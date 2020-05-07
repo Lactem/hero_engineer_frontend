@@ -1,0 +1,12 @@
+.hero {
+    background-color: lightgray;
+}
+.hero__selected {
+    background-color: lightgreen;
+}
+.hero:hover {
+    cursor: pointer;
+}
+.hero__selected:hover {
+    cursor: pointer;
+}

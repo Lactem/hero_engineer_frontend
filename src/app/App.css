@@ -1,0 +1,74 @@
+@import url(https://fonts.googleapis.com/css?family=Roboto:700);
+.App {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+  /* Use "transform" to allow "position: fixed" descendants to position themselves in relation to App */
+  -webkit-transform: rotate(0deg);
+  -moz-transform: rotate(0deg);
+  -ms-transform: rotate(0deg);
+  -o-transform: rotate(0deg);
+  transform: rotate(0deg);
+}
+
+/*body {
+  background: linear-gradient(-45deg, #c7ffd8, #b0d6ff, #a6dbff);
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}*/
+body {
+  font-family: "Roboto", serif;
+}
+
+#layer1 {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background: repeating-linear-gradient(90deg, white, white, white);
+  animation: layer1 10s linear infinite alternate;
+}
+
+#layer2 {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background: repeating-linear-gradient(90deg, white, white, white);
+  animation: layer2 15s linear infinite alternate;
+}
+
+@keyframes layer1 {
+  0% {
+    background-position: 1000px 0;
+  }
+  50% {
+    background-position: 500px 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+@keyframes layer2 {
+  0% {
+    background-position: 0 0%;
+  }
+  50% {
+    background-position: 500px 0%;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+/*# sourceMappingURL=App.css.map */

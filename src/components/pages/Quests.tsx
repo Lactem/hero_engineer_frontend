@@ -1,0 +1,278 @@
+import React, { useEffect, useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
+
+import { Button, Tabs, Tag, Tooltip, Form, Radio, Collapse } from "antd"
+import { useForm } from "antd/es/form/Form"
+import { RadioChangeEvent } from "antd/es/radio"
+import { CheckCircleOutlined, ClockCircleOutlined, StarOutlined, LockOutlined, ExclamationCircleOutlined } from "@ant-design/icons"
+
+import { RootState } from "../../app/rootReducer"
+import { gradeQuiz, loadQuizzes } from "../../features/quizzes/quizzesSlice"
+import { QuestModel } from "../../api/questsAPI"
+import { AnswerModel, QuizModel } from "../../api/quizzesAPI"
+
+import "./Quests.scss"
+
+export const Quests = () => {
+  const dispatch = useDispatch()
+  const { user, userError } = useSelector(
+    (state: RootState) => state.user
+  )
+  const { quizzes, quizzesLoading, quizzesError } = useSelector(
+    (state: RootState) => state.quizzes
+  )
+  if (quizzes == null) dispatch(loadQuizzes())
+
+  return (
+    <>
+      <div style={{position: "relative", left: "10%", width: "90%"}}>
+        <Tabs animated={true} defaultActiveKey="1" type="card" size="large">
+          <Tabs.TabPane tab="Main Quests" key="1">
+            {userError && <>{userError}<br/></>}
+            {quizzesError && <>{quizzesError}<br/></>}
+            {quizzesLoading && (<>Loading...</>)}
+            {user && quizzes && (
+              <div style={{position: "fixed", left: "0", textAlign: "center", width: "100%"}}>
+                <Tabs defaultActiveKey="0" tabPosition="left">
+                  {user.quests && user.quests.map((quest, i) => (
+                    !quest.main ? null : <Tabs.TabPane tab={quest.name} key={"" + i}>
+                      <QuestView quest={quest} quests={user.quests} quizzes={quizzes} />
+                    </Tabs.TabPane>
+                  ))}
+                </Tabs>
+              </div>
+            )}
+          </Tabs.TabPane>
+          <Tabs.TabPane tab="Side Quests" key="2">
+            {quizzesError && <>{quizzesError}<br/></>}
+            {quizzesLoading && (<>Loading...</>)}
+            {user && quizzes && (
+              <div style={{position: "fixed", left: "0", textAlign: "center", width: "100%"}}>
+                <Tabs defaultActiveKey="0" tabPosition="left">
+                  {user.quests && user.quests.map((quest, i) => (
+                    quest.main ? null : <Tabs.TabPane tab={quest.name} key={"" + i}>
+                      <QuestView quest={quest} quests={user.quests} quizzes={quizzes} />
+                    </Tabs.TabPane>
+                  ))}
+                </Tabs>
+              </div>
+            )}
+          </Tabs.TabPane>
+        </Tabs>
+      </div>
+    </>
+  )
+}
+
+interface QuestViewProps {
+  quest: QuestModel
+  quests: QuestModel[]
+  quizzes: QuizModel[]
+}
+export const QuestView = ({ quest, quests, quizzes }: QuestViewProps) => {
+  const [requiredQuests, setRequiredQuests] = useState([] as QuestModel[])
+  const [incompleteQuizzes, setIncompleteQuizzes] = useState([] as QuizModel[])
+  const [quiz, setQuiz] = useState({} as QuizModel)
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    let incompleteQuizzes: QuizModel[] = []
+    for (const quiz of quizzes) {
+      for (const quizId of quest.incompleteQuizIds) {
+        if (quizId === quiz.id) incompleteQuizzes = [...incompleteQuizzes, quiz]
+      }
+    }
+    setIncompleteQuizzes(incompleteQuizzes)
+  }, [quest.incompleteQuizIds, quizzes])
+
+  useEffect(() => {
+    let requiredQuests: QuestModel[] = []
+    for (const requiredQuestId  of quest.requiredQuestIds) {
+      for (const otherQuest of quests) {
+        if (requiredQuestId === otherQuest.id) {
+          if (otherQuest) requiredQuests = [...requiredQuests, otherQuest]
+          else break
+        }
+      }
+    }
+    setRequiredQuests(requiredQuests)
+  }, [quest.requiredQuestIds, quests])
+
+  function startQuiz(quiz: QuizModel) {
+    setQuiz(quiz)
+    setVisible(true)
+  }
+
+  return (
+    <div style={{display: "flex", flexDirection: "column"}}>
+      <h2 style={{display: "flex", justifyContent: "center"}}>
+        <span style={{height: "100%"}}>{quest.name}</span>
+        <span>{quest.complete && <Tag style={{marginLeft: "5px"}} color="success" icon={<CheckCircleOutlined />}>Complete</Tag>}</span>
+        <span>{!quest.complete && <Tag style={{marginLeft: "5px"}} color="warning" icon={<ClockCircleOutlined />}>Incomplete</Tag>}</span>
+        <span>{quest.automaticXpReward > 0 && (
+          <Tooltip title={"Earn up to " + quest.automaticXpReward + " XP for completing this quest."}>
+            <Tag icon={<StarOutlined />}>{quest.automaticXpReward} XP</Tag>
+          </Tooltip>
+        )}</span>
+      </h2>
+      {quest.description}
+      <div style={{height: "50px"}} />
+      {quest.requiredQuestIds.length === 0 && quest.incompleteQuizIds && quest.incompleteQuizIds.length > 0 && (
+        <>
+          <h4>You must take
+            {quest.incompleteQuizIds.length === 1 && (<> a quiz </>)}
+            {quest.incompleteQuizIds.length > 1 && (<> these quizzes </>)}
+            to complete this quest:</h4>
+          <div style={{display: "flex", justifyContent: "center"}}>
+              {incompleteQuizzes.map((quiz, i) => (
+                <span key={i} style={{marginLeft: "2px", marginRight: "2px"}}>
+                  {quiz.locked && <Tooltip title="This quiz is locked. Please wait for Professor Ramsey to unlock it.">
+                    <Button disabled>
+                      <LockOutlined />{quiz.name} ({quiz.numQuestions} questions)
+                    </Button>
+                  </Tooltip>}
+                  {!quiz.locked && <Tooltip title={visible ? "Quiz in progress" : "Click to start this quiz."}>
+                    <Button disabled={visible} onClick={() => startQuiz(quiz)}>
+                      {quiz.name} ({quiz.numQuestions} questions)
+                    </Button>
+                  </Tooltip>}
+                </span>
+              ))}
+          </div>
+        </>
+      )}
+      {quest.completedQuizzes && quest.completedQuizzes.length !== 0 && (
+        <>
+          <h4>Your quiz results are now available:</h4>
+          {quest.completedQuizzes.map((quiz, i) => (
+            <div key={i}>
+              <Collapse style={{width: "100%"}}>
+                <Collapse.Panel header={quiz.name} key={i}>
+                  <Form
+                    layout="vertical"
+                    name="viewQuizForm"
+                  >
+                    {quiz.questions.map((question, i) => (
+                      <div key={i}>
+                        <div>
+                          {question.question}
+                        </div>
+                        <br />
+                        <div style={{display: "flex", justifyContent: "center"}}>
+                          <div>
+                            {question.answerOptions.map((answer, j) => (
+                              <div key={j} style={{display: "flex", flexDirection: "row", justifyContent: "center"}}>
+                                <div style={{ display: "block", height: "30px", lineHeight: "30px" }}>
+                                  <span>{answer.correct && <Tag style={{marginLeft: "5px"}} color="success" icon={<CheckCircleOutlined />}>Correct Answer</Tag>}</span>
+                                  <span>{!answer.correct && question.studentAnswerId === answer.id && <Tag style={{marginLeft: "5px"}} color="error" icon={<ExclamationCircleOutlined />}>Your Answer</Tag>}</span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                          <Radio.Group disabled>
+                            {question.answerOptions.map((answer, j) => (
+                              <div key={j} style={{display: "flex", flexDirection: "row", justifyContent: "center"}}>
+                                <Radio style={{ display: "block", height: "30px", lineHeight: "30px" }}
+                                       checked={answer.correct}
+                                       value={answer.id}
+                                >
+                                  {answer.answer}
+                                </Radio>
+                              </div>
+                            ))}
+                          </Radio.Group>
+                        </div>
+                      </div>
+                    ))}
+                  </Form>
+                  <br />
+                  <br />
+                </Collapse.Panel>
+              </Collapse>
+            </div>
+          ))}
+        </>
+      )}
+      {requiredQuests.length > 0 && (
+        <>
+          {requiredQuests.length === 1
+            ? <h4>You must complete another quest before you can embark on this one:</h4>
+            : <h4>You must complete the following quests before you can embark on this one:</h4>}
+          {requiredQuests.map((requiredQuest, i) => (
+            <>{requiredQuest.name}</>
+          ))}
+        </>
+      )}
+      <div style={{height: "30px"}} />
+      {visible && <TakeQuiz questId={quest.id} quiz={quiz} endQuiz={() => setVisible(false)} />}
+    </div>
+  )
+}
+
+interface TakeQuizProps {
+  questId: string
+  quiz: QuizModel
+  endQuiz: Function
+}
+export const TakeQuiz = ({ questId, quiz, endQuiz }: TakeQuizProps) => {
+  const dispatch = useDispatch()
+  const [form] = useForm()
+  let answerModels: AnswerModel[] = []
+
+  useEffect(() => {
+    for (let question of quiz.questionBank) {
+      if (!question.answerOptions || question.answerOptions.length === 0) continue
+      answerModels = [...answerModels, { questionId: question.id, answerId: question.answerOptions[0].id }]
+    }
+  })
+
+  function onSubmitQuiz(values: any) {
+    dispatch(gradeQuiz(questId, quiz.id, answerModels))
+    endQuiz()
+  }
+
+  function onChangeAnswer(questionId: string, e: RadioChangeEvent) {
+    for (const answerModel of answerModels) {
+      if (answerModel.questionId === questionId) {
+        answerModel.answerId = e.target.value
+        return
+      }
+    }
+    answerModels = [...answerModels, { questionId, answerId: e.target.value }]
+  }
+
+  return (
+    <>
+      <h2>{quiz.name}</h2>
+      <Form
+        form={form}
+        layout="vertical"
+        name="takeQuizForm"
+        onFinish={onSubmitQuiz}
+      >
+        {quiz.questionBank.map((question, i) => (
+          <div key={i}>
+            <Form.Item name={"" + question.id}>
+              {question.question}
+              <br />
+              <Radio.Group onChange={(e) => onChangeAnswer(question.id, e)}>
+                {question.answerOptions.map((answer, j) => (
+                  <Radio style={{ display: "block", height: "30px", lineHeight: "30px" }}
+                         value={answer.id}
+                         key={j}
+                  >
+                    {answer.answer}
+                  </Radio>
+                ))}
+              </Radio.Group>
+            </Form.Item>
+          </div>
+        ))}
+
+        <Button htmlType="submit" type="primary">Submit Quiz</Button>
+      </Form>
+      <br />
+      <br />
+    </>
+  )
+}
