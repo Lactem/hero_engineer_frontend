@@ -35,9 +35,9 @@ export const AdminQuests = ({ quests, quizzes }: AdminQuestsProps) => {
   }
 
   return (
-    <>
+    <div style={{width: "100%"}}>
       {quests.map((quest, i) => (
-        <div key={i}>
+        <div key={i} style={{textAlign: "left"}}>
           <Collapse style={{width: "100%"}}>
             <Collapse.Panel header={quest.name} key={i}>
               <EditQuest quest={quest} quests={quests} quizzes={quizzes} />
@@ -54,7 +54,7 @@ export const AdminQuests = ({ quests, quizzes }: AdminQuestsProps) => {
         visible={visible}
         onAddQuest={onAddQuest}
         onCancel={() => setVisible(false)} />
-    </>
+    </div>
   )
 }
 

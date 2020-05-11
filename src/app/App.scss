@@ -1,7 +1,9 @@
 .App {
-  max-width: 1200px;
-  margin: 0 auto;
+  height: 100%;
+  width: 100%;
   padding: 1rem;
+  display: flex;
+  flex-direction: column;
 
   /* Use "transform" to allow "position: fixed" descendants to position themselves in relation to App */
   -webkit-transform: rotate(0deg);

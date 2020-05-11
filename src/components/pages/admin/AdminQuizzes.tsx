@@ -29,9 +29,9 @@ export const AdminQuizzes = ({ quizzes }: AdminQuizzesProps) => {
   }
 
   return (
-    <>
+    <div style={{width: "100%"}}>
       {quizzes.map((quiz, i) => (
-        <div key={i}>
+        <div key={i} style={{textAlign: "left"}}>
           <Collapse>
             <Collapse.Panel header={quiz.name} key={i}>
               <EditQuiz quiz={quiz} />
@@ -46,7 +46,7 @@ export const AdminQuizzes = ({ quizzes }: AdminQuizzesProps) => {
         visible={visible}
         onAddQuiz={onAddQuiz}
         onCancel={() => setVisible(false)} />
-    </>
+    </div>
   )
 }
 

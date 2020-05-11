@@ -27,29 +27,31 @@ export const Admin = () => {
 
   return (
     <>
-      <h1>Admin Page (only the professor can view)</h1>
-      <br />
-      <h2>Edit Heroes</h2>
-      {heroes && <AdminHeroes heroes={heroes as HeroModel[]} />}
-      <br />
-      <Divider />
-      <Divider />
-      <Divider />
-      <br />
-      <h2>Edit Quests</h2>
-      {questsLoading && <>Loading quests...</>}
-      {questsError}
-      {!questsLoading && quests && !quizzesLoading && quizzes
-        && <AdminQuests quests={quests} quizzes={quizzes} />}
-      <br />
-      <Divider />
-      <Divider />
-      <Divider />
-      <br />
-      <h2>Edit Quizzes</h2>
-      {quizzesLoading && <>Loading quizzes...</>}
-      {quizzesError}
-      {!quizzesLoading && quizzes && <AdminQuizzes quizzes={quizzes} />}
+      <div style={{display: "flex", flexDirection: "column", justifyContent: "center", textAlign: "center", alignItems: "center", width: "100%"}}>
+        <h1>Control Panel</h1>
+        <br />
+        <h2>Edit Heroes</h2>
+        {heroes && <AdminHeroes heroes={heroes as HeroModel[]} />}
+        <br />
+        <Divider />
+        <Divider />
+        <Divider />
+        <br />
+        <h2>Edit Quests</h2>
+        {questsLoading && <>Loading quests...</>}
+        {questsError}
+        {!questsLoading && quests && !quizzesLoading && quizzes
+          && <AdminQuests quests={quests} quizzes={quizzes} />}
+        <br />
+        <Divider />
+        <Divider />
+        <Divider />
+        <br />
+        <h2>Edit Quizzes</h2>
+        {quizzesLoading && <>Loading quizzes...</>}
+        {quizzesError}
+        {!quizzesLoading && quizzes && <AdminQuizzes quizzes={quizzes} />}
+      </div>
     </>
   )
 }

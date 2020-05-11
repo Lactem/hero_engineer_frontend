@@ -23,7 +23,9 @@ export const LoggedInRoute = ({ component: Component, ...otherProps }: Props) =>
 
   return (
     <>
-      <NavLink to="/home">&lt;-- Home</NavLink>
+      <div>
+        <NavLink to="/home">&lt;-- Home</NavLink>
+      </div>
       <Route
         render={otherProps => (
           <>

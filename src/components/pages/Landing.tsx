@@ -43,8 +43,8 @@ export const Landing = () => {
   // Logo URL: logomakr.com/6UaHmM
   return (
     <>
-      <Layout style={{textAlign: "center", height: "90vh"}}>
-        <Typography.Title style={{fontSize: "50px", marginTop: "200px"}}>Hero Engineer</Typography.Title>
+      <Layout className="container" style={{textAlign: "center", height: "100%"}}>
+        <Typography.Title style={{fontSize: "50px"}}>Hero Engineer</Typography.Title>
         <p>Your hub for all things WRIT-340 with Professor Ramsey</p>
 
         <div style={{height: "50px"}} />
