@@ -8,6 +8,7 @@ import history from "../../app/history"
 import { Card, Layout, Space, Tag } from "antd"
 import { StarOutlined } from "@ant-design/icons"
 import Meta from "antd/es/card/Meta"
+import { createAvatar } from "../../api/doppelmeAPI"
 
 
 export const Home = () => {
@@ -15,6 +16,10 @@ export const Home = () => {
   const { user } = useSelector(
     (state: RootState) => state.user
   )
+
+  function handleCreateAvatar() {
+    createAvatar()
+  }
 
   function handleQuests() {
     history.push("/quests")
@@ -49,6 +54,7 @@ export const Home = () => {
               <Tag style={{marginLeft: "5px"}} icon={<StarOutlined />}>{user.xp} XP</Tag>
           )}</span>
         </h1>
+        <button onClick={handleCreateAvatar}>Create Avatar</button>
         <Layout.Content>
           <Space direction="vertical" size="large" align="center">
             <Space direction="horizontal" size="large" align="center">
