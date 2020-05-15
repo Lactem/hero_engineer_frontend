@@ -6,10 +6,69 @@ export interface UserModel {
   email: string
   username: string
   heroId: number
+  avatarSVG: string
+  avatarDataMale: AvatarDataMaleModel
+  avatarDataFemale: AvatarDataFemaleModel
+  avatarDataColors: AvatarDataColorsModel
   xp: number
   points: number
   quests: QuestModel[]
   isProf: boolean
+}
+export interface AvatarDataMaleModel {
+  backs: number
+  chinshadow: number
+  clothes: number
+  ears: number
+  eyebrows: number
+  eyesback: number
+  eyesfront: number
+  eyesiris: number
+  facehighlight: number
+  faceshape: number
+  glasses: number
+  hair: number
+  humanbody: number
+  mouth: number
+  nose: number
+  beard: number
+  mustache: number
+}
+export interface AvatarDataFemaleModel {
+  backs: number
+  chinshadow: number
+  clothes: number
+  ears: number
+  eyebrows: number
+  eyesback: number
+  eyesfront: number
+  eyesiris: number
+  facehighlight: number
+  faceshape: number
+  glasses: number
+  hair: number
+  humanbody: number
+  mouth: number
+  nose: number
+}
+export interface AvatarDataColorsModel {
+  backs: number
+  chinshadow: number
+  clothes: number
+  ears: number
+  eyebrows: number
+  eyesback: number
+  eyesfront: number
+  eyesiris: number
+  facehighlight: number
+  faceshape: number
+  glasses: number
+  hair: number
+  humanbody: number
+  mouth: number
+  nose: number
+  beard: number
+  mustache: number
 }
 
 export function setupJwtInterceptor(token: string): number {
@@ -52,5 +111,19 @@ export async function signUpUser(email: string,
     username,
     password,
     heroId
+  })
+}
+
+export async function apiUpdateAvatar(avatarSVG: string,
+                                      avatarDataMale: AvatarDataMaleModel | null,
+                                      avatarDataFemale: AvatarDataFemaleModel | null,
+                                      avatarDataColors: AvatarDataColorsModel | null) {
+  const url = `${apiBase}/user/updateAvatar`
+
+  return await axios.post<string>(url, {
+    avatarSVG,
+    "avatarDataMale": avatarDataMale,
+    "avatarDataFemale": avatarDataFemale,
+    "avatarDataColors": avatarDataColors
   })
 }

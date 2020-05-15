@@ -10,7 +10,7 @@ import {
   signUpUser,
   setupJwtInterceptor,
   loadUserProfile,
-  teardownJwtInterceptor
+  teardownJwtInterceptor, apiUpdateAvatar, AvatarDataFemaleModel, AvatarDataMaleModel, AvatarDataColorsModel
 } from "../../api/userAPI"
 import jwt_decode from "jwt-decode";
 
@@ -74,6 +74,9 @@ const user = createSlice({
     },
     signUpFailedAction(state, action: PayloadAction<string>) {
       state.userError = action.payload
+    },
+    updateAvatarSuccessAction(state, action: PayloadAction<string>) {
+      state.user = Object.assign(state.user, {"avatar": action.payload})
     }
   }
 })
@@ -86,7 +89,8 @@ export const {
   setTokenAction,
   loadProfileSuccessAction,
   loadProfileFailedAction,
-  signUpFailedAction
+  signUpFailedAction,
+  updateAvatarSuccessAction
 } = user.actions
 
 export default user.reducer
@@ -173,6 +177,39 @@ export const signUp = (
   signUpUser(email, username, password, heroId)
     .then(response => {
       dispatch(logIn(email, password))
+    }).catch(error => {
+    if (error.response) {
+      if (error.response.data.error) {
+        dispatch(signUpFailedAction(error.response.data.error))
+      }
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      console.log("error.response.data", error.response.data);
+      console.log("error.response.status", error.response.status);
+      console.log("error.response.headers", error.response.headers);
+    } else if (error.request) {
+      // The request was made but no response was received
+      // `error.request` is an instance of XMLHttpRequest in the browser
+      console.log("error.request", error.request);
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      console.log("Error", error.message);
+    }
+    console.log("Error.config", error.config);
+  })
+}
+
+export const updateAvatar = (
+  avatar: string,
+  avatarDataMale: AvatarDataMaleModel | null,
+  avatarDataFemale: AvatarDataFemaleModel | null,
+  avatarDataColors: AvatarDataColorsModel | null,
+  successCallback: Function): AppThunk => async dispatch => {
+  apiUpdateAvatar(avatar, avatarDataMale, avatarDataFemale, avatarDataColors)
+    .then(response => {
+      dispatch(updateAvatarSuccessAction(avatar))
+      dispatch(loadProfile())
+      successCallback()
     }).catch(error => {
     if (error.response) {
       if (error.response.data.error) {
