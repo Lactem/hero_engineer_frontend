@@ -309,7 +309,7 @@ export const Home = () => {
                     cover={
                       <img
                         alt="example"
-                        src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
+                        src="../../../Quests.png"
                       />
                     }
                     style={{ width: 300 }}>
@@ -325,7 +325,7 @@ export const Home = () => {
                 cover={
                   <img
                     alt="example"
-                    src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
+                    src="../../../Hero Council.png"
                   />
                 }
                 style={{ width: 300 }}>
@@ -339,7 +339,7 @@ export const Home = () => {
                     cover={
                       <img
                         alt="example"
-                        src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
+                        src="../../../Item Store.png"
                       />
                     }
                     style={{ width: 300 }}>
@@ -355,7 +355,7 @@ export const Home = () => {
                     cover={
                       <img
                         alt="example"
-                        src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
+                        src="../../../Leaderboard.png"
                       />
                     }
                     style={{ width: 300 }}>
@@ -369,7 +369,7 @@ export const Home = () => {
                 cover={
                   <img
                     alt="example"
-                    src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
+                    src="../../../Leave Game.png"
                   />
                 }
                 style={{ width: 300 }}>
@@ -386,7 +386,7 @@ export const Home = () => {
                       cover={
                         <img
                           alt="example"
-                          src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
+                          src="../../../Admin Panel.png"
                         />
                       }
                       style={{ width: 300 }}>
