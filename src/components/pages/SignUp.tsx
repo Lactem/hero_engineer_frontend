@@ -133,9 +133,9 @@ export const SignUp = () => {
                            style={{padding: "2%", textAlign: "center", display: "flex", flexDirection: "column"}}
                       >
                         <div style={{alignSelf: "center"}}>
-                          <img
+                          <img style={{width: "30%", marginLeft: "auto", marginRight: "auto"}}
                             alt="example"
-                            src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
+                            src={"../../../" + hero.name + ".png"}
                           />
                         </div>
                         <h2 style={{display: "flex", justifyContent: "center"}}>
