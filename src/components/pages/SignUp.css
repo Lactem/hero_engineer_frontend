@@ -10,3 +10,27 @@
 .hero__selected:hover {
     cursor: pointer;
 }
+
+.dots {
+    width: 20px !important;
+    height: 150px !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-content: center !important;
+    align-items: center !important;
+}
+.ant-carousel .slick-dots li {
+    margin: 5px 0 !important;
+}
+.ant-carousel .slick-dots li button {
+    background: whitesmoke;
+    opacity: 0.4;
+    width: 8px !important;
+    height: 30px !important;
+}
+.ant-carousel .slick-dots li.slick-active button {
+    opacity: 1;
+    background: white;
+    width: 8px !important;
+    height: 30px !important;
+}

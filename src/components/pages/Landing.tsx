@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import { NavLink } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "../../app/rootReducer"
-import { logIn } from "../../features/user/userSlice"
+import { logIn, setOnLandingPageAction } from "../../features/user/userSlice"
 import { Form, Button, Input, Modal, Layout, Typography } from "antd"
 import { useForm } from "antd/es/form/Form"
 import history from "../../app/history"
@@ -14,6 +14,8 @@ export const Landing = () => {
   const { userError, loginLoading } = useSelector(
     (state: RootState) => state.user
   )
+
+  dispatch(setOnLandingPageAction(true))
 
   function showModal() {
     setModalVisible(true)
@@ -37,6 +39,7 @@ export const Landing = () => {
   }
 
   function signUp() {
+    dispatch(setOnLandingPageAction(false))
     history.push("/sign-up")
   }
 

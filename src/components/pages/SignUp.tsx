@@ -68,7 +68,7 @@ export const SignUp = () => {
           <Form
                 form={form}
                 layout="vertical"
-                name="addQuizForm"
+                name="signUpForm"
                 onFinish={handleSubmit}
           >
             <Form.Item
@@ -123,7 +123,7 @@ export const SignUp = () => {
                            message: "Please choose your Hero.",
                          },
                        ]}>
-              <Carousel dotPosition="left" autoplay={currentHero === ""}>
+              <Carousel dots={{"className": "dots"}} dotPosition="left" autoplay={currentHero === ""}>
                 {heroes && heroes.map((hero, i) => (
                   <div key={i}
                        onClick={() => handleHeroChange(hero.id)}
@@ -134,8 +134,8 @@ export const SignUp = () => {
                       >
                         <div style={{alignSelf: "center"}}>
                           <img style={{width: "30%", marginLeft: "auto", marginRight: "auto"}}
-                            alt="example"
-                            src={"../../../" + hero.name + ".png"}
+                            alt="hero image"
+                            src={"/" + hero.name + ".png"}
                           />
                         </div>
                         <h2 style={{display: "flex", justifyContent: "center"}}>

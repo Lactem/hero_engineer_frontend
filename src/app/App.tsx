@@ -14,7 +14,7 @@ import Pages from "../routes/Pages"
 const App: React.FC = () => {
   const dispatch = useDispatch()
 
-  const { isAuthenticated } = useSelector(
+  const { isAuthenticated, onLandingPage } = useSelector(
     (state: RootState) => state.user
   )
 
@@ -34,7 +34,7 @@ const App: React.FC = () => {
       <div id="layer2" />
       <div id="layer1" />
 
-      <div id="landing-cover" style={{display: history.location.pathname === "/" ? "block" : "none"}} />
+      <div id="landing-cover" style={{display: onLandingPage ? "block" : "none"}} />
 
       <div className="App">
         {app}

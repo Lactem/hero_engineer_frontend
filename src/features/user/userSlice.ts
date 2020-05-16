@@ -19,8 +19,9 @@ interface UserState {
   user: UserModel | null
   isAuthenticated: boolean | null
   loginLoading: boolean
-  userError: string,
+  userError: string
   jwtAxiosId: number | null
+  onLandingPage: boolean
 }
 
 const initialState: UserState = {
@@ -28,7 +29,8 @@ const initialState: UserState = {
   isAuthenticated: null,
   loginLoading: false,
   userError: "",
-  jwtAxiosId: null
+  jwtAxiosId: null,
+  onLandingPage: true
 }
 
 const user = createSlice({
@@ -77,6 +79,9 @@ const user = createSlice({
     },
     updateAvatarSuccessAction(state, action: PayloadAction<string>) {
       state.user = Object.assign(state.user, {"avatar": action.payload})
+    },
+    setOnLandingPageAction(state, action: PayloadAction<boolean>) {
+      state.onLandingPage = action.payload
     }
   }
 })
@@ -90,7 +95,8 @@ export const {
   loadProfileSuccessAction,
   loadProfileFailedAction,
   signUpFailedAction,
-  updateAvatarSuccessAction
+  updateAvatarSuccessAction,
+  setOnLandingPageAction
 } = user.actions
 
 export default user.reducer
@@ -105,6 +111,7 @@ export const logIn = (
       dispatch(loginSuccessAction())
       dispatch(setTokenAction(response.data.token))
       dispatch(loadProfile())
+      dispatch(setOnLandingPageAction(false))
     })
     .catch(error => {
       console.log("loginUser error")
