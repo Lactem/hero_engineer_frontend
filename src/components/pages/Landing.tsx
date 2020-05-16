@@ -43,28 +43,24 @@ export const Landing = () => {
   // Logo URL: logomakr.com/6UaHmM
   return (
     <>
-      <Layout className="container" style={{textAlign: "center", height: "100%"}}>
-        <Typography.Title style={{fontSize: "50px"}}>Hero Engineer</Typography.Title>
-        <p>Your hub for all things WRIT-340 with Professor Ramsey</p>
+      <div style={{textAlign: "center", height: "100%"}}>
+        <div style={{display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center"}}>
+          <div style={{marginTop: "5%"}} />
+          <div style={{WebkitFilter: "drop-shadow(0 0 8px black)", filter: "drop-shadow(0 0 8px black)"}}>
+            <img src={"../../../hero_engineer_logo.png"}  alt="logo" width="350px" height="350px" />
+          </div>
+          <div style={{marginTop: "5%"}} />
 
-        <div style={{height: "50px"}} />
-        <div style={{display: "inline-block"}}>
-          <img src={"../../../hero_engineer_logo.png"}  alt="logo" width="200px" height="200px" />
+          <div style={{width: "100%", padding: "0 40%", display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
+            <Button size="large" style={{width: "auto"}} type="primary" onClick={signUp}>
+              Start your journey (sign up)
+            </Button>
+            <Button size="large" type="primary" onClick={showModal}>
+              Log in
+            </Button>
+          </div>
         </div>
-        <div style={{height: "50px"}} />
-
-        <div>
-          <Button style={{width: "auto"}} type="primary" onClick={signUp}>
-            Start your journey (sign up)
-          </Button>
-          <br />or<br />
-          <Button type="primary" onClick={showModal}>
-            Log in
-          </Button>
-        </div>
-
-        <div style={{height: "10px"}} />
-      </Layout>
+      </div>
       <Modal style={{textAlign: "center"}}
              title="Log in"
              visible={modalVisible}

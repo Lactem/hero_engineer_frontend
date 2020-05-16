@@ -34,6 +34,8 @@ const App: React.FC = () => {
       <div id="layer2" />
       <div id="layer1" />
 
+      <div id="landing-cover" style={{display: history.location.pathname === "/" ? "block" : "none"}} />
+
       <div className="App">
         {app}
       </div>

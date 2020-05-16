@@ -72,6 +72,7 @@ export const Home = () => {
 
   function handleLeaveGame() {
     dispatch(logOut())
+    history.push("/")
   }
 
   function handleAdminPanel() {
