@@ -5,7 +5,7 @@ import { signUp } from "../../features/user/userSlice"
 import { RootState } from "../../app/rootReducer"
 import { loadHeroes } from "../../features/heroes/heroesSlice"
 
-import { Button, Carousel, Form, Input, Layout, Space, Tag, Tooltip } from "antd"
+import { Alert, Button, Carousel, Form, Input, Layout, Space, Tag, Tooltip } from "antd"
 import { useForm } from "antd/es/form/Form"
 import { CheckCircleOutlined } from "@ant-design/icons"
 
@@ -16,6 +16,7 @@ export const SignUp = () => {
   const dispatch = useDispatch()
   const [form] = useForm()
   const [currentHero, setCurrentHero] = useState("")
+  const [heroUnselected, setHeroUnselected] = useState(false)
   const { heroes, error }  = useSelector(
     (state: RootState) => state.heroes
   )
@@ -23,32 +24,16 @@ export const SignUp = () => {
     (state: RootState) => state.user
   )
 
-  if (heroes == null) {
-    dispatch(loadHeroes())
-  }
-
-  /*
-
-  function handleEmailChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setCurrentEmail(event.target.value)
-  }
-
-  function handleUsernameChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setCurrentUsername(event.target.value)
-  }
-
-  function handlePasswordChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setCurrentPassword(event.target.value)
-  }
-   */
+  if (heroes == null) dispatch(loadHeroes())
 
   function handleHeroChange(newHero: string) {
     setCurrentHero(newHero)
+    setHeroUnselected(false)
   }
 
   function handleSubmit(values: any) {
     if (currentHero === "") {
-      alert("No hero selected (please click one).")
+      setHeroUnselected(true)
     } else {
       const email = values.email.replace("@usc.edu", "")
       dispatch(signUp(email + "@usc.edu", values.username, values.password, currentHero))
@@ -60,8 +45,9 @@ export const SignUp = () => {
       <NavLink to="/home">&lt;-- Home</NavLink>
       <Layout style={{ textAlign: "center" }}>
         <h1>Begin Your Journey</h1>
-        <p>{error}</p>
-        <p>{userError}</p>
+        {error && <Alert message={error} type="error" />}
+        {userError && <Alert message={userError} type="error" />}
+        {heroUnselected && <Alert message={"Please select a hero."} type="error" />}
         <p>Your Hero skills will be greatly needed. Please enter some information to get started.</p>
 
         <div style={{margin: "3%"}}>
@@ -134,7 +120,7 @@ export const SignUp = () => {
                       >
                         <div style={{alignSelf: "center"}}>
                           <img style={{width: "30%", marginLeft: "auto", marginRight: "auto"}}
-                            alt="hero image"
+                            alt="hero"
                             src={"/" + hero.name + ".png"}
                           />
                         </div>

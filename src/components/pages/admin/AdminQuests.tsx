@@ -27,6 +27,9 @@ export const AdminQuests = ({ quests, quizzes }: AdminQuestsProps) => {
       values.main,
       false,
       values.completeWithQuizzes,
+      values.completeWithCode,
+      values.completeWithQuizzesAndCode,
+      "",
       values.incompleteQuizIds,
       [],
       values.requiredQuestsIds
@@ -64,7 +67,7 @@ interface EditQuestProps {
   quizzes: QuizModel[]
 }
 const EditQuest = ({ quest, quests, quizzes }: EditQuestProps) => {
-  const [form] = Form.useForm();
+  const [form] = Form.useForm()
   const dispatch = useDispatch()
 
   useEffect(() => form.resetFields(), [quest, quizzes, form])
@@ -73,7 +76,7 @@ const EditQuest = ({ quest, quests, quizzes }: EditQuestProps) => {
     form
       .validateFields()
       .then(values => {
-        console.log("onFinish values: ", values)
+        console.log("values: ", values)
         dispatch(saveQuest(
           values.name,
           values.description,
@@ -81,6 +84,9 @@ const EditQuest = ({ quest, quests, quizzes }: EditQuestProps) => {
           values.main,
           false,
           values.completeWithQuizzes,
+          values.completeWithCode,
+          values.completeWithQuizzesAndCode,
+          "",
           values.incompleteQuizIds,
           [],
           values.requiredQuestsIds,
@@ -108,6 +114,8 @@ const EditQuest = ({ quest, quests, quizzes }: EditQuestProps) => {
           automaticXpReward: quest.automaticXpReward,
           main: quest.main,
           completeWithQuizzes: quest.completeWithQuizzes,
+          completeWithCode: quest.completeWithCode,
+          completeWithQuizzesAndCode: quest.completeWithQuizzesAndCode,
           incompleteQuizIds: quest.incompleteQuizIds,
           requiredQuestIds: quest.requiredQuestIds
         }}
@@ -175,7 +183,7 @@ const EditQuest = ({ quest, quests, quizzes }: EditQuestProps) => {
           label={(
             <>
               Completed by Quiz(zes)
-              <Tooltip title="Tick this box to indicate that this quest is automatically completed when the quiz or quizzes are complete. Leave unticked to indicate that you will manually mark this quest as complete once you grade the assignment associated with it.">
+              <Tooltip title="Tick this box to indicate that this quest is automatically completed when the quiz or quizzes are complete. No code is required to complete this quest unless you tick 'Completed by Quiz(zes) AND Code.'">
                 <QuestionCircleOutlined style={{paddingLeft: "5px"}} />
               </Tooltip>
             </>
@@ -188,6 +196,50 @@ const EditQuest = ({ quest, quests, quizzes }: EditQuestProps) => {
               defaultChecked={quest.completeWithQuizzes}
               onChange={(e: CheckboxChangeEvent) => {
                 form.setFieldsValue({"completeWithQuizzes": e.target.checked})
+              }}
+            />
+          </Form.Item>
+        </Form.Item>
+
+        <Form.Item
+          label={(
+            <>
+              Completed by Code
+              <Tooltip title="Tick this box to indicate that students can complete this quest by entering a code. Completing quizzes is not necessary unless you tick the box for 'Completed by Quiz(zes) AND Code.'">
+                <QuestionCircleOutlined style={{paddingLeft: "5px"}} />
+              </Tooltip>
+            </>
+          )}>
+          <Form.Item
+            name="completeWithCode"
+            noStyle
+          >
+            <Checkbox
+              defaultChecked={quest.completeWithCode}
+              onChange={(e: CheckboxChangeEvent) => {
+                form.setFieldsValue({"completeWithCode": e.target.checked})
+              }}
+            />
+          </Form.Item>
+        </Form.Item>
+
+        <Form.Item
+          label={(
+            <>
+              Completed by Quiz(zes) AND Code
+              <Tooltip title="Tick this box to indicate that students must complete this quest both by taking a quiz (or quizzes) AND by entering a code.">
+                <QuestionCircleOutlined style={{paddingLeft: "5px"}} />
+              </Tooltip>
+            </>
+          )}>
+          <Form.Item
+            name="completeWithQuizzesAndCode"
+            noStyle
+          >
+            <Checkbox
+              defaultChecked={quest.completeWithQuizzesAndCode}
+              onChange={(e: CheckboxChangeEvent) => {
+                form.setFieldsValue({"completeWithQuizzesAndCode": e.target.checked})
               }}
             />
           </Form.Item>
@@ -274,6 +326,8 @@ const AddQuestModal = ({ quests, quizzes, visible, onAddQuest, onCancel }: AddQu
           automaticXpReward: 0,
           main: false,
           completeWithQuizzes: false,
+          completeWithCode: false,
+          completeWithQuizzesAndCode: false,
           incompleteQuizIds: [],
           requiredQuestIds: []
         }}
@@ -339,7 +393,7 @@ const AddQuestModal = ({ quests, quizzes, visible, onAddQuest, onCancel }: AddQu
           label={(
             <>
               Completed by Quiz(zes)
-              <Tooltip title="Tick this box to indicate that this quest is automatically completed when the quiz or quizzes are complete. Leave unticked to indicate that you will manually mark this quest as complete once you grade the assignment associated with it.">
+              <Tooltip title="Tick this box to indicate that this quest is automatically completed when the quiz or quizzes are complete. No code is required to complete this quest unless you tick 'Completed by Quiz(zes) AND Code.'">
                 <QuestionCircleOutlined style={{paddingLeft: "5px"}} />
               </Tooltip>
             </>
@@ -351,6 +405,48 @@ const AddQuestModal = ({ quests, quizzes, visible, onAddQuest, onCancel }: AddQu
             <Checkbox
               onChange={(e: CheckboxChangeEvent) => {
                 form.setFieldsValue({"completeWithQuizzes": e.target.checked})
+              }}
+            />
+          </Form.Item>
+        </Form.Item>
+
+        <Form.Item
+          label={(
+            <>
+              Completed by Code
+              <Tooltip title="Tick this box to indicate that students can complete this quest by entering a code. Completing quizzes is not necessary unless you tick the box for 'Completed by Quiz(zes) AND Code.'">
+                <QuestionCircleOutlined style={{paddingLeft: "5px"}} />
+              </Tooltip>
+            </>
+          )}>
+          <Form.Item
+            name="completeWithCode"
+            noStyle
+          >
+            <Checkbox
+              onChange={(e: CheckboxChangeEvent) => {
+                form.setFieldsValue({"completeWithCode": e.target.checked})
+              }}
+            />
+          </Form.Item>
+        </Form.Item>
+
+        <Form.Item
+          label={(
+            <>
+              Completed by Quiz(zes) AND Code
+              <Tooltip title="Tick this box to indicate that students must complete this quest both by taking a quiz (or quizzes) AND by entering a code.">
+                <QuestionCircleOutlined style={{paddingLeft: "5px"}} />
+              </Tooltip>
+            </>
+          )}>
+          <Form.Item
+            name="completeWithQuizzesAndCode"
+            noStyle
+          >
+            <Checkbox
+              onChange={(e: CheckboxChangeEvent) => {
+                form.setFieldsValue({"completeWithQuizzesAndCode": e.target.checked})
               }}
             />
           </Form.Item>

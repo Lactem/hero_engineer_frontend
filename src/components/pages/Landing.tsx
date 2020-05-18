@@ -2,10 +2,12 @@ import React, { useState } from "react"
 import { NavLink } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "../../app/rootReducer"
-import { logIn, setOnLandingPageAction } from "../../features/user/userSlice"
-import { Form, Button, Input, Modal, Layout, Typography } from "antd"
+import { logIn, loginFailedAction } from "../../features/user/userSlice"
+import { Form, Button, Input, Modal } from "antd"
 import { useForm } from "antd/es/form/Form"
 import history from "../../app/history"
+
+import "./Landing.css"
 
 export const Landing = () => {
   const dispatch = useDispatch()
@@ -14,8 +16,6 @@ export const Landing = () => {
   const { userError, loginLoading } = useSelector(
     (state: RootState) => state.user
   )
-
-  dispatch(setOnLandingPageAction(true))
 
   function showModal() {
     setModalVisible(true)
@@ -36,16 +36,18 @@ export const Landing = () => {
   function handleCancel() {
     setModalVisible(false)
     form.resetFields();
+    dispatch(loginFailedAction(""))
   }
 
   function signUp() {
-    dispatch(setOnLandingPageAction(false))
+    dispatch(loginFailedAction(""))
     history.push("/sign-up")
   }
 
   // Logo URL: logomakr.com/6UaHmM
   return (
     <>
+      <div id="landing-cover" />
       <div style={{textAlign: "center", height: "100%"}}>
         <div style={{display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center"}}>
           <div style={{marginTop: "5%"}} />

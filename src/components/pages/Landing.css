@@ -1,0 +1,22 @@
+#landing-cover {
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)), url("/Landing.png") no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+}
+
+.ant-btn-primary {
+    background-color: #FFD700;
+    border-color: #FFD700;
+}
+.ant-btn-primary:hover {
+    background-color: #ffc800 !important;
+    border-color: #ffc800 !important;
+}

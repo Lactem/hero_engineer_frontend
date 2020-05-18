@@ -2,8 +2,16 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 
 import { AppThunk } from "app/store"
 
-import { apiDeleteQuest, apiFetchQuests, apiSaveQuest, QuestModel } from "../../api/questsAPI"
+import {
+  apiDeleteQuest,
+  apiEnterCode,
+  apiFetchQuests,
+  apiGenerateCode,
+  apiSaveQuest,
+  QuestModel
+} from "../../api/questsAPI"
 import { GradedQuizModel } from "../../api/quizzesAPI"
+import { loadAllUsers, loadProfile } from "../user/userSlice"
 
 interface QuestsState {
   quests: QuestModel[] | null
@@ -61,17 +69,24 @@ export const saveQuest = (
   main: boolean,
   complete: boolean,
   completeWithQuizzes: boolean,
+  completeWithCode: boolean,
+  completeWithQuizzesAndCode: boolean,
+  code: string,
   incompleteQuizIds: string[],
   completedQuizzes: GradedQuizModel[],
   requiredQuestIds: string[],
   id?: string
 ): AppThunk => async dispatch => {
+  console.log("completWithQandC: ", completeWithQuizzesAndCode)
   apiSaveQuest(name,
     description,
     automaticXpReward,
     main,
     complete,
     completeWithQuizzes,
+    completeWithCode,
+    completeWithQuizzesAndCode,
+    code,
     incompleteQuizIds,
     completedQuizzes,
     requiredQuestIds,
@@ -95,5 +110,33 @@ export const deleteQuest = (id: string): AppThunk => async dispatch => {
     .catch(error => {
       alert("Error deleting quest (info in console)")
       console.log("error: ", error)
+    })
+}
+
+export const enterCode = (
+  questId: string,
+  code: string
+): AppThunk => async dispatch => {
+  apiEnterCode(questId, code)
+    .then(_ => {
+      dispatch(loadProfile())
+    })
+    .catch(error => {
+      alert("Invalid code")
+      console.log("Code error: ", error)
+    })
+}
+
+export const generateCode = (
+  userEmail: string,
+  questId: string
+): AppThunk => async dispatch => {
+  apiGenerateCode(userEmail, questId)
+    .then(_ => {
+      dispatch(loadAllUsers())
+    })
+    .catch(error => {
+      alert("Invalid code")
+      console.log("Code error: ", error)
     })
 }

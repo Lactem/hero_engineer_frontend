@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
-import { Button, Tabs, Tag, Tooltip, Form, Radio, Collapse } from "antd"
+import { Button, Tabs, Tag, Tooltip, Form, Radio, Collapse, Input } from "antd"
 import { useForm } from "antd/es/form/Form"
 import { RadioChangeEvent } from "antd/es/radio"
 import { CheckCircleOutlined, ClockCircleOutlined, StarOutlined, LockOutlined, ExclamationCircleOutlined } from "@ant-design/icons"
 
 import { RootState } from "../../app/rootReducer"
 import { gradeQuiz, loadQuizzes } from "../../features/quizzes/quizzesSlice"
+import { enterCode } from "../../features/quests/questsSlice"
 import { QuestModel } from "../../api/questsAPI"
 import { AnswerModel, QuizModel } from "../../api/quizzesAPI"
 
@@ -34,8 +35,8 @@ export const Quests = () => {
             {user && quizzes && (
               <div style={{position: "fixed", left: "0", textAlign: "center", width: "100%"}}>
                 <Tabs defaultActiveKey="0" tabPosition="left">
-                  {user.quests && user.quests.map((quest, i) => (
-                    !quest.main ? null : <Tabs.TabPane tab={quest.name} key={"" + i}>
+                  {user.quests && user.quests.filter(quest => quest.main).map((quest) => (
+                    <Tabs.TabPane tab={quest.name} key={quest.id}>
                       <QuestView quest={quest} quests={user.quests} quizzes={quizzes} />
                     </Tabs.TabPane>
                   ))}
@@ -49,8 +50,8 @@ export const Quests = () => {
             {user && quizzes && (
               <div style={{position: "fixed", left: "0", textAlign: "center", width: "100%"}}>
                 <Tabs defaultActiveKey="0" tabPosition="left">
-                  {user.quests && user.quests.map((quest, i) => (
-                    quest.main ? null : <Tabs.TabPane tab={quest.name} key={"" + i}>
+                  {user.quests && user.quests.filter(quest => !quest.main).map((quest) => (
+                    <Tabs.TabPane tab={quest.name} key={quest.id}>
                       <QuestView quest={quest} quests={user.quests} quizzes={quizzes} />
                     </Tabs.TabPane>
                   ))}
@@ -70,7 +71,10 @@ interface QuestViewProps {
   quizzes: QuizModel[]
 }
 export const QuestView = ({ quest, quests, quizzes }: QuestViewProps) => {
+  const dispatch = useDispatch()
+  const [codeForm] = useForm()
   const [requiredQuests, setRequiredQuests] = useState([] as QuestModel[])
+  const [requiredIncompleteQuests, setRequiredIncompleteQuests] = useState([] as QuestModel[])
   const [incompleteQuizzes, setIncompleteQuizzes] = useState([] as QuizModel[])
   const [quiz, setQuiz] = useState({} as QuizModel)
   const [visible, setVisible] = useState(false)
@@ -98,9 +102,33 @@ export const QuestView = ({ quest, quests, quizzes }: QuestViewProps) => {
     setRequiredQuests(requiredQuests)
   }, [quest.requiredQuestIds, quests])
 
+  useEffect(() => {
+    let requiredIncompleteQuests: QuestModel[] = []
+    for (const requiredQuest  of requiredQuests) {
+      if (!requiredQuest.complete) {
+        requiredIncompleteQuests = [...requiredIncompleteQuests, requiredQuest]
+      }
+    }
+    setRequiredIncompleteQuests(requiredIncompleteQuests)
+  }, [requiredQuests])
+
   function startQuiz(quiz: QuizModel) {
     setQuiz(quiz)
     setVisible(true)
+  }
+
+  function onSubmitCode() {
+    codeForm
+      .validateFields()
+      .then(values => {
+        dispatch(enterCode(
+          quest.id,
+          values.code
+        ))
+      })
+      .catch(info => {
+        console.log('Validate Failed:', info);
+      });
   }
 
   return (
@@ -117,15 +145,31 @@ export const QuestView = ({ quest, quests, quizzes }: QuestViewProps) => {
       </h2>
       {quest.description}
       <div style={{height: "50px"}} />
-      {quest.requiredQuestIds.length === 0 && quest.incompleteQuizIds && quest.incompleteQuizIds.length > 0 && (
+      {(quest.completeWithCode || quest.completeWithQuizzesAndCode) && (
+        <div style={{display: "flex", justifyContent: "center"}}>
+          <Form layout="inline" form={codeForm} onFinish={onSubmitCode}>
+            <Form.Item label="Enter Code">
+              <Form.Item
+                name="code"
+                rules={[{ required: true, message: "Enter code" }]}
+              >
+                <Input placeholder="code" />
+              </Form.Item>
+            </Form.Item>
+            <Button htmlType="submit">Submit</Button>
+          </Form>
+        </div>
+      )}
+      <div style={{height: "50px"}} />
+      {requiredIncompleteQuests.length === 0 && quest.incompleteQuizIds && quest.incompleteQuizIds.length > 0 && (
         <>
           <h4>You must take
             {quest.incompleteQuizIds.length === 1 && (<> a quiz </>)}
             {quest.incompleteQuizIds.length > 1 && (<> these quizzes </>)}
             to complete this quest:</h4>
           <div style={{display: "flex", justifyContent: "center"}}>
-              {incompleteQuizzes.map((quiz, i) => (
-                <span key={i} style={{marginLeft: "2px", marginRight: "2px"}}>
+              {incompleteQuizzes.map((quiz) => (
+                <span key={quiz.id} style={{marginLeft: "2px", marginRight: "2px"}}>
                   {quiz.locked && <Tooltip title="This quiz is locked. Please wait for Professor Ramsey to unlock it.">
                     <Button disabled>
                       <LockOutlined />{quiz.name} ({quiz.numQuestions} questions)
@@ -145,23 +189,23 @@ export const QuestView = ({ quest, quests, quizzes }: QuestViewProps) => {
         <>
           <h4>Your quiz results are now available:</h4>
           {quest.completedQuizzes.map((quiz, i) => (
-            <div key={i}>
+            <div key={quiz.id}>
               <Collapse style={{width: "100%"}}>
                 <Collapse.Panel header={quiz.name} key={i}>
                   <Form
                     layout="vertical"
                     name="viewQuizForm"
                   >
-                    {quiz.questions.map((question, i) => (
-                      <div key={i}>
+                    {quiz.questions.map((question) => (
+                      <div key={question.id}>
                         <div>
                           {question.question}
                         </div>
                         <br />
                         <div style={{display: "flex", justifyContent: "center"}}>
                           <div>
-                            {question.answerOptions.map((answer, j) => (
-                              <div key={j} style={{display: "flex", flexDirection: "row", justifyContent: "center"}}>
+                            {question.answerOptions.map((answer) => (
+                              <div key={answer.id + "answer"} style={{display: "flex", flexDirection: "row", justifyContent: "center"}}>
                                 <div style={{ display: "block", height: "30px", lineHeight: "30px" }}>
                                   <span>{answer.correct && <Tag style={{marginLeft: "5px"}} color="success" icon={<CheckCircleOutlined />}>Correct Answer</Tag>}</span>
                                   <span>{!answer.correct && question.studentAnswerId === answer.id && <Tag style={{marginLeft: "5px"}} color="error" icon={<ExclamationCircleOutlined />}>Your Answer</Tag>}</span>
@@ -170,8 +214,8 @@ export const QuestView = ({ quest, quests, quizzes }: QuestViewProps) => {
                             ))}
                           </div>
                           <Radio.Group disabled>
-                            {question.answerOptions.map((answer, j) => (
-                              <div key={j} style={{display: "flex", flexDirection: "row", justifyContent: "center"}}>
+                            {question.answerOptions.map((answer,) => (
+                              <div key={answer.id} style={{display: "flex", flexDirection: "row", justifyContent: "center"}}>
                                 <Radio style={{ display: "block", height: "30px", lineHeight: "30px" }}
                                        checked={answer.correct}
                                        value={answer.id}
@@ -193,13 +237,13 @@ export const QuestView = ({ quest, quests, quizzes }: QuestViewProps) => {
           ))}
         </>
       )}
-      {requiredQuests.length > 0 && (
+      {requiredIncompleteQuests.length > 0 && (
         <>
-          {requiredQuests.length === 1
+          {requiredIncompleteQuests.length === 1
             ? <h4>You must complete another quest before you can embark on this one:</h4>
             : <h4>You must complete the following quests before you can embark on this one:</h4>}
-          {requiredQuests.map((requiredQuest, i) => (
-            <>{requiredQuest.name}</>
+          {requiredIncompleteQuests.map((requiredQuest) => (
+            <span key={requiredQuest.id}>{requiredQuest.name}</span>
           ))}
         </>
       )}
@@ -217,14 +261,15 @@ interface TakeQuizProps {
 export const TakeQuiz = ({ questId, quiz, endQuiz }: TakeQuizProps) => {
   const dispatch = useDispatch()
   const [form] = useForm()
-  let answerModels: AnswerModel[] = []
+  const [answerModels, setAnswerModels] = useState([] as AnswerModel[])
 
+  /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     for (let question of quiz.questionBank) {
       if (!question.answerOptions || question.answerOptions.length === 0) continue
-      answerModels = [...answerModels, { questionId: question.id, answerId: question.answerOptions[0].id }]
+      setAnswerModels([...answerModels, { questionId: question.id, answerId: question.answerOptions[0].id }])
     }
-  })
+  }, [quiz.questionBank])
 
   function onSubmitQuiz(values: any) {
     dispatch(gradeQuiz(questId, quiz.id, answerModels))
@@ -238,7 +283,7 @@ export const TakeQuiz = ({ questId, quiz, endQuiz }: TakeQuizProps) => {
         return
       }
     }
-    answerModels = [...answerModels, { questionId, answerId: e.target.value }]
+    setAnswerModels([...answerModels, { questionId, answerId: e.target.value }])
   }
 
   return (
@@ -250,16 +295,16 @@ export const TakeQuiz = ({ questId, quiz, endQuiz }: TakeQuizProps) => {
         name="takeQuizForm"
         onFinish={onSubmitQuiz}
       >
-        {quiz.questionBank.map((question, i) => (
-          <div key={i}>
-            <Form.Item name={"" + question.id}>
+        {quiz.questionBank.map((question,) => (
+          <div key={question.id}>
+            <Form.Item>
               {question.question}
               <br />
               <Radio.Group onChange={(e) => onChangeAnswer(question.id, e)}>
-                {question.answerOptions.map((answer, j) => (
+                {question.answerOptions.map((answer) => (
                   <Radio style={{ display: "block", height: "30px", lineHeight: "30px" }}
                          value={answer.id}
-                         key={j}
+                         key={answer.id}
                   >
                     {answer.answer}
                   </Radio>

@@ -291,7 +291,7 @@ const EditQuiz = ({ quiz }: EditQuizProps) => {
                                                       const answers = form.getFieldValue("questionBank")[field.key]["answerOptions"]
                                                       answers[fieldAnswer.name] = {...answers[fieldAnswer.name], correct: e.target.checked}
                                                       questions[field.key]["answerOptions"] = answers;
-                                                      form.setFieldsValue({["questionBank"]: questions})
+                                                      form.setFieldsValue({"questionBank": questions})
                                                     }}
                                                   />
                                                 </Form.Item>
@@ -572,7 +572,7 @@ const AddQuizModal = ({ visible, onAddQuiz, onCancel }: AddQuizProps) => {
                                                         const answers = form.getFieldValue("questionBank")[field.key]["answerOptions"]
                                                         answers[fieldAnswer.name] = {...answers[fieldAnswer.name], correct: e.target.checked}
                                                         questions[field.key]["answerOptions"] = answers;
-                                                        form.setFieldsValue({["questionBank"]: questions})
+                                                        form.setFieldsValue({"questionBank": questions})
                                                       }}
                                                     />
                                                   </Form.Item>

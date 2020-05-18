@@ -71,6 +71,11 @@ export interface AvatarDataColorsModel {
   mustache: number
 }
 
+export interface UserWhitelistModel {
+  id: string
+  emails: string[]
+}
+
 export function setupJwtInterceptor(token: string): number {
   return axios.interceptors.request.use(
     config => {
@@ -94,7 +99,7 @@ export async function logInUser(email: string, password: string) {
 }
 
 // Backend extracts email from JWT, so there's no need to specify it
-export async function loadUserProfile() {
+export async function apiLoadProfile() {
   const url = `${apiBase}/user/profile`
 
   return await axios.get<UserModel>(url)
@@ -125,5 +130,33 @@ export async function apiUpdateAvatar(avatarSVG: string,
     "avatarDataMale": avatarDataMale,
     "avatarDataFemale": avatarDataFemale,
     "avatarDataColors": avatarDataColors
+  })
+}
+
+export async function apiLoadAllUsers() {
+  const url = `${apiBase}/user/allUsers`
+
+  return await axios.get<UserModel[]>(url)
+}
+
+export async function apiGetWhitelist() {
+  const url = `${apiBase}/user/getWhitelist`
+
+  return await axios.get<UserWhitelistModel>(url)
+}
+
+export async function apiAddUserToWhitelist(email: string) {
+  const url = `${apiBase}/user/addToWhitelist`
+
+  return await axios.post<string>(url, {
+    email
+  })
+}
+
+export async function apiRemoveUserFromWhitelist(email: string) {
+  const url = `${apiBase}/user/removeFromWhitelist`
+
+  return await axios.post<string>(url, {
+    email
   })
 }

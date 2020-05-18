@@ -1,18 +1,27 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
-
 import { AppThunk } from "app/store"
+
+import jwt_decode from "jwt-decode";
+
 import { resetQuestsStateAction } from "../quests/questsSlice"
 import { resetQuizzesStateAction } from "../quizzes/quizzesSlice"
-
 import {
   UserModel,
   logInUser,
   signUpUser,
   setupJwtInterceptor,
-  loadUserProfile,
-  teardownJwtInterceptor, apiUpdateAvatar, AvatarDataFemaleModel, AvatarDataMaleModel, AvatarDataColorsModel
+  teardownJwtInterceptor,
+  apiUpdateAvatar,
+  AvatarDataFemaleModel,
+  AvatarDataMaleModel,
+  AvatarDataColorsModel,
+  apiLoadProfile,
+  apiLoadAllUsers,
+  apiAddUserToWhitelist,
+  apiRemoveUserFromWhitelist,
+  apiGetWhitelist,
+  UserWhitelistModel
 } from "../../api/userAPI"
-import jwt_decode from "jwt-decode";
 
 
 interface UserState {
@@ -22,6 +31,8 @@ interface UserState {
   userError: string
   jwtAxiosId: number | null
   onLandingPage: boolean
+  allUsers: UserModel[] | null
+  userWhitelist: UserWhitelistModel | null
 }
 
 const initialState: UserState = {
@@ -30,7 +41,9 @@ const initialState: UserState = {
   loginLoading: false,
   userError: "",
   jwtAxiosId: null,
-  onLandingPage: true
+  onLandingPage: true,
+  allUsers: null,
+  userWhitelist: null
 }
 
 const user = createSlice({
@@ -80,8 +93,11 @@ const user = createSlice({
     updateAvatarSuccessAction(state, action: PayloadAction<string>) {
       state.user = Object.assign(state.user, {"avatar": action.payload})
     },
-    setOnLandingPageAction(state, action: PayloadAction<boolean>) {
-      state.onLandingPage = action.payload
+    loadAllUsersSuccessAction(state, action: PayloadAction<UserModel[]>) {
+      state.allUsers = action.payload
+    },
+    loadWhitelistSuccessAction(state, action: PayloadAction<UserWhitelistModel>) {
+      state.userWhitelist = action.payload
     }
   }
 })
@@ -96,7 +112,8 @@ export const {
   loadProfileFailedAction,
   signUpFailedAction,
   updateAvatarSuccessAction,
-  setOnLandingPageAction
+  loadAllUsersSuccessAction,
+  loadWhitelistSuccessAction
 } = user.actions
 
 export default user.reducer
@@ -111,31 +128,27 @@ export const logIn = (
       dispatch(loginSuccessAction())
       dispatch(setTokenAction(response.data.token))
       dispatch(loadProfile())
-      dispatch(setOnLandingPageAction(false))
     })
     .catch(error => {
       console.log("loginUser error")
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        console.log("error.response.data", error.response.data);
-        console.log("error.response.status", error.response.status);
-        console.log("error.response.headers", error.response.headers);
+      if (error.response && error.response.data && error.response.data.error) {
+        dispatch(loginFailedAction(error.response.data.error))
       } else if (error.request) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser
         console.log("error.request", error.request);
+        dispatch(loginFailedAction("Wrong email/password combination"))
       } else {
         // Something happened in setting up the request that triggered an Error
         console.log("Error", error.message);
+        dispatch(loginFailedAction("Wrong email/password combination"))
       }
       console.log("Error.config", error.config);
-      dispatch(loginFailedAction("Wrong email/password combination"))
     })
 }
 
 export const loadProfile = (): AppThunk => async dispatch => {
-  loadUserProfile()
+  apiLoadProfile()
     .then(response => {
       console.log("dispatching loadProfileSuccessAction")
       dispatch(loadProfileSuccessAction(response.data))
@@ -182,7 +195,7 @@ export const signUp = (
   heroId: string
 ): AppThunk => async dispatch => {
   signUpUser(email, username, password, heroId)
-    .then(response => {
+    .then(_ => {
       dispatch(logIn(email, password))
     }).catch(error => {
     if (error.response) {
@@ -213,7 +226,7 @@ export const updateAvatar = (
   avatarDataColors: AvatarDataColorsModel | null,
   successCallback: Function): AppThunk => async dispatch => {
   apiUpdateAvatar(avatar, avatarDataMale, avatarDataFemale, avatarDataColors)
-    .then(response => {
+    .then(_ => {
       dispatch(updateAvatarSuccessAction(avatar))
       dispatch(loadProfile())
       successCallback()
@@ -237,6 +250,57 @@ export const updateAvatar = (
     }
     console.log("Error.config", error.config);
   })
+}
+
+
+export const loadAllUsers = (): AppThunk => async dispatch => {
+  apiLoadAllUsers()
+    .then(result => {
+      dispatch(loadAllUsersSuccessAction(result.data))
+    })
+    .catch(error => {
+      alert("An error occurred while loading student data")
+      console.log(error)
+    })
+}
+
+export const addUserToWhitelist = (
+  email: string
+): AppThunk => async dispatch => {
+  apiAddUserToWhitelist(email)
+    .then(_ => {
+      alert("Added " + email + " to the whitelist")
+      dispatch(loadWhitelist())
+    })
+    .catch(error => {
+      alert("Error adding user to whitelist (see console for details)")
+      console.log(error)
+    })
+}
+
+export const removeUserFromWhitelist = (
+  email: string
+): AppThunk => async dispatch => {
+  apiRemoveUserFromWhitelist(email)
+    .then(_ => {
+      alert("Removed " + email + " from the whitelist")
+      dispatch(loadWhitelist())
+    })
+    .catch(error => {
+      alert("Error removing user from whitelist (see console for details)")
+      console.log(error)
+    })
+}
+
+export const loadWhitelist = (): AppThunk => async dispatch => {
+  apiGetWhitelist()
+    .then(response => {
+      dispatch(loadWhitelistSuccessAction(response.data))
+    })
+    .catch(error => {
+      alert("Error fetching whitelist (see console for details)")
+      console.log(error)
+    })
 }
 
 export const checkAuthentication = (): AppThunk => async dispatch => {
