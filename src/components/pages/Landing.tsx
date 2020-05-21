@@ -48,16 +48,16 @@ export const Landing = () => {
   return (
     <>
       <div id="landing-cover" />
-      <div style={{textAlign: "center", height: "100%"}}>
-        <div style={{display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center"}}>
+      <div style={{textAlign: "center", height: "100%", width: "100%", zIndex: 1}}>
+        <div style={{display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", width: "100%", height: "100%"}}>
           <div style={{marginTop: "5%"}} />
-          <div style={{WebkitFilter: "drop-shadow(0 0 8px black)", filter: "drop-shadow(0 0 8px black)"}}>
-            <img src={"../../../hero_engineer_logo.png"}  alt="logo" width="350px" height="350px" />
+          <div style={{WebkitFilter: "drop-shadow(0 0 3px white)", filter: "drop-shadow(0 0 3px white)", width: "25%", height: "100%"}}>
+            <img src={"/hero_engineer_logo.png"}  alt="logo" width="100%" height="100%" />
           </div>
-          <div style={{marginTop: "5%"}} />
+          <div style={{marginTop: "2%"}} />
 
-          <div style={{width: "100%", padding: "0 40%", display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
-            <Button size="large" style={{width: "auto"}} type="primary" onClick={signUp}>
+          <div id="button-container">
+            <Button size="large" type="primary" onClick={signUp}>
               Start your journey (sign up)
             </Button>
             <Button size="large" type="primary" onClick={showModal}>
