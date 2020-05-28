@@ -44,7 +44,7 @@ export const Landing = () => {
     history.push("/sign-up")
   }
 
-  // Logo URL: logomakr.com/6UaHmM
+  // Logo URL: https://logomakr.com/93uFCv
   return (
     <>
       <div id="landing-cover" />

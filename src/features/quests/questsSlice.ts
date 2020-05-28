@@ -6,7 +6,7 @@ import {
   apiDeleteQuest,
   apiEnterCode,
   apiFetchQuests,
-  apiGenerateCode,
+  apiGenerateCode, apiGenerateUniversalCode,
   apiSaveQuest,
   QuestModel
 } from "../../api/questsAPI"
@@ -72,12 +72,12 @@ export const saveQuest = (
   completeWithCode: boolean,
   completeWithQuizzesAndCode: boolean,
   code: string,
+  universalCode: string,
   incompleteQuizIds: string[],
   completedQuizzes: GradedQuizModel[],
   requiredQuestIds: string[],
   id?: string
 ): AppThunk => async dispatch => {
-  console.log("completWithQandC: ", completeWithQuizzesAndCode)
   apiSaveQuest(name,
     description,
     automaticXpReward,
@@ -87,6 +87,7 @@ export const saveQuest = (
     completeWithCode,
     completeWithQuizzesAndCode,
     code,
+    universalCode,
     incompleteQuizIds,
     completedQuizzes,
     requiredQuestIds,
@@ -134,6 +135,19 @@ export const generateCode = (
   apiGenerateCode(userEmail, questId)
     .then(_ => {
       dispatch(loadAllUsers())
+    })
+    .catch(error => {
+      alert("Invalid code")
+      console.log("Code error: ", error)
+    })
+}
+
+export const generateUniversalCode = (
+  questId: string
+): AppThunk => async dispatch => {
+  apiGenerateUniversalCode(questId)
+    .then(_ => {
+      dispatch(loadQuests())
     })
     .catch(error => {
       alert("Invalid code")

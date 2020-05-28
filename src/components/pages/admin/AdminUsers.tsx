@@ -1,5 +1,5 @@
 import React from "react"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 
 import { Button, Collapse, Avatar } from "antd"
 import { UserOutlined } from "@ant-design/icons/lib"
@@ -8,6 +8,9 @@ import CopyToClipboard from "react-copy-to-clipboard"
 
 import { generateCode } from "../../../features/quests/questsSlice"
 import { UserModel } from "../../../api/userAPI"
+import { QuestView } from "../Quests"
+import { RootState } from "../../../app/rootReducer"
+import { loadQuizzes } from "../../../features/quizzes/quizzesSlice"
 
 
 interface AdminUsersProps {
@@ -44,6 +47,10 @@ interface EditUserProps {
 }
 const EditUser = ({ user }: EditUserProps) => {
   const dispatch = useDispatch()
+  const { quizzes } = useSelector(
+    (state: RootState) => state.quizzes
+  )
+  if (quizzes == null) dispatch(loadQuizzes())
 
   function generateQuestCode(questId: string) {
     dispatch(generateCode(user.email, questId))
@@ -68,8 +75,17 @@ const EditUser = ({ user }: EditUserProps) => {
           {!quest.complete && (quest.completeWithQuizzesAndCode || quest.completeWithCode) && (
             <Button onClick={() => {generateQuestCode(quest.id)}}>Generate Code</Button>
           )}
+          <br />
+          <Collapse style={{width: "100%"}}>
+            <Collapse.Panel header={"Student's View"} key={quest.id + "view"}>
+              <div style={{ width: "100%", textAlign: "center" }}>
+                {quizzes && <QuestView quest={quest} quests={user.quests} quizzes={quizzes} />}
+              </div>
+            </Collapse.Panel>
+          </Collapse>
         </Collapse.Panel>
       ))}
     </Collapse>
   )
 }
+

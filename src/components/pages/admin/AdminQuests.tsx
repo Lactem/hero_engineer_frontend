@@ -2,13 +2,14 @@ import React, { useEffect, useState } from "react"
 import { useDispatch } from "react-redux"
 
 import { QuestModel } from "../../../api/questsAPI"
-import { deleteQuest, saveQuest } from "../../../features/quests/questsSlice"
+import { deleteQuest, generateCode, generateUniversalCode, saveQuest } from "../../../features/quests/questsSlice"
 
 import { Modal, Form, Button, Select, Input, Tooltip, Divider, Checkbox, InputNumber, Collapse } from "antd"
 import { QuestionCircleOutlined } from "@ant-design/icons"
 import { CheckboxChangeEvent } from "antd/es/checkbox"
 import { QuizModel } from "../../../api/quizzesAPI"
 import TextArea from "antd/es/input/TextArea"
+import CopyToClipboard from "react-copy-to-clipboard"
 
 interface AdminQuestsProps {
   quests: QuestModel[]
@@ -29,6 +30,7 @@ export const AdminQuests = ({ quests, quizzes }: AdminQuestsProps) => {
       values.completeWithQuizzes,
       values.completeWithCode,
       values.completeWithQuizzesAndCode,
+      "",
       "",
       values.incompleteQuizIds,
       [],
@@ -87,6 +89,7 @@ const EditQuest = ({ quest, quests, quizzes }: EditQuestProps) => {
           values.completeWithCode,
           values.completeWithQuizzesAndCode,
           "",
+          values.universalCode,
           values.incompleteQuizIds,
           [],
           values.requiredQuestsIds,
@@ -100,6 +103,10 @@ const EditQuest = ({ quest, quests, quizzes }: EditQuestProps) => {
 
   function onDeleteQuest() {
     dispatch(deleteQuest(quest.id))
+  }
+
+  function generateCode(questId: string) {
+    dispatch(generateUniversalCode(questId))
   }
 
   return (
@@ -116,6 +123,7 @@ const EditQuest = ({ quest, quests, quizzes }: EditQuestProps) => {
           completeWithQuizzes: quest.completeWithQuizzes,
           completeWithCode: quest.completeWithCode,
           completeWithQuizzesAndCode: quest.completeWithQuizzesAndCode,
+          universalCode: quest.universalCode,
           incompleteQuizIds: quest.incompleteQuizIds,
           requiredQuestIds: quest.requiredQuestIds
         }}
@@ -243,6 +251,21 @@ const EditQuest = ({ quest, quests, quizzes }: EditQuestProps) => {
               }}
             />
           </Form.Item>
+        </Form.Item>
+
+        <Form.Item>
+          {quest.universalCode && (quest.completeWithQuizzesAndCode || quest.completeWithCode) && (
+            <>
+              {quest.universalCode}
+              <CopyToClipboard text={quest.universalCode}>
+                <Button>Copy to clipboard</Button>
+              </CopyToClipboard>
+            </>
+          )}
+          <br />
+          {(quest.completeWithQuizzesAndCode || quest.completeWithCode) && (
+            <Button onClick={() => {generateCode(quest.id)}}>Generate Universal Code</Button>
+          )}
         </Form.Item>
 
         <Form.Item

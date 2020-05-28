@@ -65,7 +65,7 @@ export const Quests = () => {
   )
 }
 
-interface QuestViewProps {
+export interface QuestViewProps {
   quest: QuestModel
   quests: QuestModel[]
   quizzes: QuizModel[]
@@ -77,6 +77,8 @@ export const QuestView = ({ quest, quests, quizzes }: QuestViewProps) => {
   const [requiredIncompleteQuests, setRequiredIncompleteQuests] = useState([] as QuestModel[])
   const [incompleteQuizzes, setIncompleteQuizzes] = useState([] as QuizModel[])
   const [quiz, setQuiz] = useState({} as QuizModel)
+  const [totalPercentCorrect, setTotalPercentCorrect] = useState(0)
+  const [xpReward, setXpReward] = useState(0)
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
@@ -111,6 +113,17 @@ export const QuestView = ({ quest, quests, quizzes }: QuestViewProps) => {
     }
     setRequiredIncompleteQuests(requiredIncompleteQuests)
   }, [requiredQuests])
+
+  useEffect(() => {
+    let totalPercentCorrect: number = 0
+    for (let gradedQuiz of quest.completedQuizzes) {
+      totalPercentCorrect += gradedQuiz.gradePercent
+    }
+    let avgPercentCorrect: number = totalPercentCorrect / quest.completedQuizzes.length
+    let xpReward: number = Math.floor(avgPercentCorrect * quest.automaticXpReward)
+    setTotalPercentCorrect(totalPercentCorrect * 100);
+    setXpReward(xpReward)
+  }, [quest, quest.completedQuizzes, quest.automaticXpReward])
 
   function startQuiz(quiz: QuizModel) {
     setQuiz(quiz)
@@ -183,6 +196,12 @@ export const QuestView = ({ quest, quests, quizzes }: QuestViewProps) => {
                 </span>
               ))}
           </div>
+        </>
+      )}
+      {quest.completedQuizzes && quest.completedQuizzes.length !== 0 && (!quest.incompleteQuizIds || quest.incompleteQuizIds.length === 0) && (
+        <>
+          <h3>Total grade: {totalPercentCorrect.toFixed(2)}%</h3>
+          <h3>XP Reward: {xpReward}/{quest.automaticXpReward}</h3>
         </>
       )}
       {quest.completedQuizzes && quest.completedQuizzes.length !== 0 && (
