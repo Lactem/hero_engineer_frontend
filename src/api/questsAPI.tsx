@@ -13,6 +13,7 @@ export interface QuestModel {
   completeWithCode: boolean
   completeWithQuizzesAndCode: boolean
   code: string
+  universalCode: string
   incompleteQuizIds: string[]
   completedQuizzes: GradedQuizModel[]
   requiredQuestIds: string[]
@@ -34,6 +35,7 @@ export async function apiSaveQuest(name: string,
                                    completeWithCode: boolean,
                                    completeWithQuizzesAndCode: boolean,
                                    code: string,
+                                   universalCode: string,
                                    incompleteQuizIds: string[],
                                    completedQuizzes: GradedQuizModel[],
                                    requiredQuestIds: string[],
@@ -51,6 +53,7 @@ export async function apiSaveQuest(name: string,
     completeWithCode,
     completeWithQuizzesAndCode,
     code,
+    universalCode,
     incompleteQuizIds,
     completedQuizzes,
     requiredQuestIds
@@ -77,6 +80,14 @@ export async function apiGenerateCode(userEmail:string, questId: string) {
 
   return await axios.put(url, {
     userEmail,
+    questId
+  })
+}
+
+export async function apiGenerateUniversalCode(questId: string) {
+  const url = `${apiBase}/quest/generateUniversalCode`
+
+  return await axios.put(url, {
     questId
   })
 }
