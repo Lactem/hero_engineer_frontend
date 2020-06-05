@@ -8,7 +8,7 @@ import history from "./history"
 import { RootState } from "./rootReducer"
 
 import "./App.scss"
-import { checkAuthentication } from "../features/user/userSlice"
+import { checkAuthentication } from "../features/userSlice"
 import Pages from "../routes/Pages"
 
 const App: React.FC = () => {

@@ -5,15 +5,16 @@ import { Divider } from "antd"
 
 import { RootState } from "../../../app/rootReducer"
 import { HeroModel} from "../../../api/heroesAPI"
-import { loadHeroes } from "../../../features/heroes/heroesSlice"
+import { loadHeroes } from "../../../features/heroesSlice"
 import { AdminHeroes } from "./AdminHero"
-import { loadQuests } from "../../../features/quests/questsSlice"
+import { loadQuests } from "../../../features/questsSlice"
 import { AdminQuests } from "./AdminQuests"
 import { AdminQuizzes } from "./AdminQuizzes"
-import { loadQuizzes } from "../../../features/quizzes/quizzesSlice"
-import { loadAllUsers, loadWhitelist } from "../../../features/user/userSlice"
-import { AdminUsers } from "./AdminUsers"
+import { loadQuizzes } from "../../../features/quizzesSlice"
+import { loadAllUsers, loadWhitelist } from "../../../features/userSlice"
 import { AdminUserWhitelist } from "./AdminUserWhitelist"
+import { loadAllSections } from "../../../features/sectionSlice"
+import { AdminSections } from "./AdminSections"
 
 export const Admin = () => {
   const dispatch = useDispatch()
@@ -29,11 +30,15 @@ export const Admin = () => {
   const { allUsers, userWhitelist } = useSelector(
     (state: RootState) => state.user
   )
+  const { allSections } = useSelector(
+    (state: RootState) => state.section
+  )
   if (heroes == null) dispatch(loadHeroes())
   if (quests == null) dispatch(loadQuests())
   if (quizzes == null) dispatch(loadQuizzes())
   if (allUsers == null) dispatch(loadAllUsers())
   if (userWhitelist == null) dispatch(loadWhitelist())
+  if (allSections == null) dispatch(loadAllSections())
 
   return (
     <>
@@ -69,8 +74,8 @@ export const Admin = () => {
         <Divider />
         <Divider />
         <br />
-        <h2>Students</h2>
-        {allUsers && <AdminUsers users={allUsers} />}
+        <h2>Class Sections</h2>
+        {allUsers && allSections && <AdminSections users={allUsers} sections={allSections} />}
 
         <br />
         <Divider />

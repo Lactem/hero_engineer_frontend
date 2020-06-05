@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import { useDispatch } from "react-redux"
 
 import { QuestModel } from "../../../api/questsAPI"
-import { deleteQuest, generateCode, generateUniversalCode, saveQuest } from "../../../features/quests/questsSlice"
+import { deleteQuest, generateUniversalCode, saveQuest } from "../../../features/questsSlice"
 
 import { Modal, Form, Button, Select, Input, Tooltip, Divider, Checkbox, InputNumber, Collapse } from "antd"
 import { QuestionCircleOutlined } from "@ant-design/icons"

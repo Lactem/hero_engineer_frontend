@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux"
 import { Button, Input} from "antd"
 
 import { UserWhitelistModel } from "../../../api/userAPI"
-import { addUserToWhitelist, removeUserFromWhitelist } from "../../../features/user/userSlice"
+import { addUserToWhitelist, removeUserFromWhitelist } from "../../../features/userSlice"
 
 interface AdminUserWhitelistProps {
   whitelist: UserWhitelistModel
@@ -14,7 +14,6 @@ export const AdminUserWhitelist = ({ whitelist }: AdminUserWhitelistProps) => {
   const [email, setEmail] = useState("")
 
   function onChangeEmail(e: React.ChangeEvent<HTMLInputElement>) {
-    console.log(e.target)
     setEmail(e.target.value)
   }
 
@@ -34,9 +33,12 @@ export const AdminUserWhitelist = ({ whitelist }: AdminUserWhitelistProps) => {
           <Button onClick={() => {removeEmail(email)}}>Remove</Button>
         </div>
       ))}
+
       <br />
-      <Input placeholder="ttrojan@usc.edu" onChange={onChangeEmail} />
-      <Button onClick={addEmail}>Add</Button>
+      <div style={{display: "flex", flexDirection: "row", width: "25%"}}>
+        <Input placeholder="ttrojan@usc.edu" onChange={onChangeEmail} />
+        <Button onClick={addEmail}>Add</Button>
+      </div>
     </div>
   )
 }

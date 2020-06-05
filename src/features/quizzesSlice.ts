@@ -10,8 +10,8 @@ import {
   apiSaveQuiz,
   QuizModel,
   QuizQuestionModel
-} from "../../api/quizzesAPI"
-import { loadProfile } from "../user/userSlice"
+} from "../api/quizzesAPI"
+import { loadProfile } from "./userSlice"
 
 interface QuizzesState {
   quizzes: QuizModel[] | null

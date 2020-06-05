@@ -3,8 +3,8 @@ import { AppThunk } from "app/store"
 
 import jwt_decode from "jwt-decode";
 
-import { resetQuestsStateAction } from "../quests/questsSlice"
-import { resetQuizzesStateAction } from "../quizzes/quizzesSlice"
+import { resetQuestsStateAction } from "./questsSlice"
+import { resetQuizzesStateAction } from "./quizzesSlice"
 import {
   UserModel,
   logInUser,
@@ -21,7 +21,7 @@ import {
   apiRemoveUserFromWhitelist,
   apiGetWhitelist,
   UserWhitelistModel
-} from "../../api/userAPI"
+} from "../api/userAPI"
 
 
 interface UserState {

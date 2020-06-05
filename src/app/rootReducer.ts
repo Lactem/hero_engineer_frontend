@@ -1,15 +1,17 @@
 import { combineReducers } from "@reduxjs/toolkit"
 
-import userReducer from "features/user/userSlice"
-import heroesReducer from "features/heroes/heroesSlice"
-import questsReducer from "features/quests/questsSlice"
-import quizzesReducer from "features/quizzes/quizzesSlice"
+import userReducer from "features/userSlice"
+import heroesReducer from "features/heroesSlice"
+import questsReducer from "features/questsSlice"
+import quizzesReducer from "features/quizzesSlice"
+import sectionReducer from "features/sectionSlice"
 
 const rootReducer = combineReducers({
   user: userReducer,
   heroes: heroesReducer,
   quests: questsReducer,
-  quizzes: quizzesReducer
+  quizzes: quizzesReducer,
+  section: sectionReducer
 })
 
 export type RootState = ReturnType<typeof rootReducer>

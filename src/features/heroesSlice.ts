@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 
 import { AppThunk } from "app/store"
 
-import { HeroModel, apiFetchHeroes, apiSaveHero, apiDeleteHero } from "../../api/heroesAPI"
+import { HeroModel, apiFetchHeroes, apiSaveHero, apiDeleteHero } from "../api/heroesAPI"
 
 interface HeroesState {
   heroes: HeroModel[] | null,
@@ -15,7 +15,7 @@ const initialState: HeroesState = {
 }
 
 const heroes = createSlice({
-  name: "user",
+  name: "heroes",
   initialState,
   reducers: {
     fetchHeroesSuccessAction(state, action: PayloadAction<HeroModel[]>) {

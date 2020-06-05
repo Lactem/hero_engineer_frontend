@@ -6,11 +6,11 @@ import { UserOutlined } from "@ant-design/icons/lib"
 
 import CopyToClipboard from "react-copy-to-clipboard"
 
-import { generateCode } from "../../../features/quests/questsSlice"
+import { generateCode } from "../../../features/questsSlice"
 import { UserModel } from "../../../api/userAPI"
 import { QuestView } from "../Quests"
 import { RootState } from "../../../app/rootReducer"
-import { loadQuizzes } from "../../../features/quizzes/quizzesSlice"
+import { loadQuizzes } from "../../../features/quizzesSlice"
 
 
 interface AdminUsersProps {

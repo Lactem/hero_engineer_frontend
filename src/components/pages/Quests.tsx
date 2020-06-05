@@ -7,8 +7,8 @@ import { RadioChangeEvent } from "antd/es/radio"
 import { CheckCircleOutlined, ClockCircleOutlined, StarOutlined, LockOutlined, ExclamationCircleOutlined } from "@ant-design/icons"
 
 import { RootState } from "../../app/rootReducer"
-import { gradeQuiz, loadQuizzes } from "../../features/quizzes/quizzesSlice"
-import { enterCode } from "../../features/quests/questsSlice"
+import { gradeQuiz, loadQuizzes } from "../../features/quizzesSlice"
+import { enterCode } from "../../features/questsSlice"
 import { QuestModel } from "../../api/questsAPI"
 import { AnswerModel, QuizModel } from "../../api/quizzesAPI"
 

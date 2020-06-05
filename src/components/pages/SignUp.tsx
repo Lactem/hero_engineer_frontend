@@ -1,9 +1,9 @@
 import React, { useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
-import { signUp } from "../../features/user/userSlice"
+import { signUp } from "../../features/userSlice"
 import { RootState } from "../../app/rootReducer"
-import { loadHeroes } from "../../features/heroes/heroesSlice"
+import { loadHeroes } from "../../features/heroesSlice"
 
 import { Alert, Button, Carousel, Form, Input, Layout, Space, Tag, Tooltip } from "antd"
 import { useForm } from "antd/es/form/Form"

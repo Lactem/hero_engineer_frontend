@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import { useDispatch } from "react-redux"
 
 import { HeroModel } from "../../../api/heroesAPI"
-import { deleteHero, saveHero } from "../../../features/heroes/heroesSlice"
+import { deleteHero, saveHero } from "../../../features/heroesSlice"
 import { Divider } from "antd"
 
 interface AdminHeroesProps {

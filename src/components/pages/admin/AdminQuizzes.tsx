@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import { useDispatch } from "react-redux"
 
 import { QuizModel } from "../../../api/quizzesAPI"
-import { deleteQuiz, saveQuiz } from "../../../features/quizzes/quizzesSlice"
+import { deleteQuiz, saveQuiz } from "../../../features/quizzesSlice"
 import "./AdminQuizzes.css"
 
 import { Modal, Form, Button, Input, Tooltip, Divider, Row, Col, Checkbox, InputNumber, Collapse } from "antd"

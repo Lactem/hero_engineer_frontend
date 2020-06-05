@@ -9,9 +9,9 @@ import {
   apiGenerateCode, apiGenerateUniversalCode,
   apiSaveQuest,
   QuestModel
-} from "../../api/questsAPI"
-import { GradedQuizModel } from "../../api/quizzesAPI"
-import { loadAllUsers, loadProfile } from "../user/userSlice"
+} from "../api/questsAPI"
+import { GradedQuizModel } from "../api/quizzesAPI"
+import { loadAllUsers, loadProfile } from "./userSlice"
 
 interface QuestsState {
   quests: QuestModel[] | null
