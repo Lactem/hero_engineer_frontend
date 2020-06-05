@@ -20,7 +20,7 @@ import {
   apiAddUserToWhitelist,
   apiRemoveUserFromWhitelist,
   apiGetWhitelist,
-  UserWhitelistModel
+  UserWhitelistModel, apiSetIdeas
 } from "../api/userAPI"
 
 
@@ -150,7 +150,6 @@ export const logIn = (
 export const loadProfile = (): AppThunk => async dispatch => {
   apiLoadProfile()
     .then(response => {
-      console.log("dispatching loadProfileSuccessAction")
       dispatch(loadProfileSuccessAction(response.data))
     })
     .catch(error => {
@@ -249,6 +248,37 @@ export const updateAvatar = (
       console.log("Error", error.message);
     }
     console.log("Error.config", error.config);
+  })
+}
+
+export const setIdeas = (
+  idea1: string,
+  idea2: string,
+  idea3: string,
+  successCallback?: Function): AppThunk => async dispatch => {
+  apiSetIdeas(idea1, idea2, idea3)
+    .then(_ => {
+      dispatch(loadProfile())
+      if (successCallback) successCallback()
+    }).catch(error => {
+    if (error.response) {
+      if (error.response.data.error) {
+        dispatch(signUpFailedAction(error.response.data.error))
+      }
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      console.log("error.response.data", error.response.data)
+      console.log("error.response.status", error.response.status)
+      console.log("error.response.headers", error.response.headers)
+    } else if (error.request) {
+      // The request was made but no response was received
+      // `error.request` is an instance of XMLHttpRequest in the browser
+      console.log("error.request", error.request)
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      console.log("Error", error.message)
+    }
+    console.log("Error.config", error.config)
   })
 }
 

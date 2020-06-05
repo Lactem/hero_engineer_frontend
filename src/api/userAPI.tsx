@@ -13,6 +13,11 @@ export interface UserModel {
   xp: number
   points: number
   quests: QuestModel[]
+  grandChallengeCategory: string
+  grandChallengeCode: string
+  idea1: string
+  idea2: string
+  idea3: string
   isProf: boolean
 }
 export interface AvatarDataMaleModel {
@@ -130,6 +135,19 @@ export async function apiUpdateAvatar(avatarSVG: string,
     "avatarDataMale": avatarDataMale,
     "avatarDataFemale": avatarDataFemale,
     "avatarDataColors": avatarDataColors
+  })
+}
+
+export async function apiSetIdeas(
+  idea1: string,
+  idea2: string,
+  idea3: string) {
+  const url = `${apiBase}/user/setIdeas`
+
+  return await axios.post<string>(url, {
+    idea1,
+    idea2,
+    idea3
   })
 }
 

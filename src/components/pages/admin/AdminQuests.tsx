@@ -98,7 +98,7 @@ const EditQuest = ({ quest, quests, quizzes }: EditQuestProps) => {
       })
       .catch(info => {
         console.log('Validate Failed:', info);
-      });
+      })
   }
 
   function onDeleteQuest() {

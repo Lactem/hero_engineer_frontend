@@ -15,11 +15,13 @@ import { initAvatars } from "../../avatars/js/svgavatars.core.min"
 import { initTools } from "../../avatars/js/svgavatars.tools"
 import { UserOutlined } from "@ant-design/icons"
 import { AvatarDataColorsModel, AvatarDataFemaleModel, AvatarDataMaleModel, UserModel } from "../../api/userAPI"
+import { HeroCouncilIntro } from "./HeroCouncilIntro"
 
 
 export const Home = () => {
   const dispatch = useDispatch()
   const [avatarModalVisible, setAvatarModalVisible] = useState(false)
+  const [heroCouncilIntroVisible, setHeroCouncilIntroVisible] = useState(false)
   const { user } = useSelector(
     (state: RootState) => state.user
   )
@@ -59,7 +61,8 @@ export const Home = () => {
   }
 
   function handleHeroCouncil() {
-    alert("Coming soon")
+    if (user && user.isProf) setHeroCouncilIntroVisible(true)
+    else alert("Coming soon")
   }
 
   function handleItemStore() {
@@ -81,6 +84,7 @@ export const Home = () => {
 
   return (
     <>
+      {user && <HeroCouncilIntro visible={heroCouncilIntroVisible} setVisible={setHeroCouncilIntroVisible} user={user} />}
       <Layout style={{ textAlign: "center" }}>
         <h1 style={{display: "flex", justifyContent: "center"}}>
           <span style={{height: "100%"}}>Welcome, {user && user.username}</span>

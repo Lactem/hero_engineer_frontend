@@ -15,6 +15,8 @@ import { loadAllUsers, loadWhitelist } from "../../../features/userSlice"
 import { AdminUserWhitelist } from "./AdminUserWhitelist"
 import { loadAllSections } from "../../../features/sectionSlice"
 import { AdminSections } from "./AdminSections"
+import { loadAllGrandChallenges, loadAllHeroCouncils } from "../../../features/heroCouncilSlice"
+import { AdminHeroCouncils } from "./AdminHeroCouncils"
 
 export const Admin = () => {
   const dispatch = useDispatch()
@@ -33,12 +35,17 @@ export const Admin = () => {
   const { allSections } = useSelector(
     (state: RootState) => state.section
   )
+  const { allHeroCouncils, allGrandChallenges } = useSelector(
+    (state: RootState) => state.heroCouncil
+  )
   if (heroes == null) dispatch(loadHeroes())
   if (quests == null) dispatch(loadQuests())
   if (quizzes == null) dispatch(loadQuizzes())
   if (allUsers == null) dispatch(loadAllUsers())
   if (userWhitelist == null) dispatch(loadWhitelist())
   if (allSections == null) dispatch(loadAllSections())
+  if (allHeroCouncils == null) dispatch(loadAllHeroCouncils())
+  if (allGrandChallenges == null) dispatch(loadAllGrandChallenges())
 
   return (
     <>
@@ -76,6 +83,14 @@ export const Admin = () => {
         <br />
         <h2>Class Sections</h2>
         {allUsers && allSections && <AdminSections users={allUsers} sections={allSections} />}
+
+        <br />
+        <Divider />
+        <Divider />
+        <Divider />
+        <br />
+        <h2>Hero Councils / Grand Challenge Categories</h2>
+        {allHeroCouncils && allGrandChallenges && <AdminHeroCouncils heroCouncils={allHeroCouncils} grandChallenges={allGrandChallenges} />}
 
         <br />
         <Divider />
