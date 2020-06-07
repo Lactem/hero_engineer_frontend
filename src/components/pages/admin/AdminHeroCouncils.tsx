@@ -1,14 +1,25 @@
 import React, { useEffect, useState } from "react"
 import { useDispatch } from "react-redux"
 
-import { Button, Collapse, Input } from "antd"
-
-import { UserModel } from "../../../api/userAPI"
-import { SectionModel } from "../../../api/sectionAPI"
-import { AdminUsers } from "./AdminUsers"
-import { removeSection, saveSection } from "../../../features/sectionSlice"
 import { GrandChallengeModel, HeroCouncilModel } from "../../../api/heroCouncilAPI"
-import { generateCodeForGrandChallenge, saveGrandChallenge } from "../../../features/heroCouncilSlice"
+import {
+  generateCodeForGrandChallenge,
+  removeHeroCouncil,
+  saveGrandChallenge,
+  saveHeroCouncil
+} from "../../../features/heroCouncilSlice"
+import apiBase from "../../../api/api"
+import axios from "axios"
+
+import { Button, Checkbox, Collapse, Form, Input, Modal, Row, Tooltip } from "antd"
+import {
+  ExclamationCircleOutlined,
+  MinusCircleOutlined,
+  PlusOutlined,
+  QuestionCircleOutlined
+} from "@ant-design/icons/lib"
+import { CheckboxChangeEvent } from "antd/es/checkbox"
+import { useForm } from "antd/lib/form/Form"
 
 
 interface AdminHeroCouncilsProps {
@@ -16,30 +27,31 @@ interface AdminHeroCouncilsProps {
   grandChallenges: GrandChallengeModel[]
 }
 export const AdminHeroCouncils = ({ heroCouncils, grandChallenges }: AdminHeroCouncilsProps) => {
-  const dispatch = useDispatch()
-  const [name, setName] = useState("")
-
-  function onChangeName(e: React.ChangeEvent<HTMLInputElement>) {
-    setName(e.target.value)
-  }
-
-  function createSection() {
-    dispatch(saveSection(name, []))
-  }
-
-  function deleteSection(id: string) {
-    dispatch(removeSection(id))
-  }
-
   return (
-    <div style={{width: "100%"}}>
-      {grandChallenges.map((category, i) => (
-        <div key={i} style={{textAlign: "left"}}>
-          <EditCategory category={category} />
-          <br />
-        </div>
-      ))}
-    </div>
+    <>
+      <div style={{width: "100%"}}>
+        {grandChallenges.map((category, i) => (
+          <div key={i} style={{textAlign: "left"}}>
+            <EditCategory category={category} />
+            <br />
+          </div>
+        ))}
+      </div>
+
+      <br />
+
+      <div style={{width: "100%"}}>
+        {heroCouncils.map((council, i) => (
+          <div key={council.id} style={{textAlign: "left"}}>
+            <Collapse style={{width: "100%"}}>
+              <Collapse.Panel header={council.name + (council.approved ? " (approved)" : " (pending approval)")} key={i}>
+                <EditHeroCouncil heroCouncil={council} />
+              </Collapse.Panel>
+            </Collapse>
+          </div>
+        ))}
+      </div>
+    </>
   )
 }
 
@@ -78,15 +90,160 @@ const EditCategory = ({ category }: EditCategoryProps) => {
 
   return (
     <>
-      <div style={{display: "flex", flexDirection: "row", width: "25%"}}>
+      <div style={{display: "flex", flexDirection: "row", width: "50%"}}>
         <Input placeholder="name" value={name} onChange={onChangeName} />
         <Button onClick={saveName}>Save Name</Button>
       </div>
-      <div style={{display: "flex", flexDirection: "row", width: "25%"}}>
+      <div style={{display: "flex", flexDirection: "row", width: "50%"}}>
         <Input placeholder="code" value={code} onChange={onChangeCode} />
         <Button onClick={saveCode}>Save Code</Button>
         <Button onClick={generateCode}>Generate New Code</Button>
       </div>
+    </>
+  )
+}
+
+interface EditHeroCouncilProps {
+  heroCouncil: HeroCouncilModel
+}
+const EditHeroCouncil = ({ heroCouncil }: EditHeroCouncilProps) => {
+  const dispatch = useDispatch()
+  const [form] = useForm()
+
+  useEffect(() => form.resetFields(), [heroCouncil, form])
+
+  function onSave() {
+    form
+      .validateFields()
+      .then(values => {
+        values.emails = values.emails.filter((email: string) => email)
+        console.log("values: ", values)
+        dispatch(saveHeroCouncil(
+          "Successfully saved Hero Council '" + values.name + "'",
+          values.name,
+          values.emails,
+          values.approved,
+          heroCouncil.declarationFileName,
+          heroCouncil.id
+        ))
+      })
+      .catch(info => {
+        console.log('Validate Failed:', info);
+      })
+  }
+
+  function onClickDownload() {
+    const url = `${apiBase}/herocouncil/downloadDeclaration/${heroCouncil.declarationFileName}`
+
+    return axios.get(url, { responseType: 'arraybuffer' }).then((response) => {
+      const fileDownload = require('js-file-download');
+      fileDownload(response, heroCouncil.declarationFileName);
+    })
+  }
+
+  function confirmDelete() {
+    Modal.confirm({
+      title: "Do you want to delete the Hero Council '" + heroCouncil.name + "'?",
+      icon: <ExclamationCircleOutlined />,
+      content: "You'll have to manually re-create this Hero Council if you wish to recover it.",
+      onOk() {
+        dispatch(removeHeroCouncil(heroCouncil.id))
+      }
+    })
+  }
+
+  return (
+    <>
+      <Button type="primary" onClick={onClickDownload}>Download Declaration</Button>
+      <br /><br />
+
+      <Form
+        form={form}
+        layout="vertical"
+        name="saveHeroCouncilForm"
+        initialValues={{
+          name: heroCouncil.name,
+          emails: heroCouncil.emails,
+          approved: heroCouncil.approved
+        }}
+        onFinish={onSave}
+      >
+
+        <Form.Item
+          name="name"
+          label="Name"
+          rules={[{ required: true, message: "Name is required" }]}
+        >
+          <Input placeholder="Hero Council Name" />
+        </Form.Item>
+
+        <Form.Item
+          label={(
+            <>
+              Approved by Professor
+              <Tooltip title="Tick to approve this Hero Council's Declaration.">
+                <QuestionCircleOutlined style={{paddingLeft: "5px"}} />
+              </Tooltip>
+            </>
+          )}>
+          <Form.Item
+            name="approved"
+            noStyle
+          >
+            <Checkbox
+              defaultChecked={heroCouncil.approved}
+              onChange={(e: CheckboxChangeEvent) => {
+                form.setFieldsValue({"approved": e.target.checked})
+              }}
+            />
+          </Form.Item>
+        </Form.Item>
+
+        <Form.Item
+          label={(
+            <>
+              Students in Group
+              <Tooltip title="Emails of students in this Hero Council">
+                <QuestionCircleOutlined style={{paddingLeft: "5px"}} />
+              </Tooltip>
+            </>
+          )}>
+          <Form.List name="emails">
+            {(fields, { add, remove }) => (
+              <div style={{width: "100%"}}>
+                {fields.map((field) => (
+                  <>
+                    <Row>
+                    <Form.Item {...field}>
+                      <Input placeholder="ttrojan@usc.edu" />
+                    </Form.Item>
+                    <MinusCircleOutlined
+                      className="dynamic-delete-button"
+                      onClick={() => {
+                        remove(field.name);
+                      }}
+                    />
+                    </Row>
+                    </>
+                ))}
+                <Form.Item>
+                  <Button
+                    type="dashed"
+                    onClick={() => {
+                      add();
+                    }}
+                  >
+                    <PlusOutlined /> Add student
+                  </Button>
+                </Form.Item>
+              </div>
+            )}
+          </Form.List>
+        </Form.Item>
+
+        <Button htmlType="submit">Save</Button>
+        <Button danger onClick={confirmDelete}>Delete</Button>
+      </Form>
     </>
   )
 }

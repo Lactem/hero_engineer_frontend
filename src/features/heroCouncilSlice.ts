@@ -4,7 +4,7 @@ import { AppThunk } from "app/store"
 import {
   apiEnterCodeForGrandChallenge, apiGenerateCodeForGrandChallenge,
   apiLoadAllGrandChallenges, apiLoadAllHeroCouncils,
-  apiLoadHeroCouncil, apiSaveGrandChallenge,
+  apiLoadHeroCouncil, apiRemoveHeroCouncil, apiSaveGrandChallenge, apiSaveHeroCouncil,
   GrandChallengeModel,
   HeroCouncilModel
 } from "../api/heroCouncilAPI"
@@ -93,6 +93,37 @@ export const loadAllHeroCouncils = (): AppThunk => async dispatch => {
     })
 }
 
+export const saveHeroCouncil = (
+  successMessage: string,
+  name: string,
+  emails: string[],
+  approved: boolean,
+  declarationFileName: string,
+  id?: string
+): AppThunk => async dispatch => {
+  apiSaveHeroCouncil(name, emails, approved, declarationFileName, id)
+    .then(_ => {
+      message.success(successMessage)
+      dispatch(loadAllHeroCouncils())
+    })
+    .catch(error => {
+      message.error("Error saving Hero Council (see console for details)")
+      console.log(error)
+    })
+}
+
+export const removeHeroCouncil = (id: string): AppThunk => async dispatch => {
+  apiRemoveHeroCouncil(id)
+    .then(_ => {
+      message.success("Deleted Hero Council")
+      dispatch(loadAllHeroCouncils())
+    })
+    .catch(error => {
+      message.error("Error deleting Hero Council (see console for details)")
+      console.log(error)
+    })
+}
+
 export const loadAllGrandChallenges = (): AppThunk => async dispatch => {
   apiLoadAllGrandChallenges()
     .then(result => {
@@ -115,7 +146,7 @@ export const saveGrandChallenge = (
       dispatch(loadAllGrandChallenges())
     })
     .catch(error => {
-      alert("Error saving class section(see console for details)")
+      message.error("Error saving grand challenge category (see console for details)")
       console.log(error)
     })
 }

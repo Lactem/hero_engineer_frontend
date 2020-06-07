@@ -61,7 +61,10 @@ export const Home = () => {
   }
 
   function handleHeroCouncil() {
-    if (user && user.isProf) setHeroCouncilIntroVisible(true)
+    if (user && (user.isProf || user.email === "hramsey@usc.edu" || user.email === "tilie@usc.edu" || user.email === "tilie1@usc.edu")) {
+      if (user.grandChallengeCategory) history.push("/councils")
+      else setHeroCouncilIntroVisible(true)
+    }
     else alert("Coming soon")
   }
 

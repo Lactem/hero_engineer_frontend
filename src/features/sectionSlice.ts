@@ -41,6 +41,9 @@ const section = createSlice({
     },
     loadFailedAction(state, action: PayloadAction<string>) {
       state.error = action.payload
+    },
+    resetSectionStateAction(state) {
+      Object.assign(state, initialState)
     }
   }
 })
@@ -49,7 +52,8 @@ export const {
   loadSectionSuccessAction,
   loadAllSectionsSuccessAction,
   loadClassmatesSuccessAction,
-  loadFailedAction
+  loadFailedAction,
+  resetSectionStateAction
 } = section.actions
 
 export default section.reducer

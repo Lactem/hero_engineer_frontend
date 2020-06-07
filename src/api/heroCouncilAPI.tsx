@@ -5,6 +5,8 @@ export interface HeroCouncilModel {
   id: string
   name: string
   emails: string[]
+  approved: boolean
+  declarationFileName: string
 }
 export interface GrandChallengeModel {
   id: string
@@ -22,6 +24,28 @@ export async function apiLoadHeroCouncil() {
   const url = `${apiBase}/herocouncil/herocouncil`
 
   return await axios.get<HeroCouncilModel>(url)
+}
+
+export async function apiSaveHeroCouncil(name: string,
+                                         emails: string[],
+                                         approved: boolean,
+                                         declarationFileName: string,
+                                         id?: string) {
+  const url = `${apiBase}/herocouncil/save`
+
+  return await axios.post<HeroCouncilModel>(url, {
+    id,
+    name,
+    emails,
+    approved,
+    declarationFileName
+  })
+}
+
+export async function apiRemoveHeroCouncil(id: string) {
+  const url = `${apiBase}/herocouncil/remove/${id}`
+
+  return await axios.delete(url)
 }
 
 export async function apiLoadAllGrandChallenges() {

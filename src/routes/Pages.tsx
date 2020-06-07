@@ -10,6 +10,7 @@ import { Admin } from "../components/pages/admin/Admin"
 import { LoggedInRoute } from "./LoggedInRoute"
 import { LoggedInHomeRoute } from "./LoggedInHomeRoute"
 import { Quests } from "../components/pages/Quests"
+import { Councils } from "../components/pages/Councils"
 
 const Pages = () => {
   const reload = () => window.location.reload();
@@ -20,6 +21,7 @@ const Pages = () => {
       <LoggedInRoute path="/log-out" exact={true} component={LogOut} />
       <LoggedInRoute path="/admin" exact={true} component={Admin} />
       <LoggedInRoute path="/quests" exact={true} component={Quests} />
+      <LoggedInRoute path="/councils" exact={true} component={Councils} />
       <LoggedInHomeRoute path="/home" exact={true} component={Home} />
       <Route path="/.well-known/pki-validation/5E5757841245634A66E1A558303AAAEB.txt" exact={true} onEnter={reload} />
       <Route component={NotFound} />

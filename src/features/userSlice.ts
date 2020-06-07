@@ -5,6 +5,7 @@ import jwt_decode from "jwt-decode";
 
 import { resetQuestsStateAction } from "./questsSlice"
 import { resetQuizzesStateAction } from "./quizzesSlice"
+import { resetSectionStateAction } from "./sectionSlice"
 import {
   UserModel,
   logInUser,
@@ -184,6 +185,7 @@ export const logOut = (): AppThunk => async dispatch => {
   dispatch(logoutAction())
   dispatch(resetQuestsStateAction())
   dispatch(resetQuizzesStateAction())
+  dispatch(resetSectionStateAction())
   document.cookie = "HERO_ENGINEER="
 }
 
@@ -335,7 +337,6 @@ export const loadWhitelist = (): AppThunk => async dispatch => {
 
 export const checkAuthentication = (): AppThunk => async dispatch => {
   const cookies = document.cookie.split(';');
-  console.log('1cookies : ', cookies);
   for (let cookie of cookies) {
     if (cookie.split("=")[0] === "HERO_ENGINEER"
         && cookie.split("=")[1]) {
@@ -346,7 +347,6 @@ export const checkAuthentication = (): AppThunk => async dispatch => {
       return
     }
   }
-  console.log('cookies : ', cookies);
   setTimeout(() => {
     dispatch(setAuthenticationCheckedAction())
   }, 1)
@@ -358,6 +358,5 @@ const setCookie = (name: string, value: string, expire: number) => {
     "; expires = " + expireDate.toUTCString() //+
     //"; site=heroengineer.com; secure; samesite
     )
-  console.log("set cookie")
   // TODO: Uncomment security additions
 }

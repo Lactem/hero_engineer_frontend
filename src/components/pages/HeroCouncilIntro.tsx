@@ -19,11 +19,6 @@ export const HeroCouncilIntro = ({ visible, setVisible, user }: HeroCouncilIntro
   const [codeForm] = Form.useForm()
   const [ideasForm] = Form.useForm()
   const [currentStep, setCurrentStep] = useState(0)
-  const [code, setCode] = useState(user.grandChallengeCode)
-
-  function onChangeCode(e: React.ChangeEvent<HTMLInputElement>) {
-    setCode(e.target.value)
-  }
 
   function next() {
     if (currentStep === 0) {
@@ -74,7 +69,7 @@ export const HeroCouncilIntro = ({ visible, setVisible, user }: HeroCouncilIntro
       html: (
         <>
           <div style={{width: "100%", display: "flex", justifyContent: "center"}}>
-            <Form form={codeForm} style={{width: "100%"}} size="large" initialValues={{code: code}}>
+            <Form form={codeForm} style={{width: "100%"}} size="large" initialValues={{code: user.grandChallengeCode}}>
               <Form.Item
                 style={{width: "100%"}}
                 name="code"
