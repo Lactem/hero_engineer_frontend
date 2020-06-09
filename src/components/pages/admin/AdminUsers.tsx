@@ -29,7 +29,7 @@ export const AdminUsers = ({ users }: AdminUsersProps) => {
                   ? <span dangerouslySetInnerHTML={{__html: user.avatarSVG}} />
                   : <UserOutlined />}
                 />
-                {user.email}
+                {user.email} ({user.xp} XP; {user.points} points)
                 </>
               }
               key={i}>

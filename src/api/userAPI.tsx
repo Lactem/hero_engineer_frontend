@@ -110,6 +110,12 @@ export async function apiLoadProfile() {
   return await axios.get<UserModel>(url)
 }
 
+export async function apiLoadProfessorAvatar() {
+  const url = `${apiBase}/user/professorAvatar`
+
+  return await axios.get<string>(url)
+}
+
 export async function signUpUser(email: string,
                                  username: string,
                                  password: string,

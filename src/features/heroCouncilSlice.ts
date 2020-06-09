@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 
 import { AppThunk } from "app/store"
 import {
+  AnnouncementModel,
   apiEnterCodeForGrandChallenge, apiGenerateCodeForGrandChallenge,
   apiLoadAllGrandChallenges, apiLoadAllHeroCouncils,
   apiLoadHeroCouncil, apiRemoveHeroCouncil, apiSaveGrandChallenge, apiSaveHeroCouncil,
@@ -99,9 +100,10 @@ export const saveHeroCouncil = (
   emails: string[],
   approved: boolean,
   declarationFileName: string,
+  announcements: AnnouncementModel[],
   id?: string
 ): AppThunk => async dispatch => {
-  apiSaveHeroCouncil(name, emails, approved, declarationFileName, id)
+  apiSaveHeroCouncil(name, emails, approved, declarationFileName, announcements, id)
     .then(_ => {
       message.success(successMessage)
       dispatch(loadAllHeroCouncils())

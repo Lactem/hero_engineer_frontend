@@ -7,11 +7,16 @@ export interface HeroCouncilModel {
   emails: string[]
   approved: boolean
   declarationFileName: string
+  announcements: AnnouncementModel[]
 }
 export interface GrandChallengeModel {
   id: string
   code: string
   grandChallenge: string
+}
+export interface AnnouncementModel {
+  num: number
+  text: string
 }
 
 export async function apiLoadAllHeroCouncils() {
@@ -30,6 +35,7 @@ export async function apiSaveHeroCouncil(name: string,
                                          emails: string[],
                                          approved: boolean,
                                          declarationFileName: string,
+                                         announcements: AnnouncementModel[],
                                          id?: string) {
   const url = `${apiBase}/herocouncil/save`
 
@@ -38,7 +44,8 @@ export async function apiSaveHeroCouncil(name: string,
     name,
     emails,
     approved,
-    declarationFileName
+    declarationFileName,
+    announcements
   })
 }
 

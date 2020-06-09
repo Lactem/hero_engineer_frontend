@@ -16,12 +16,13 @@ import apiBase from "../../api/api"
 import axios from "axios"
 import { loadHeroCouncil, saveHeroCouncil } from "../../features/heroCouncilSlice"
 import { HeroCouncilModel } from "../../api/heroCouncilAPI"
+import { loadProfessorAvatar } from "../../features/userSlice"
 
 export const Councils = () => {
   const dispatch = useDispatch()
   const [heroCouncilIntroVisible, setHeroCouncilIntroVisible] = useState(false)
   const [categoryClassmates, setCategoryClassmates] = useState([] as UserModel[])
-  const { user } = useSelector(
+  const { user, professorAvatar } = useSelector(
     (state: RootState) => state.user
   )
   const { heroCouncil } = useSelector(
@@ -30,13 +31,14 @@ export const Councils = () => {
   const { classmates } = useSelector(
     (state: RootState) => state.section
   )
-  if (!heroCouncil) {
-    dispatch(loadHeroCouncil())
-  }
-  setTimeout(() => {
-    dispatch(loadHeroCouncil())
-  }, 1000 * 10)
+  useEffect(() => {
+    const timer = setInterval(() => {
+      dispatch(loadHeroCouncil())
+    }, 1000);
+    return () => clearTimeout(timer);
+  })
   if (!classmates) dispatch(loadClassmates())
+  //if (!professorAvatar) dispatch(loadProfessorAvatar())
 
   useEffect(() => {
     let categoryClassmates: UserModel[] = []
@@ -53,9 +55,9 @@ export const Councils = () => {
     setCategoryClassmates(categoryClassmates)
   }, [classmates, user])
 
-
   return (
     <>
+      {professorAvatar}
       {user && (!heroCouncil || !heroCouncil.name) && <CreateCouncil
         user={user}
         heroCouncilIntroVisible={heroCouncilIntroVisible}
@@ -64,7 +66,7 @@ export const Councils = () => {
       />}
 
       {user && heroCouncil && heroCouncil.name && !heroCouncil.approved && <PendingCouncilView user={user} />}
-      {user && heroCouncil && heroCouncil.name && heroCouncil.approved && <ApprovedCouncilView user={user} council={heroCouncil} />}
+      {user && heroCouncil && heroCouncil.name && heroCouncil.approved && <ApprovedCouncilView user={user} professorAvatar={""} council={heroCouncil} />}
     </>
   )
 }
@@ -117,7 +119,8 @@ const CreateCouncil = ({ user, heroCouncilIntroVisible, setHeroCouncilIntroVisib
           values.name,
           values.emails,
           false,
-          ""))
+          "",
+          []))
         setTimeout(() => {
           dispatch(loadHeroCouncil())
         }, 1000)
@@ -202,7 +205,7 @@ const CreateCouncil = ({ user, heroCouncilIntroVisible, setHeroCouncilIntroVisib
 
       <br />
 
-      {user && categoryClassmates.length === 0 && <Empty description={<>No ideas for {user.grandChallengeCategory} yet</>} />}
+      {user && categoryClassmates.length === 0 && <Empty style={{marginTop: "50px"}} description={<>No ideas for {user.grandChallengeCategory} yet</>} />}
       {categoryClassmates.map(classmate => (
         <div key={classmate.email}>
           <Comment
@@ -236,11 +239,28 @@ const PendingCouncilView = ({ user }: PendingCouncilViewProps) => {
 
 interface ApprovedCouncilViewProps {
   user: UserModel
+  professorAvatar: string
   council: HeroCouncilModel
 }
-const ApprovedCouncilView = ({ user, council }: ApprovedCouncilViewProps) => {
+const ApprovedCouncilView = ({ user, professorAvatar, council }: ApprovedCouncilViewProps) => {
   return <>
     <h1 style={{textAlign: "center"}}>Hero Council Room</h1>
-    <Empty description={<>No activity yet. Professor Ramsey will post an update soon.</>} />
+    {!(council.announcements) && (<Empty description={<>No activity yet. Professor Ramsey will post an update soon.</>} />)}
+    {council.announcements && council.announcements.length > 0 && [...council.announcements]
+      .sort((a, b) =>(a.num < b.num) ? 1 : -1)
+      .map(announcement => <div key={announcement.num}>
+        <Comment
+          author="Professor Ramsey"
+          content={
+            <>
+              <p>{announcement.text}</p>
+            </>
+          }
+          avatar={<Avatar style={{marginRight: "3px"}} size="large" icon={professorAvatar
+            ? <span dangerouslySetInnerHTML={{__html: professorAvatar}} />
+            : <UserOutlined />}
+          />}
+        />
+      </div>)}
   </>
 }

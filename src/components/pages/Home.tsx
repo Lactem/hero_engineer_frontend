@@ -61,7 +61,7 @@ export const Home = () => {
   }
 
   function handleHeroCouncil() {
-    if (user && (user.isProf || user.email === "hramsey@usc.edu" || user.email === "tilie@usc.edu" || user.email === "tilie1@usc.edu")) {
+    if (user && (user.isProf || user.email === "hramsey@usc.edu" || user.email === "tilie@usc.edu" || user.email === "test.student@usc.edu")) {
       if (user.grandChallengeCategory) history.push("/councils")
       else setHeroCouncilIntroVisible(true)
     }

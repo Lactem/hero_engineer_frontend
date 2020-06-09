@@ -21,8 +21,9 @@ import {
   apiAddUserToWhitelist,
   apiRemoveUserFromWhitelist,
   apiGetWhitelist,
-  UserWhitelistModel, apiSetIdeas
+  UserWhitelistModel, apiSetIdeas, apiLoadProfessorAvatar
 } from "../api/userAPI"
+import { message } from "antd"
 
 
 interface UserState {
@@ -34,6 +35,7 @@ interface UserState {
   onLandingPage: boolean
   allUsers: UserModel[] | null
   userWhitelist: UserWhitelistModel | null
+  professorAvatar: string
 }
 
 const initialState: UserState = {
@@ -44,7 +46,8 @@ const initialState: UserState = {
   jwtAxiosId: null,
   onLandingPage: true,
   allUsers: null,
-  userWhitelist: null
+  userWhitelist: null,
+  professorAvatar: ""
 }
 
 const user = createSlice({
@@ -99,6 +102,9 @@ const user = createSlice({
     },
     loadWhitelistSuccessAction(state, action: PayloadAction<UserWhitelistModel>) {
       state.userWhitelist = action.payload
+    },
+    loadProfessorAvatarSuccessAction(state, action: PayloadAction<string>) {
+      state.professorAvatar = action.payload
     }
   }
 })
@@ -114,7 +120,8 @@ export const {
   signUpFailedAction,
   updateAvatarSuccessAction,
   loadAllUsersSuccessAction,
-  loadWhitelistSuccessAction
+  loadWhitelistSuccessAction,
+  loadProfessorAvatarSuccessAction
 } = user.actions
 
 export default user.reducer
@@ -177,6 +184,38 @@ export const loadProfile = (): AppThunk => async dispatch => {
       }
       console.log("Error.config", error.config);
       dispatch(loadProfileFailedAction("There was a problem loading your Hero profile. Please try again."))
+    })
+}
+
+export const loadProfessorAvatar = (): AppThunk => async dispatch => {
+  apiLoadProfessorAvatar()
+    .then(response => {
+      dispatch(loadProfessorAvatarSuccessAction(response.data))
+    })
+    .catch(error => {
+      console.log("loadUserProfile error")
+      console.log(error.toJSON())
+      console.log(error.toString())
+      if (error.response) {
+        if (error.response.status === 401) {
+          dispatch(logOut())
+          return
+        }
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.log("error.response.data", error.response.data);
+        console.log("error.response.status", error.response.status);
+        console.log("error.response.headers", error.response.headers);
+      } else if (error.request) {
+        // The request was made but no response was received
+        // `error.request` is an instance of XMLHttpRequest in the browser
+        console.log("error.request", error.request);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.log("Error", error.message);
+      }
+      console.log("Error.config", error.config);
+      message.error("Could not load Professor Ramsey's avatar")
     })
 }
 

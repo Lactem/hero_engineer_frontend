@@ -9,9 +9,9 @@ import {
   saveHeroCouncil
 } from "../../../features/heroCouncilSlice"
 import apiBase from "../../../api/api"
-import axios from "axios"
+import axios, { AxiosResponse } from "axios"
 
-import { Button, Checkbox, Collapse, Form, Input, Modal, Row, Tooltip } from "antd"
+import { Button, Checkbox, Collapse, Form, Input, InputNumber, Modal, Row, Tooltip } from "antd"
 import {
   ExclamationCircleOutlined,
   MinusCircleOutlined,
@@ -20,6 +20,7 @@ import {
 } from "@ant-design/icons/lib"
 import { CheckboxChangeEvent } from "antd/es/checkbox"
 import { useForm } from "antd/lib/form/Form"
+import TextArea from "antd/es/input/TextArea"
 
 
 interface AdminHeroCouncilsProps {
@@ -124,6 +125,7 @@ const EditHeroCouncil = ({ heroCouncil }: EditHeroCouncilProps) => {
           values.emails,
           values.approved,
           heroCouncil.declarationFileName,
+          values.announcements,
           heroCouncil.id
         ))
       })
@@ -135,9 +137,10 @@ const EditHeroCouncil = ({ heroCouncil }: EditHeroCouncilProps) => {
   function onClickDownload() {
     const url = `${apiBase}/herocouncil/downloadDeclaration/${heroCouncil.declarationFileName}`
 
-    return axios.get(url, { responseType: 'arraybuffer' }).then((response) => {
-      const fileDownload = require('js-file-download');
-      fileDownload(response, heroCouncil.declarationFileName);
+    return axios.get(url, { responseType: 'arraybuffer' }).then((response: AxiosResponse) => {
+      var FileSaver = require('file-saver');
+      var blob = new Blob([response.data], {type: response.headers["content-type"]});
+      FileSaver.saveAs(blob, heroCouncil.declarationFileName);
     })
   }
 
@@ -164,7 +167,8 @@ const EditHeroCouncil = ({ heroCouncil }: EditHeroCouncilProps) => {
         initialValues={{
           name: heroCouncil.name,
           emails: heroCouncil.emails,
-          approved: heroCouncil.approved
+          approved: heroCouncil.approved,
+          announcements: heroCouncil.announcements ? heroCouncil.announcements : []
         }}
         onFinish={onSave}
       >
@@ -234,6 +238,60 @@ const EditHeroCouncil = ({ heroCouncil }: EditHeroCouncilProps) => {
                     }}
                   >
                     <PlusOutlined /> Add student
+                  </Button>
+                </Form.Item>
+              </div>
+            )}
+          </Form.List>
+        </Form.Item>
+
+        <Form.Item
+          label={(
+            <>
+              Announcements
+              <Tooltip title="Text that members of this Hero Council will see in their Hero Council room">
+                <QuestionCircleOutlined style={{paddingLeft: "5px"}} />
+              </Tooltip>
+            </>
+          )}>
+          <Form.List name="announcements">
+            {(fields, { add, remove }) => (
+              <div style={{width: "100%"}}>
+                {fields.map((field) => (
+                  <>
+                    <Row>
+                      <Form.Item name={[field.name, "num"]}
+                                 label={(
+                                   <>
+                                     Order
+                                     <Tooltip title="The order in which this announcement will be shown (higher numbers are shown first)">
+                                       <QuestionCircleOutlined style={{paddingLeft: "5px"}} />
+                                     </Tooltip>
+                                   </>
+                                 )}
+                      >
+                        <InputNumber />
+                      </Form.Item>
+                      <Form.Item label="Announcement Text" name={[field.name, "text"]}>
+                        <TextArea />
+                      </Form.Item>
+                      <MinusCircleOutlined
+                        className="dynamic-delete-button"
+                        onClick={() => {
+                          remove(field.name);
+                        }}
+                      />
+                    </Row>
+                  </>
+                ))}
+                <Form.Item>
+                  <Button
+                    type="dashed"
+                    onClick={() => {
+                      add();
+                    }}
+                  >
+                    <PlusOutlined /> Create new announcement
                   </Button>
                 </Form.Item>
               </div>
