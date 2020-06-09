@@ -21,7 +21,7 @@ import {
   apiAddUserToWhitelist,
   apiRemoveUserFromWhitelist,
   apiGetWhitelist,
-  UserWhitelistModel, apiSetIdeas, apiLoadProfessorAvatar
+  UserWhitelistModel, apiSetIdeas, apiLoadProfessorAvatar, apiResetPassword, apiSetPassword
 } from "../api/userAPI"
 import { message } from "antd"
 
@@ -216,6 +216,71 @@ export const loadProfessorAvatar = (): AppThunk => async dispatch => {
       }
       console.log("Error.config", error.config);
       message.error("Could not load Professor Ramsey's avatar")
+    })
+}
+
+export const resetPassword = (
+  email: string,
+  resetPassword: boolean
+): AppThunk => async dispatch => {
+  apiResetPassword(email, resetPassword)
+    .then(_ => {
+      message.success("Saved")
+    })
+    .catch(error => {
+      console.log(error.toJSON())
+      console.log(error.toString())
+      if (error.response) {
+        if (error.response.status === 401) {
+          dispatch(logOut())
+          return
+        }
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.log("error.response.data", error.response.data);
+        console.log("error.response.status", error.response.status);
+        console.log("error.response.headers", error.response.headers);
+      } else if (error.request) {
+        // The request was made but no response was received
+        // `error.request` is an instance of XMLHttpRequest in the browser
+        console.log("error.request", error.request);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.log("Error", error.message);
+      }
+      console.log("Error.config", error.config);
+    })
+}
+
+export const setPassword = (
+  email: string,
+  password: string
+): AppThunk => async dispatch => {
+  apiSetPassword(email, password)
+    .then(_ => {
+    })
+    .catch(error => {
+      console.log(error.toJSON())
+      console.log(error.toString())
+      if (error.response) {
+        if (error.response.status === 401) {
+          dispatch(logOut())
+          return
+        }
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.log("error.response.data", error.response.data);
+        console.log("error.response.status", error.response.status);
+        console.log("error.response.headers", error.response.headers);
+      } else if (error.request) {
+        // The request was made but no response was received
+        // `error.request` is an instance of XMLHttpRequest in the browser
+        console.log("error.request", error.request);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.log("Error", error.message);
+      }
+      console.log("Error.config", error.config);
     })
 }
 

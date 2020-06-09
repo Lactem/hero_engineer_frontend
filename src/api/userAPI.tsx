@@ -19,6 +19,7 @@ export interface UserModel {
   idea2: string
   idea3: string
   isProf: boolean
+  resetPasswordOnLogin: boolean
 }
 export interface AvatarDataMaleModel {
   backs: number
@@ -174,6 +175,24 @@ export async function apiAddUserToWhitelist(email: string) {
 
   return await axios.post<string>(url, {
     email
+  })
+}
+
+export async function apiResetPassword(email: string, resetPassword: boolean) {
+  const url = `${apiBase}/user/resetPassword`
+
+  return await axios.post<string>(url, {
+    email,
+    resetPassword
+  })
+}
+
+export async function apiSetPassword(email: string, password: string) {
+  const url = `${apiBase}/user/setPassword`
+
+  return await axios.post<string>(url, {
+    email,
+    password
   })
 }
 

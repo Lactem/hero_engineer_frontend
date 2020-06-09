@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import { NavLink } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "../../app/rootReducer"
-import { logIn, loginFailedAction } from "../../features/userSlice"
+import { logIn, loginFailedAction, setPassword } from "../../features/userSlice"
 import { Form, Button, Input, Modal } from "antd"
 import { useForm } from "antd/es/form/Form"
 import history from "../../app/history"
@@ -11,8 +11,10 @@ import "./Landing.css"
 
 export const Landing = () => {
   const dispatch = useDispatch()
-  const [ form ] = useForm()
+  const [form] = useForm()
+  const [setPassForm] = useForm()
   const [modalVisible, setModalVisible] = useState(false)
+  const [resetPassModalVisible, setResetPassModalVisible] = useState(false)
   const { userError, loginLoading } = useSelector(
     (state: RootState) => state.user
   )
@@ -35,13 +37,32 @@ export const Landing = () => {
 
   function handleCancel() {
     setModalVisible(false)
-    form.resetFields();
+    setResetPassModalVisible(false)
+    form.resetFields()
+    setPassForm.resetFields()
     dispatch(loginFailedAction(""))
+  }
+
+  function handleSetPassSubmit() {
+    setPassForm
+      .validateFields()
+      .then(values => {
+        const email = values.email.replace("@usc.edu", "")
+        dispatch(setPassword(email + "@usc.edu", values.password));
+      })
+      .catch(info => {
+        console.log('Validate Failed:', info);
+      });
   }
 
   function signUp() {
     dispatch(loginFailedAction(""))
     history.push("/sign-up")
+  }
+
+  function onClickReset() {
+    handleCancel()
+    setResetPassModalVisible(false)
   }
 
   // Logo URL: https://logomakr.com/93uFCv
@@ -112,6 +133,54 @@ export const Landing = () => {
         </Form>
         Don't have an account?
         <NavLink to="/sign-up"> Sign Up!</NavLink>
+        <br />
+        Forgot Password?
+        <span onClick={onClickReset}> <a>Reset</a></span>
+      </Modal>
+
+      <Modal style={{textAlign: "center"}}
+             title="Set New Password"
+             visible={resetPassModalVisible}
+             onOk={handleSetPassSubmit}
+             okText="Reset Password"
+             onCancel={handleCancel}
+             footer={null}
+      >
+        {userError && <div style={{color: "red"}}>{userError}</div>}
+        <Form
+          layout="vertical"
+          form={setPassForm}
+          name="basic"
+        >
+          <Form.Item
+            label="USC email"
+            name="email"
+            rules={[
+              {
+                required: true,
+                message: "Please enter your @usc.edu email address.",
+              },
+            ]}
+          >
+            <Input placeholder="tommy.trojan" addonAfter="@usc.edu" />
+          </Form.Item>
+
+          <Form.Item
+            label="Password"
+            name="password"
+            rules={[
+              {
+                required: true,
+                message: "Please enter your password.",
+              },
+            ]}
+          >
+            <Input.Password placeholder="password" />
+          </Form.Item>
+          <Button onClick={handleSetPassSubmit} type="primary" htmlType="submit" style={{width: "100%"}}>
+            Set Password
+          </Button>
+        </Form>
       </Modal>
     </>
   )

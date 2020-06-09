@@ -1,7 +1,7 @@
 import React from "react"
 import { useDispatch, useSelector } from "react-redux"
 
-import { Button, Collapse, Avatar } from "antd"
+import { Button, Collapse, Avatar, Checkbox } from "antd"
 import { UserOutlined } from "@ant-design/icons/lib"
 
 import CopyToClipboard from "react-copy-to-clipboard"
@@ -11,6 +11,8 @@ import { UserModel } from "../../../api/userAPI"
 import { QuestView } from "../Quests"
 import { RootState } from "../../../app/rootReducer"
 import { loadQuizzes } from "../../../features/quizzesSlice"
+import { CheckboxChangeEvent } from "antd/es/checkbox"
+import { resetPassword } from "../../../features/userSlice"
 
 
 interface AdminUsersProps {
@@ -56,36 +58,44 @@ const EditUser = ({ user }: EditUserProps) => {
     dispatch(generateCode(user.email, questId))
   }
 
+  function onResetPasswordChange(e: CheckboxChangeEvent) {
+    dispatch(resetPassword(user.email, e.target.checked))
+  }
+
   return (
-    <Collapse style={{width: "100%"}}>
-      {user.quests.map(quest => (
-        <Collapse.Panel
-          header={quest.name + (quest.main ? " (main quest)" : " (side quest)") + (quest.complete ? " (complete)" : " (incomplete)")}
-          key={quest.id}
-        >
-          {quest.code && !quest.complete && (quest.completeWithQuizzesAndCode || quest.completeWithCode) && (
-            <>
-              {quest.code}
-              <CopyToClipboard text={quest.code}>
-                <Button>Copy to clipboard</Button>
-              </CopyToClipboard>
-            </>
-          )}
-          <br />
-          {!quest.complete && (quest.completeWithQuizzesAndCode || quest.completeWithCode) && (
-            <Button onClick={() => {generateQuestCode(quest.id)}}>Generate Code</Button>
-          )}
-          <br />
-          <Collapse style={{width: "100%"}}>
-            <Collapse.Panel header={"Student's View"} key={quest.id + "view"}>
-              <div style={{ width: "100%", textAlign: "center" }}>
-                {quizzes && <QuestView quest={quest} quests={user.quests} quizzes={quizzes} />}
-              </div>
-            </Collapse.Panel>
-          </Collapse>
-        </Collapse.Panel>
-      ))}
-    </Collapse>
+    <>
+      Reset Password? <Checkbox defaultChecked={user.resetPasswordOnLogin} onChange={onResetPasswordChange} />
+      <br />
+      <Collapse style={{width: "100%"}}>
+        {user.quests.map(quest => (
+          <Collapse.Panel
+            header={quest.name + (quest.main ? " (main quest)" : " (side quest)") + (quest.complete ? " (complete)" : " (incomplete)")}
+            key={quest.id}
+          >
+            {quest.code && !quest.complete && (quest.completeWithQuizzesAndCode || quest.completeWithCode) && (
+              <>
+                {quest.code}
+                <CopyToClipboard text={quest.code}>
+                  <Button>Copy to clipboard</Button>
+                </CopyToClipboard>
+              </>
+            )}
+            <br />
+            {!quest.complete && (quest.completeWithQuizzesAndCode || quest.completeWithCode) && (
+              <Button onClick={() => {generateQuestCode(quest.id)}}>Generate Code</Button>
+            )}
+            <br />
+            <Collapse style={{width: "100%"}}>
+              <Collapse.Panel header={"Student's View"} key={quest.id + "view"}>
+                <div style={{ width: "100%", textAlign: "center" }}>
+                  {quizzes && <QuestView quest={quest} quests={user.quests} quizzes={quizzes} />}
+                </div>
+              </Collapse.Panel>
+            </Collapse>
+          </Collapse.Panel>
+        ))}
+      </Collapse>
+    </>
   )
 }
 
