@@ -38,7 +38,7 @@ export const Councils = () => {
     return () => clearTimeout(timer);
   })
   if (!classmates) dispatch(loadClassmates())
-  //if (!professorAvatar) dispatch(loadProfessorAvatar())
+  if (!professorAvatar) dispatch(loadProfessorAvatar())
 
   useEffect(() => {
     let categoryClassmates: UserModel[] = []
@@ -57,16 +57,23 @@ export const Councils = () => {
 
   return (
     <>
-      {professorAvatar}
-      {user && (!heroCouncil || !heroCouncil.name) && <CreateCouncil
+      {user && (!heroCouncil || !heroCouncil.name || !heroCouncil.declarationFileName) && <CreateCouncil
         user={user}
         heroCouncilIntroVisible={heroCouncilIntroVisible}
         setHeroCouncilIntroVisible={setHeroCouncilIntroVisible}
         categoryClassmates={categoryClassmates}
       />}
 
-      {user && heroCouncil && heroCouncil.name && !heroCouncil.approved && <PendingCouncilView user={user} />}
-      {user && heroCouncil && heroCouncil.name && heroCouncil.approved && <ApprovedCouncilView user={user} professorAvatar={""} council={heroCouncil} />}
+      {user && heroCouncil && heroCouncil.name && heroCouncil.declarationFileName && !heroCouncil.approved &&
+      <PendingCouncilView
+        user={user}
+      />}
+      {user && heroCouncil && heroCouncil.name && heroCouncil.declarationFileName && heroCouncil.approved &&
+      <ApprovedCouncilView
+        user={user}
+        professorAvatar={professorAvatar}
+        council={heroCouncil}
+      />}
     </>
   )
 }

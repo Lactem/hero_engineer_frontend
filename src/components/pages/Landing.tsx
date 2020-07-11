@@ -62,7 +62,8 @@ export const Landing = () => {
 
   function onClickReset() {
     handleCancel()
-    setResetPassModalVisible(false)
+    setModalVisible(false)
+    setResetPassModalVisible(true)
   }
 
   // Logo URL: https://logomakr.com/93uFCv
