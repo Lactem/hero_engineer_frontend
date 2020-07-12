@@ -20,6 +20,7 @@ export interface UserModel {
   idea3: string
   isProf: boolean
   resetPasswordOnLogin: boolean
+  xpBreakdown?: any
 }
 export interface AvatarDataMaleModel {
   backs: number
@@ -202,4 +203,19 @@ export async function apiRemoveUserFromWhitelist(email: string) {
   return await axios.post<string>(url, {
     email
   })
+}
+
+export async function apiAddXP(email: string, xp: number) {
+  const url = `${apiBase}/user/addXP`
+
+  return await axios.post<string>(url, {
+    email,
+    xp
+  })
+}
+
+export async function apiGetXPBreakdown(email: string) {
+  const url = `${apiBase}/user/XPBreakdown/${email}`;
+
+  return await axios.get(url)
 }

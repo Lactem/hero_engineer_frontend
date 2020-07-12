@@ -21,7 +21,7 @@ import {
   apiAddUserToWhitelist,
   apiRemoveUserFromWhitelist,
   apiGetWhitelist,
-  UserWhitelistModel, apiSetIdeas, apiLoadProfessorAvatar, apiResetPassword, apiSetPassword
+  UserWhitelistModel, apiSetIdeas, apiLoadProfessorAvatar, apiResetPassword, apiSetPassword, apiAddXP, apiGetXPBreakdown
 } from "../api/userAPI"
 import { message } from "antd"
 
@@ -395,7 +395,7 @@ export const loadAllUsers = (): AppThunk => async dispatch => {
       dispatch(loadAllUsersSuccessAction(result.data))
     })
     .catch(error => {
-      alert("An error occurred while loading student data")
+      message.error("An error occurred while loading student data - try refreshing")
       console.log(error)
     })
 }
@@ -405,11 +405,11 @@ export const addUserToWhitelist = (
 ): AppThunk => async dispatch => {
   apiAddUserToWhitelist(email)
     .then(_ => {
-      alert("Added " + email + " to the whitelist")
+      message.success("Added " + email + " to the whitelist")
       dispatch(loadWhitelist())
     })
     .catch(error => {
-      alert("Error adding user to whitelist (see console for details)")
+      message.error("Error adding user to whitelist (see console for details)")
       console.log(error)
     })
 }
@@ -419,11 +419,11 @@ export const removeUserFromWhitelist = (
 ): AppThunk => async dispatch => {
   apiRemoveUserFromWhitelist(email)
     .then(_ => {
-      alert("Removed " + email + " from the whitelist")
+      message.success("Removed " + email + " from the whitelist")
       dispatch(loadWhitelist())
     })
     .catch(error => {
-      alert("Error removing user from whitelist (see console for details)")
+      message.error("Error removing user from whitelist (see console for details)")
       console.log(error)
     })
 }
@@ -434,7 +434,29 @@ export const loadWhitelist = (): AppThunk => async dispatch => {
       dispatch(loadWhitelistSuccessAction(response.data))
     })
     .catch(error => {
-      alert("Error fetching whitelist (see console for details)")
+      message.error("Error fetching whitelist (see console for details) - try refreshing")
+      console.log(error)
+    })
+}
+
+export const addXP = (email: string, xp: number): AppThunk => async dispatch => {
+  apiAddXP(email, xp)
+    .then(response => {
+      message.success("Added XP. Please refresh.")
+    })
+    .catch(error => {
+      message.error("Error adding XP (see console for details)")
+      console.log(error)
+    })
+}
+
+export const getXPBreakdown = (email: string, setXPBreakdown: Function): AppThunk => async dispatch => {
+  apiGetXPBreakdown(email)
+    .then(response => {
+      setXPBreakdown(response.data)
+    })
+    .catch(error => {
+      message.error("Error calculating XP breakdown (see console for details)")
       console.log(error)
     })
 }

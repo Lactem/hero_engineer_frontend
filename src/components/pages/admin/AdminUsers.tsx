@@ -1,8 +1,8 @@
-import React from "react"
+import React, { useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
-import { Button, Collapse, Avatar, Checkbox } from "antd"
-import { UserOutlined } from "@ant-design/icons/lib"
+import { Button, Collapse, Avatar, Checkbox, InputNumber, Tooltip } from "antd"
+import { QuestionCircleOutlined, UserOutlined } from "@ant-design/icons/lib"
 
 import CopyToClipboard from "react-copy-to-clipboard"
 
@@ -12,7 +12,7 @@ import { QuestView } from "../Quests"
 import { RootState } from "../../../app/rootReducer"
 import { loadQuizzes } from "../../../features/quizzesSlice"
 import { CheckboxChangeEvent } from "antd/es/checkbox"
-import { resetPassword } from "../../../features/userSlice"
+import { addXP, getXPBreakdown, resetPassword } from "../../../features/userSlice"
 
 
 interface AdminUsersProps {
@@ -52,6 +52,8 @@ const EditUser = ({ user }: EditUserProps) => {
   const { quizzes } = useSelector(
     (state: RootState) => state.quizzes
   )
+  const [addXPValue, setAddXPValue] = useState(0);
+  const [xpBreakdown, setXPBreakdown] = useState();
   if (quizzes == null) dispatch(loadQuizzes())
 
   function generateQuestCode(questId: string) {
@@ -62,9 +64,43 @@ const EditUser = ({ user }: EditUserProps) => {
     dispatch(resetPassword(user.email, e.target.checked))
   }
 
+  function onAddXPChange(value: number | undefined) {
+    setAddXPValue(value || 0)
+  }
+
+  function onAddXP() {
+    dispatch(addXP(user.email, addXPValue))
+  }
+
+  function fetchXPBreakdown() {
+    dispatch(getXPBreakdown(user.email, setXPBreakdown))
+  }
+
   return (
     <>
       Reset Password? <Checkbox defaultChecked={user.resetPasswordOnLogin} onChange={onResetPasswordChange} />
+      <br />
+      <InputNumber defaultValue={0} onChange={onAddXPChange} /> <Button onClick={onAddXP}>Add XP</Button>
+      <br />
+      <Button onClick={fetchXPBreakdown}>
+        Show XP Breakdown
+      </Button>
+      <Tooltip title="Computes the total XP a student should have based on quiz scores and quest completion. Does not account for XP added manually by the Professor.">
+        <QuestionCircleOutlined style={{paddingLeft: "5px"}} />
+      </Tooltip>
+      <br />
+      { xpBreakdown &&
+      <>
+        <br />
+        {Object.keys(xpBreakdown).map((key) => key === "Total" ? null :
+            <div key={key}>
+              { key }: { xpBreakdown[key] }
+            </div>
+        )}
+        <hr />
+        Total: { xpBreakdown["Total"] }
+      </>
+      }
       <br />
       <Collapse style={{width: "100%"}}>
         {user.quests.map(quest => (
