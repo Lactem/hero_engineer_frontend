@@ -1,3 +1,4 @@
+@import '../../styles/effects';
 
 @media (min-width: 1200px) {
   .container {
@@ -14,6 +15,56 @@
 @media (min-width: 768px) {
   .container {
     width: 750px;
+  }
+}
+
+.title {
+  display: flex;
+  justify-content: center;
+  margin: 2%;
+  @include fade-in(0.5s, 0s);
+}
+
+.card {
+  width: 300px;
+
+  &__quests {
+    @extend .card;
+    @include fade-in(0.5s, 0.5s);
+  }
+
+  &__live-classroom {
+    @extend .card;
+    @include fade-in(0.5s, 0.7s);
+  }
+
+  &__hero-council {
+    @extend .card;
+    @include fade-in(0.5s, 0.9s);
+  }
+
+  &__profile {
+    @include fade-in(0.5s, 1.1s);
+  }
+
+  &__item-store {
+    @extend .card;
+    @include fade-in(0.5s, 1.3s);
+  }
+
+  &__leaderboard {
+    @extend .card;
+    @include fade-in(0.5s, 1.5s);
+  }
+
+  &__logout {
+    @extend .card;
+    @include fade-in(0.5s, 1.7s);
+  }
+
+  &__admin-panel {
+    @extend .card;
+    @include fade-in(0.5s, 1.9s);
   }
 }
 

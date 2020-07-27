@@ -5,11 +5,11 @@ import { RootState } from "../../app/rootReducer"
 import { logOut, updateAvatar } from "../../features/userSlice"
 import history from "../../app/history"
 
-import { Avatar, Card, Layout, Modal, Space, Tag, Tooltip } from "antd"
+import { Avatar, Card, Layout, message, Modal, Space, Tag, Tooltip } from "antd"
 import { StarOutlined } from "@ant-design/icons"
 import Meta from "antd/es/card/Meta"
 
-import "./Home.css"
+import "./Home.scss"
 
 import { initAvatars } from "../../avatars/js/svgavatars.core.min"
 import { initTools } from "../../avatars/js/svgavatars.tools"
@@ -60,6 +60,10 @@ export const Home = () => {
     history.push("/quests")
   }
 
+  function handleLiveClassroom() {
+    history.push("/live-classroom");
+  }
+
   function handleHeroCouncil() {
     if (user) {
       if (user.grandChallengeCategory) history.push("/councils")
@@ -68,11 +72,11 @@ export const Home = () => {
   }
 
   function handleItemStore() {
-    alert("Coming soon")
+    message.info('The Item Store is coming soon!');
   }
 
   function handleLeaderboard() {
-    alert("Coming soon")
+    message.info('Leaderboards are coming soon!')
   }
 
   function handleLeaveGame() {
@@ -87,22 +91,10 @@ export const Home = () => {
   return (
     <>
       {user && <HeroCouncilIntro visible={heroCouncilIntroVisible} setVisible={setHeroCouncilIntroVisible} user={user} />}
-      <Layout style={{ textAlign: "center" }}>
-        <h1 style={{display: "flex", justifyContent: "center"}}>
-          <span style={{height: "100%"}}>Welcome, {user && user.username}</span>
-          <span>{user && (
-              <Tag style={{marginLeft: "5px"}} icon={<StarOutlined />}>{user.xp} XP</Tag>
-          )}</span>
-          {user && (
-            <div onClick={handleAvatar}>
-              <Tooltip title="Edit Avatar">
-                <Avatar size="large" icon={user.avatarSVG
-                          ? <span dangerouslySetInnerHTML={{__html: user.avatarSVG}} />
-                          : <UserOutlined />}
-                />
-              </Tooltip>
-            </div>
-          )}
+      <div style={{ textAlign: "center" }}>
+        <h1 className="title">
+          <span style={{height: "100%", color: "red", marginRight: "10px"}}>Main</span>
+          <span style={{height: "100%", color: "gold"}}>Menu</span>
         </h1>
         <Modal visible={avatarModalVisible}
                centered={true}
@@ -319,28 +311,62 @@ export const Home = () => {
                         src="../../../Quests.png"
                       />
                     }
-                    style={{ width: 300 }}>
+                    className="card__quests">
                 <Meta
                   title="Quests"
                   description="Earn XP and points by completing quests."
                 />
               </Card>
-            </Space>
-            <Space direction="horizontal" size="large" align="center">
+
+              <Card onClick={handleLiveClassroom}
+                    hoverable bordered
+                    cover={
+                      <img
+                        alt="example"
+                        src="../../../Live_Classroom.jpg"
+                      />
+                    }
+                    className="card__live-classroom">
+                <Meta
+                  title="Live Classroom"
+                  description="Complete in-class assignments."
+                />
+              </Card>
+
               <Card onClick={handleHeroCouncil}
-                hoverable bordered
-                cover={
-                  <img
-                    alt="example"
-                    src="../../../Hero Council.png"
-                  />
-                }
-                style={{ width: 300 }}>
+                    hoverable bordered
+                    cover={
+                      <img
+                        alt="example"
+                        src="../../../Hero Council.png"
+                      />
+                    }
+                    className="card__hero-council">
                 <Meta
                   title="Hero Council"
                   description="Every Hero needs allies."
                 />
               </Card>
+            </Space>
+            <Space className="card__profile">
+              {user && (
+                <div onClick={handleAvatar}>
+                  <Tooltip title="Edit Avatar">
+                    <Avatar size={75} icon={user.avatarSVG
+                      ? <span dangerouslySetInnerHTML={{__html: user.avatarSVG}} />
+                      : <UserOutlined />}
+                    />
+                  </Tooltip>
+                </div>
+              )}
+
+              <span>{user && (<>
+              {user.username}
+                <Tag style={{marginLeft: "5px"}} icon={<StarOutlined />}>{user.xp} XP</Tag>
+              </>
+              )}</span>
+            </Space>
+            <Space direction="horizontal" size="large" align="center">
               <Card onClick={handleItemStore}
                     hoverable bordered
                     cover={
@@ -349,14 +375,12 @@ export const Home = () => {
                         src="../../../Item Store.png"
                       />
                     }
-                    style={{ width: 300 }}>
+                    className="card__item-store">
                 <Meta
                   title="Item Store"
                   description="Use Hero Points to buy power-ups for you and your fellow Heroes."
                 />
               </Card>
-            </Space>
-            <Space direction="horizontal" size="large" align="center">
               <Card onClick={handleLeaderboard}
                     hoverable bordered
                     cover={
@@ -365,21 +389,21 @@ export const Home = () => {
                         src="../../../Leaderboard.png"
                       />
                     }
-                    style={{ width: 300 }}>
+                    className="card__leaderboard">
                 <Meta
                   title="Leaderboard"
                   description="View the latest rankings."
                 />
               </Card>
               <Card onClick={handleLeaveGame}
-                hoverable bordered
-                cover={
-                  <img
-                    alt="example"
-                    src="../../../Leave Game.png"
-                  />
-                }
-                style={{ width: 300 }}>
+                    hoverable bordered
+                    cover={
+                      <img
+                        alt="example"
+                        src="../../../Leave Game.png"
+                      />
+                    }
+                    className="card__logout">
                 <Meta
                   title="Leave Game"
                   description="Sign out."
@@ -396,7 +420,7 @@ export const Home = () => {
                           src="../../../Admin Panel.png"
                         />
                       }
-                      style={{ width: 300 }}>
+                      className="card__admin-panel">
                   <Meta
                     title="Admin Panel"
                     description="Modify the game."
@@ -407,7 +431,7 @@ export const Home = () => {
             <br />
           </Space>
         </Layout.Content>
-      </Layout>
+      </div>
     </>
   )
 }

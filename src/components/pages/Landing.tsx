@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "../../app/rootReducer"
 import { logIn, loginFailedAction, setPassword } from "../../features/userSlice"
-import { Form, Button, Input, Modal } from "antd"
+import { Form, Button, Input, Modal, Space } from "antd"
 import { useForm } from "antd/es/form/Form"
 import history from "../../app/history"
 
@@ -78,14 +78,14 @@ export const Landing = () => {
           </div>
           <div style={{marginTop: "2%"}} />
 
-          <div id="button-container">
+          <Space size={50}>
             <Button size="large" type="primary" onClick={signUp}>
               Start your journey (sign up)
             </Button>
             <Button size="large" type="primary" onClick={showModal}>
               Log in
             </Button>
-          </div>
+          </Space>
         </div>
       </div>
       <Modal style={{textAlign: "center"}}

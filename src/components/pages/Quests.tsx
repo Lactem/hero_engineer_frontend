@@ -26,7 +26,7 @@ export const Quests = () => {
 
   return (
     <>
-      <div style={{position: "relative", left: "10%", width: "90%"}}>
+      <div style={{position: "relative", left: "10%", width: "90%"}} className="quests-container">
         <Tabs animated={true} defaultActiveKey="1" type="card" size="large">
           <Tabs.TabPane tab="Main Quests" key="1">
             {userError && <>{userError}<br/></>}

@@ -1,3 +1,9 @@
+@import '../../styles/effects';
+
+.councils-container {
+    @include fade-in(1s, 0s);
+}
+
 .ant-comment-avatar {
     cursor: default;
 }

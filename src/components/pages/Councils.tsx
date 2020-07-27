@@ -92,7 +92,6 @@ const CreateCouncil = ({ user, heroCouncilIntroVisible, setHeroCouncilIntroVisib
     console.log("called upload with data: ", data)
     const url = `${apiBase}/herocouncil/uploadDeclaration`
 
-    console.log("data.file: ", data.file)
     const formData = new FormData()
     formData.append("file", data.file)
     axios.post(url, formData )
@@ -106,9 +105,6 @@ const CreateCouncil = ({ user, heroCouncilIntroVisible, setHeroCouncilIntroVisib
 
   function onUploadFile(info: UploadChangeParam) {
     const { status } = info.file;
-    if (status !== 'uploading') {
-      console.log(info.file, info.fileList);
-    }
     if (status === 'done') {
       message.success(`${info.file.name} file uploaded successfully.`);
     } else if (status === 'error') {
@@ -138,7 +134,7 @@ const CreateCouncil = ({ user, heroCouncilIntroVisible, setHeroCouncilIntroVisib
   }
 
   return (
-    <>
+    <div className="councils-container">
       <HeroCouncilIntro visible={heroCouncilIntroVisible} setVisible={setHeroCouncilIntroVisible} user={user} />
       <div id="controls-container">
 
@@ -231,7 +227,7 @@ const CreateCouncil = ({ user, heroCouncilIntroVisible, setHeroCouncilIntroVisib
           />
         </div>
       ))}
-    </>
+    </div>
   )
 }
 
