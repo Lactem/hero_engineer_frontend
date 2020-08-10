@@ -19,6 +19,7 @@ import { AdminHeroCouncils } from "./AdminHeroCouncils"
 import { LoadingOutlined } from "@ant-design/icons/lib"
 import { AdminLiveClassroom } from "./AdminLiveClassroom"
 import { loadShortAnswerAssignments } from "../../../features/shortAnswerAssignmentsSlice"
+import { AdminQuizzes } from "./AdminQuizzes"
 
 export const Admin = () => {
   const dispatch = useDispatch()
@@ -28,7 +29,7 @@ export const Admin = () => {
   const { quests, questsLoading, questsError } = useSelector(
     (state: RootState) => state.quests
   )
-  const { quizzes, quizzesLoading } = useSelector(
+  const { quizzes, quizzesLoading, quizzesError } = useSelector(
     (state: RootState) => state.quizzes
   )
   const { allUsers, userWhitelist } = useSelector(
@@ -74,15 +75,20 @@ export const Admin = () => {
             )}
             {!allAssignmentsLoading && allAssignments && allSections && <AdminLiveClassroom assignments={allAssignments} sections={allSections} />}
           </Tabs.TabPane>
-          <Tabs.TabPane tab="Quests & Quizzes" key="4">
+          <Tabs.TabPane tab="Quests" key="4">
             {questsLoading && <>Loading quests...</>}
             {questsError}
             {!questsLoading && quests && !quizzesLoading && quizzes && <AdminQuests quests={quests} quizzes={quizzes} />}
           </Tabs.TabPane>
-          <Tabs.TabPane tab="Councils & Grand Challenges" key="5">
+          <Tabs.TabPane tab="Quizzes" key="5">
+            {quizzesLoading && <>Loading quizzes...</>}
+            {quizzesError}
+            {!quizzesLoading && quizzes && <AdminQuizzes quizzes={quizzes} />}
+          </Tabs.TabPane>
+          <Tabs.TabPane tab="Councils & Grand Challenges" key="6">
             {allHeroCouncils && allGrandChallenges && <AdminHeroCouncils heroCouncils={allHeroCouncils} grandChallenges={allGrandChallenges} />}
           </Tabs.TabPane>
-          <Tabs.TabPane tab="Heroes" key="6">
+          <Tabs.TabPane tab="Heroes" key="7">
             {heroes && <AdminHeroes heroes={heroes as HeroModel[]} />}
           </Tabs.TabPane>
         </Tabs>
