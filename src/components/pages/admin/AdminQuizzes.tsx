@@ -17,7 +17,7 @@ export const AdminQuizzes = ({ quizzes }: AdminQuizzesProps) => {
   const [visible, setVisible] = useState(false)
 
   function onAddQuiz(values: any) {
-    console.log("onFinish values: ", values)
+    console.log("create quiz onFinish values: ", values)
     dispatch(saveQuiz(
       values.name,
       values.locked,
@@ -63,7 +63,7 @@ const EditQuiz = ({ quiz }: EditQuizProps) => {
     form
       .validateFields()
       .then(values => {
-        console.log("onFinish values: ", values)
+        console.log("save quiz onFinish values: ", values)
         dispatch(saveQuiz(
           values.name,
           values.locked,

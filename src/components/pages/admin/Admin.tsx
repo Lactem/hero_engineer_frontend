@@ -1,7 +1,7 @@
 import React from "react"
 import { useDispatch, useSelector } from "react-redux"
 
-import { Divider } from "antd"
+import { Tabs } from "antd"
 
 import { RootState } from "../../../app/rootReducer"
 import { HeroModel} from "../../../api/heroesAPI"
@@ -9,7 +9,6 @@ import { loadHeroes } from "../../../features/heroesSlice"
 import { AdminHeroes } from "./AdminHero"
 import { loadQuests } from "../../../features/questsSlice"
 import { AdminQuests } from "./AdminQuests"
-import { AdminQuizzes } from "./AdminQuizzes"
 import { loadQuizzes } from "../../../features/quizzesSlice"
 import { loadAllUsers, loadWhitelist } from "../../../features/userSlice"
 import { AdminUserWhitelist } from "./AdminUserWhitelist"
@@ -17,6 +16,9 @@ import { loadAllSections } from "../../../features/sectionSlice"
 import { AdminSections } from "./AdminSections"
 import { loadAllGrandChallenges, loadAllHeroCouncils } from "../../../features/heroCouncilSlice"
 import { AdminHeroCouncils } from "./AdminHeroCouncils"
+import { LoadingOutlined } from "@ant-design/icons/lib"
+import { AdminLiveClassroom } from "./AdminLiveClassroom"
+import { loadShortAnswerAssignments } from "../../../features/shortAnswerAssignmentsSlice"
 
 export const Admin = () => {
   const dispatch = useDispatch()
@@ -26,7 +28,7 @@ export const Admin = () => {
   const { quests, questsLoading, questsError } = useSelector(
     (state: RootState) => state.quests
   )
-  const { quizzes, quizzesLoading, quizzesError } = useSelector(
+  const { quizzes, quizzesLoading } = useSelector(
     (state: RootState) => state.quizzes
   )
   const { allUsers, userWhitelist } = useSelector(
@@ -38,6 +40,9 @@ export const Admin = () => {
   const { allHeroCouncils, allGrandChallenges } = useSelector(
     (state: RootState) => state.heroCouncil
   )
+  const { allAssignments, allAssignmentsLoading, allAssignmentsError } = useSelector(
+    (state: RootState) => state.shortAnswerAssignments
+  )
   if (heroes == null) dispatch(loadHeroes())
   if (quests == null) dispatch(loadQuests())
   if (quizzes == null) dispatch(loadQuizzes())
@@ -46,59 +51,41 @@ export const Admin = () => {
   if (allSections == null) dispatch(loadAllSections())
   if (allHeroCouncils == null) dispatch(loadAllHeroCouncils())
   if (allGrandChallenges == null) dispatch(loadAllGrandChallenges())
+  if (allAssignments == null) dispatch(loadShortAnswerAssignments())
 
   return (
     <>
       <div style={{display: "flex", flexDirection: "column", justifyContent: "center", textAlign: "center", alignItems: "center", width: "100%"}}>
         <h1>Control Panel</h1>
         <br />
-        <h2>Edit Heroes</h2>
-        {heroes && <AdminHeroes heroes={heroes as HeroModel[]} />}
-
-        <br />
-        <Divider />
-        <Divider />
-        <Divider />
-        <br />
-        <h2>Edit Quests</h2>
-        {questsLoading && <>Loading quests...</>}
-        {questsError}
-        {!questsLoading && quests && !quizzesLoading && quizzes
-          && <AdminQuests quests={quests} quizzes={quizzes} />}
-
-        <br />
-        <Divider />
-        <Divider />
-        <Divider />
-        <br />
-        <h2>Edit Quizzes</h2>
-        {quizzesLoading && <>Loading quizzes...</>}
-        {quizzesError}
-        {!quizzesLoading && quizzes && <AdminQuizzes quizzes={quizzes} />}
-
-        <br />
-        <Divider />
-        <Divider />
-        <Divider />
-        <br />
-        <h2>Class Sections</h2>
-        {allUsers && allSections && <AdminSections users={allUsers} sections={allSections} />}
-
-        <br />
-        <Divider />
-        <Divider />
-        <Divider />
-        <br />
-        <h2>Hero Councils / Grand Challenge Categories</h2>
-        {allHeroCouncils && allGrandChallenges && <AdminHeroCouncils heroCouncils={allHeroCouncils} grandChallenges={allGrandChallenges} />}
-
-        <br />
-        <Divider />
-        <Divider />
-        <Divider />
-        <br />
-        <h2>Whitelist</h2>
-        {userWhitelist && <AdminUserWhitelist whitelist={userWhitelist} />}
+        <Tabs animated={true} defaultActiveKey="1" type="card" size="large">
+          <Tabs.TabPane tab="Allowed List" key="1">
+            {userWhitelist && <AdminUserWhitelist whitelist={userWhitelist} />}
+          </Tabs.TabPane>
+          <Tabs.TabPane tab="Class Sections" key="2">
+            {allUsers && allSections && <AdminSections users={allUsers} sections={allSections} />}
+          </Tabs.TabPane>
+          <Tabs.TabPane tab="Live Classroom" key="3">
+            {allAssignmentsLoading && <LoadingOutlined />}
+            {allAssignmentsError && (
+              <div style={{textAlign: "center", color: "red"}}>
+                {allAssignmentsError}
+              </div>
+            )}
+            {!allAssignmentsLoading && allAssignments && allSections && <AdminLiveClassroom assignments={allAssignments} sections={allSections} />}
+          </Tabs.TabPane>
+          <Tabs.TabPane tab="Quests & Quizzes" key="4">
+            {questsLoading && <>Loading quests...</>}
+            {questsError}
+            {!questsLoading && quests && !quizzesLoading && quizzes && <AdminQuests quests={quests} quizzes={quizzes} />}
+          </Tabs.TabPane>
+          <Tabs.TabPane tab="Councils & Grand Challenges" key="5">
+            {allHeroCouncils && allGrandChallenges && <AdminHeroCouncils heroCouncils={allHeroCouncils} grandChallenges={allGrandChallenges} />}
+          </Tabs.TabPane>
+          <Tabs.TabPane tab="Heroes" key="6">
+            {heroes && <AdminHeroes heroes={heroes as HeroModel[]} />}
+          </Tabs.TabPane>
+        </Tabs>
       </div>
     </>
   )

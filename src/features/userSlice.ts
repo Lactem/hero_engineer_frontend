@@ -24,6 +24,7 @@ import {
   UserWhitelistModel, apiSetIdeas, apiLoadProfessorAvatar, apiResetPassword, apiSetPassword, apiAddXP, apiGetXPBreakdown
 } from "../api/userAPI"
 import { message } from "antd"
+import { resetShortAnswerAssignmentsStateAction } from "./shortAnswerAssignmentsSlice";
 
 
 interface UserState {
@@ -290,6 +291,7 @@ export const logOut = (): AppThunk => async dispatch => {
   dispatch(resetQuestsStateAction())
   dispatch(resetQuizzesStateAction())
   dispatch(resetSectionStateAction())
+  dispatch(resetShortAnswerAssignmentsStateAction())
   document.cookie = "HERO_ENGINEER="
 }
 

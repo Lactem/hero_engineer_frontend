@@ -1,6 +1,7 @@
 import axios from "axios"
 import apiBase from "./api"
 import { QuestModel } from "./questsAPI"
+import { GradedShortAnswerAssignmentModel } from "./shortAnswerAssignmentsAPI"
 
 export interface UserModel {
   email: string
@@ -13,6 +14,7 @@ export interface UserModel {
   xp: number
   points: number
   quests: QuestModel[]
+  gradedShortAnswerAssignments: GradedShortAnswerAssignmentModel[]
   grandChallengeCategory: string
   grandChallengeCode: string
   idea1: string

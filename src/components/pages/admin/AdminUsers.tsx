@@ -13,6 +13,7 @@ import { RootState } from "../../../app/rootReducer"
 import { loadQuizzes } from "../../../features/quizzesSlice"
 import { CheckboxChangeEvent } from "antd/es/checkbox"
 import { addXP, getXPBreakdown, resetPassword } from "../../../features/userSlice"
+import TextArea from "antd/es/input/TextArea"
 
 
 interface AdminUsersProps {
@@ -102,6 +103,7 @@ const EditUser = ({ user }: EditUserProps) => {
       </>
       }
       <br />
+      <h3>Quests</h3>
       <Collapse style={{width: "100%"}}>
         {user.quests.map(quest => (
           <Collapse.Panel
@@ -124,10 +126,32 @@ const EditUser = ({ user }: EditUserProps) => {
             <Collapse style={{width: "100%"}}>
               <Collapse.Panel header={"Student's View"} key={quest.id + "view"}>
                 <div style={{ width: "100%", textAlign: "center" }}>
-                  {quizzes && <QuestView quest={quest} quests={user.quests} quizzes={quizzes} />}
+                  {quizzes && <QuestView quest={quest} quests={user.quests} quizzes={quizzes} active={true} adminView={true} />}
                 </div>
               </Collapse.Panel>
             </Collapse>
+          </Collapse.Panel>
+        ))}
+      </Collapse>
+
+      <br />
+      <h3>In-Class Assignments</h3>
+      <Collapse style={{width: "100%"}}>
+        {user.gradedShortAnswerAssignments.map(assignment => (
+          <Collapse.Panel
+            header={assignment.name + (assignment.graded ? " (graded)" : " (pending grade)")}
+            key={assignment.id}
+          >
+
+            <h4>Student Answers</h4>
+            {assignment.gradedQuestions.map((question, i) => (
+              <div key={question.id}>
+                {i + 1}. {question.question}
+                <br />
+                <TextArea disabled={true} value={question.answer} />
+                <br /><br />
+              </div>
+            ))}
           </Collapse.Panel>
         ))}
       </Collapse>

@@ -8,6 +8,7 @@ export interface QuestModel {
   description: string
   automaticXpReward: number
   main: boolean
+  available: boolean
   complete: boolean
   completeWithQuizzes: boolean
   completeWithCode: boolean
@@ -30,6 +31,7 @@ export async function apiSaveQuest(name: string,
                                    description: string,
                                    automaticXpReward: number,
                                    main: boolean,
+                                   available: boolean,
                                    complete: boolean,
                                    completeWithQuizzes: boolean,
                                    completeWithCode: boolean,
@@ -48,6 +50,7 @@ export async function apiSaveQuest(name: string,
     description,
     automaticXpReward,
     main,
+    available,
     complete,
     completeWithQuizzes,
     completeWithCode,

@@ -12,6 +12,7 @@ import {
 } from "../api/questsAPI"
 import { GradedQuizModel } from "../api/quizzesAPI"
 import { loadAllUsers, loadProfile } from "./userSlice"
+import { message } from "antd"
 
 interface QuestsState {
   quests: QuestModel[] | null
@@ -67,6 +68,7 @@ export const saveQuest = (
   description: string,
   automaticXpReward: number,
   main: boolean,
+  available: boolean,
   complete: boolean,
   completeWithQuizzes: boolean,
   completeWithCode: boolean,
@@ -82,6 +84,7 @@ export const saveQuest = (
     description,
     automaticXpReward,
     main,
+    available,
     complete,
     completeWithQuizzes,
     completeWithCode,
@@ -94,10 +97,10 @@ export const saveQuest = (
     id)
     .then(_ => {
       dispatch(loadQuests())
-      alert("Successfully saved quest")
+      message.success("Successfully saved quest")
     })
     .catch(error => {
-      alert("Error saving quest (info in console)")
+      message.error("Error saving quest (info in console)")
       console.log("error: ", error)
     })
 }
@@ -106,10 +109,10 @@ export const deleteQuest = (id: string): AppThunk => async dispatch => {
   apiDeleteQuest(id)
     .then(_ => {
       dispatch(loadQuests())
-      alert("Successfully deleted quest")
+      message.success("Successfully deleted quest")
     })
     .catch(error => {
-      alert("Error deleting quest (info in console)")
+      message.error("Error deleting quest (info in console)")
       console.log("error: ", error)
     })
 }
@@ -123,7 +126,7 @@ export const enterCode = (
       dispatch(loadProfile())
     })
     .catch(error => {
-      alert("Invalid code")
+      message.error("Invalid code")
       console.log("Code error: ", error)
     })
 }
@@ -137,7 +140,7 @@ export const generateCode = (
       dispatch(loadAllUsers())
     })
     .catch(error => {
-      alert("Invalid code")
+      message.error("Invalid code")
       console.log("Code error: ", error)
     })
 }
@@ -150,7 +153,7 @@ export const generateUniversalCode = (
       dispatch(loadQuests())
     })
     .catch(error => {
-      alert("Invalid code")
+      message.error("Invalid code")
       console.log("Code error: ", error)
     })
 }

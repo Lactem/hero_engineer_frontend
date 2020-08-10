@@ -26,6 +26,7 @@ export const AdminQuests = ({ quests, quizzes }: AdminQuestsProps) => {
       values.description,
       values.automaticXpReward,
       values.main,
+      values.available,
       false,
       values.completeWithQuizzes,
       values.completeWithCode,
@@ -84,6 +85,7 @@ const EditQuest = ({ quest, quests, quizzes }: EditQuestProps) => {
           values.description,
           values.automaticXpReward,
           values.main,
+          values.available,
           false,
           values.completeWithQuizzes,
           values.completeWithCode,
@@ -120,6 +122,7 @@ const EditQuest = ({ quest, quests, quizzes }: EditQuestProps) => {
           description: quest.description,
           automaticXpReward: quest.automaticXpReward,
           main: quest.main,
+          available: quest.available,
           completeWithQuizzes: quest.completeWithQuizzes,
           completeWithCode: quest.completeWithCode,
           completeWithQuizzesAndCode: quest.completeWithQuizzesAndCode,
@@ -182,6 +185,28 @@ const EditQuest = ({ quest, quests, quizzes }: EditQuestProps) => {
               defaultChecked={quest.main}
               onChange={(e: CheckboxChangeEvent) => {
                 form.setFieldsValue({"main": e.target.checked})
+              }}
+            />
+          </Form.Item>
+        </Form.Item>
+
+        <Form.Item
+          label={(
+            <>
+              Available
+              <Tooltip title="Tick this box to allow students to view this quest and complete it. Untick to hide the quest.">
+                <QuestionCircleOutlined style={{paddingLeft: "5px"}} />
+              </Tooltip>
+            </>
+          )}>
+          <Form.Item
+            name="available"
+            noStyle
+          >
+            <Checkbox
+              defaultChecked={quest.available}
+              onChange={(e: CheckboxChangeEvent) => {
+                form.setFieldsValue({"available": e.target.checked})
               }}
             />
           </Form.Item>
@@ -348,6 +373,7 @@ const AddQuestModal = ({ quests, quizzes, visible, onAddQuest, onCancel }: AddQu
         initialValues={{
           automaticXpReward: 0,
           main: false,
+          available: false,
           completeWithQuizzes: false,
           completeWithCode: false,
           completeWithQuizzesAndCode: false,
@@ -407,6 +433,27 @@ const AddQuestModal = ({ quests, quizzes, visible, onAddQuest, onCancel }: AddQu
             <Checkbox
               onChange={(e: CheckboxChangeEvent) => {
                 form.setFieldsValue({"main": e.target.checked})
+              }}
+            />
+          </Form.Item>
+        </Form.Item>
+
+        <Form.Item
+          label={(
+            <>
+              Available
+              <Tooltip title="Tick this box to allow students to view this quest and complete it. Untick to hide the quest.">
+                <QuestionCircleOutlined style={{paddingLeft: "5px"}} />
+              </Tooltip>
+            </>
+          )}>
+          <Form.Item
+            name="available"
+            noStyle
+          >
+            <Checkbox
+              onChange={(e: CheckboxChangeEvent) => {
+                form.setFieldsValue({"available": e.target.checked})
               }}
             />
           </Form.Item>

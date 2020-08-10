@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
-import { Button, Tabs, Tag, Tooltip, Form, Radio, Collapse, Input } from "antd"
+import { Button, Tabs, Tag, Tooltip, Form, Radio, Collapse, Input, Menu } from "antd"
 import { useForm } from "antd/es/form/Form"
 import { RadioChangeEvent } from "antd/es/radio"
 import { CheckCircleOutlined, ClockCircleOutlined, StarOutlined, LockOutlined, ExclamationCircleOutlined } from "@ant-design/icons"
@@ -13,9 +13,11 @@ import { QuestModel } from "../../api/questsAPI"
 import { AnswerModel, QuizModel } from "../../api/quizzesAPI"
 
 import "./Quests.scss"
+import { CheckCircleTwoTone, ClockCircleTwoTone, EyeInvisibleOutlined } from "@ant-design/icons/lib"
 
 export const Quests = () => {
   const dispatch = useDispatch()
+  const [selectedQuest, setSelectedQuest] = useState<QuestModel>()
   const { user, userError } = useSelector(
     (state: RootState) => state.user
   )
@@ -24,43 +26,64 @@ export const Quests = () => {
   )
   if (quizzes == null) dispatch(loadQuizzes())
 
+  useEffect(() => {
+    if (user && user.quests && quizzes && selectedQuest == null) {
+      for (const quest of user.quests) {
+        if (quest.main) {
+          setSelectedQuest(quest)
+          return
+        }
+      }
+    }
+  }, [user, selectedQuest, quizzes])
+
   return (
     <>
-      <div style={{position: "relative", left: "10%", width: "90%"}} className="quests-container">
-        <Tabs animated={true} defaultActiveKey="1" type="card" size="large">
-          <Tabs.TabPane tab="Main Quests" key="1">
-            {userError && <>{userError}<br/></>}
-            {quizzesError && <>{quizzesError}<br/></>}
-            {quizzesLoading && (<>Loading...</>)}
-            {user && quizzes && (
-              <div style={{position: "fixed", left: "0", textAlign: "center", width: "100%"}}>
-                <Tabs defaultActiveKey="0" tabPosition="left">
-                  {user.quests && user.quests.filter(quest => quest.main).map((quest) => (
-                    <Tabs.TabPane tab={quest.name} key={quest.id}>
-                      <QuestView quest={quest} quests={user.quests} quizzes={quizzes} />
-                    </Tabs.TabPane>
-                  ))}
-                </Tabs>
-              </div>
-            )}
-          </Tabs.TabPane>
-          <Tabs.TabPane tab="Side Quests" key="2">
-            {quizzesError && <>{quizzesError}<br/></>}
-            {quizzesLoading && (<>Loading...</>)}
-            {user && quizzes && (
-              <div style={{position: "fixed", left: "0", textAlign: "center", width: "100%"}}>
-                <Tabs defaultActiveKey="0" tabPosition="left">
-                  {user.quests && user.quests.filter(quest => !quest.main).map((quest) => (
-                    <Tabs.TabPane tab={quest.name} key={quest.id}>
-                      <QuestView quest={quest} quests={user.quests} quizzes={quizzes} />
-                    </Tabs.TabPane>
-                  ))}
-                </Tabs>
-              </div>
-            )}
-          </Tabs.TabPane>
-        </Tabs>
-      </div>
+      {user && user.quests && quizzes && selectedQuest && (
+        <>
+          <div className="quests-menu">
+            <Menu
+              style={{ width: 400 }}
+              defaultSelectedKeys={[selectedQuest.name]}
+              defaultOpenKeys={["Main Quests", "Side Quests"]}
+              mode="inline"
+            >
+              <Menu.SubMenu title="Main Quests" key="Main Quests">
+                {user.quests.filter(quest => quest.main).map((quest) => (
+                  <Menu.Item key={quest.name}
+                             disabled={!quest.available}
+                             onClick={() => { if (quest.available) setSelectedQuest(quest) }}
+                             icon={quest.available
+                               ? (quest.complete ? <CheckCircleTwoTone twoToneColor="#52c41a" /> : <ClockCircleTwoTone twoToneColor="#ffd591" />)
+                               : <EyeInvisibleOutlined />}
+                  >
+                    {quest.name}
+                  </Menu.Item>
+                ))}
+              </Menu.SubMenu>
+              <Menu.SubMenu title="Side Quests" key="Side Quests">
+                {user.quests.filter(quest => !quest.main).map((quest) => (
+                  <Menu.Item
+                    key={quest.name}
+                    disabled={!quest.available}
+                    onClick={() => { if (quest.available) setSelectedQuest(quest) }}
+                    icon={quest.available
+                      ? (quest.complete ? <CheckCircleTwoTone twoToneColor="#52c41a" /> : <ClockCircleTwoTone twoToneColor="#ffd591" />)
+                      : <EyeInvisibleOutlined />}
+                  >
+                    {quest.name}
+                  </Menu.Item>
+                ))}
+              </Menu.SubMenu>
+            </Menu>
+          </div>
+          <div className="quest-view-container">
+            {user.quests.map((quest) => (
+              <QuestView quest={quest} quests={user.quests} quizzes={quizzes} active={quest.name === selectedQuest.name} adminView={false} />
+            ))}
+          </div>
+        </>
+      )}
     </>
   )
 }
@@ -69,8 +92,10 @@ export interface QuestViewProps {
   quest: QuestModel
   quests: QuestModel[]
   quizzes: QuizModel[]
+  active: boolean
+  adminView: boolean // Admin View makes the position relative instead of absolute so that it can display on the admin page
 }
-export const QuestView = ({ quest, quests, quizzes }: QuestViewProps) => {
+export const QuestView = ({ quest, quests, quizzes, active, adminView }: QuestViewProps) => {
   const dispatch = useDispatch()
   const [codeForm] = useForm()
   const [requiredQuests, setRequiredQuests] = useState([] as QuestModel[])
@@ -145,7 +170,7 @@ export const QuestView = ({ quest, quests, quizzes }: QuestViewProps) => {
   }
 
   return (
-    <div style={{display: "flex", flexDirection: "column"}}>
+    <div className={adminView ? "quest-view-admin" : `quest-view__${active ? 'active' : 'inactive'}`}>
       <h2 style={{display: "flex", justifyContent: "center"}}>
         <span style={{height: "100%"}}>{quest.name}</span>
         <span>{quest.complete && <Tag style={{marginLeft: "5px"}} color="success" icon={<CheckCircleOutlined />}>Complete</Tag>}</span>

@@ -1,0 +1,22 @@
+@import '../../styles/effects';
+
+.active-assignment-view {
+  @include fade-in(1s, 0s);
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  align-items: center;
+  position: relative;
+  width: 100%;
+}
+
+.graded-assignments-view {
+  @include fade-in(1s, 0s);
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  margin-top: 5%;
+}
