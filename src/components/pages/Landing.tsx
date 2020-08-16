@@ -2,12 +2,12 @@ import React, { useState } from "react"
 import { NavLink } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "../../app/rootReducer"
-import { logIn, loginFailedAction, setPassword } from "../../features/userSlice"
+import { logIn, loginFailedAction, setPassword, clearUserErrorAction } from "../../features/userSlice"
 import { Form, Button, Input, Modal, Space } from "antd"
 import { useForm } from "antd/es/form/Form"
 import history from "../../app/history"
 
-import "./Landing.css"
+import "./Landing.scss"
 
 export const Landing = () => {
   const dispatch = useDispatch()
@@ -20,6 +20,7 @@ export const Landing = () => {
   )
 
   function showModal() {
+    dispatch(clearUserErrorAction())
     setModalVisible(true)
   }
 
@@ -70,19 +71,19 @@ export const Landing = () => {
   return (
     <>
       <div id="landing-cover" />
-      <div style={{textAlign: "center", height: "100%", width: "100%", zIndex: 1}}>
+      <div className="landing-container">
         <div style={{display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", width: "100%", height: "100%"}}>
           <div style={{marginTop: "5%"}} />
-          <div style={{WebkitFilter: "drop-shadow(0 0 3px white)", filter: "drop-shadow(0 0 3px white)", width: "25%", height: "100%"}}>
+          <div className="logo">
             <img src={"/hero_engineer_logo.png"}  alt="logo" width="100%" height="100%" />
           </div>
           <div style={{marginTop: "2%"}} />
 
-          <Space size={50}>
-            <Button size="large" type="primary" onClick={signUp}>
+          <Space size={50} className="button-container">
+            <Button size="large" type="primary" onClick={signUp} className="sign-up-button">
               Start your journey (sign up)
             </Button>
-            <Button size="large" type="primary" onClick={showModal}>
+            <Button size="large" type="primary" onClick={showModal} className="log-in-button">
               Log in
             </Button>
           </Space>

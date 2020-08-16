@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
+import { NavLink } from "react-router-dom"
 
 import { signUp } from "../../features/userSlice"
 import { RootState } from "../../app/rootReducer"
@@ -9,8 +10,7 @@ import { Alert, Button, Carousel, Form, Input, Layout, Space, Tag, Tooltip } fro
 import { useForm } from "antd/es/form/Form"
 import { CheckCircleOutlined } from "@ant-design/icons"
 
-import "./SignUp.css"
-import { NavLink } from "react-router-dom"
+import "./SignUp.scss"
 
 export const SignUp = () => {
   const dispatch = useDispatch()
@@ -42,8 +42,12 @@ export const SignUp = () => {
 
   return (
     <>
-      <NavLink to="/home">&lt;-- Home</NavLink>
-      <Layout style={{ textAlign: "center" }}>
+      <div className="nav-bar-sign-up">
+        <NavLink to="/">
+          <img src={"/hero_engineer_logo.png"}  alt="logo" width="100px" height="100px" />
+        </NavLink>
+      </div>
+      <Layout className="page-container">
         <h1>Begin Your Journey</h1>
         {error && <Alert message={error} type="error" />}
         {userError && <Alert message={userError} type="error" />}

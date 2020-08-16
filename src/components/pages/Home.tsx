@@ -1,8 +1,8 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
 import { RootState } from "../../app/rootReducer"
-import { logOut, updateAvatar } from "../../features/userSlice"
+import { loadProfile, logOut, updateAvatar } from "../../features/userSlice"
 import history from "../../app/history"
 
 import { Avatar, Card, Layout, message, Modal, Space, Tag, Tooltip } from "antd"

@@ -1,5 +1,5 @@
 @import '../styles/effects';
 
 .nav-bar {
-  @include fade-in(0.5s, 0s);
+  @include fade-in(0.5s, 0.1s);
 }

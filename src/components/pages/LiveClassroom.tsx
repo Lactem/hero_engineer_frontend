@@ -19,11 +19,12 @@ import {
   GradedShortAnswerQuestionModel,
   ShortAnswerAssignmentModel
 } from "../../api/shortAnswerAssignmentsAPI"
+import { loadProfile } from "../../features/userSlice"
 
 export const LiveClassroom = () => {
   const dispatch = useDispatch()
   const [firstLoad, setFirstLoad] = useState(true);
-  const { user, userError } = useSelector(
+  const { user } = useSelector(
     (state: RootState) => state.user
   )
   const { activeAssignment, activeAssignmentLoading, activeAssignmentError } = useSelector(
@@ -77,13 +78,16 @@ export const DoAssignment = ({ assignment }: DoAssignmentProps) => {
 
   /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
+    console.log('calling effect for questions: ', assignment.questions, ' with gradedQuestions: ', gradedQuestions)
     for (let question of assignment.questions) {
       if (!question.question) continue
+      if (gradedQuestions.find(gradedQuestion => gradedQuestion.id === question.id)) continue
       setGradedQuestions([...gradedQuestions, { id: question.id, question: question.question, answer: "" }])
     }
-  }, [assignment])
+  }, [assignment.questions])
 
   function onSubmitAssignment(values: any) {
+    console.log('values when submitting assignment: ', values, '; gradedQuestion: ', gradedQuestions)
     dispatch(saveGradedShortAnswerAssignment(
       assignment.id,
       assignment.name,
@@ -92,6 +96,7 @@ export const DoAssignment = ({ assignment }: DoAssignmentProps) => {
       false,
       0,
       assignment.maxXp,
+      "",
       "",
       false
     ))
@@ -152,6 +157,7 @@ const ViewGradedAssignments = ({ assignments }: ViewGradedAssignmentsProps) => {
       </h1>
       <br /><br />
       <Collapse style={{width: "100%"}}>
+
         {assignments.filter(assignment => assignment.graded && assignment.available).map((assignment) => (
             <Collapse.Panel header={assignment.name} key={assignment.id}>
               XP Awarded: {assignment.xpAwarded}/{assignment.maxXp}

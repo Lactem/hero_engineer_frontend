@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { useDispatch } from "react-redux"
 
-import { Modal, Form, Button, Select, Input, Tooltip, Divider, InputNumber, Collapse, Row, Col } from "antd"
+import { Modal, Form, Button, Select, Input, Tooltip, InputNumber, Collapse, Row, Col } from "antd"
 import { QuestionCircleOutlined } from "@ant-design/icons"
 import TextArea from "antd/es/input/TextArea"
 import { SectionModel } from "../../../api/sectionAPI"

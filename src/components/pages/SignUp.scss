@@ -1,3 +1,16 @@
+@import '../../styles/effects';
+
+.nav-bar-sign-up {
+    @include fade-in(0.7s, 0.1s);
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2%;
+}
+
+.page-container {
+    text-align: center;
+    @include fade-in(1.5s, 0.1s);
+}
 .hero {
     background-color: lightgray;
 }

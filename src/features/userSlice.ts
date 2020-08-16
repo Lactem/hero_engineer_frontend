@@ -29,9 +29,10 @@ import { resetShortAnswerAssignmentsStateAction } from "./shortAnswerAssignments
 
 interface UserState {
   user: UserModel | null
+  userError: string
+  userLoading: boolean
   isAuthenticated: boolean | null
   loginLoading: boolean
-  userError: string
   jwtAxiosId: number | null
   onLandingPage: boolean
   allUsers: UserModel[] | null
@@ -41,9 +42,10 @@ interface UserState {
 
 const initialState: UserState = {
   user: null,
+  userError: "",
+  userLoading: false,
   isAuthenticated: null,
   loginLoading: false,
-  userError: "",
   jwtAxiosId: null,
   onLandingPage: true,
   allUsers: null,
@@ -69,7 +71,10 @@ const user = createSlice({
       state.isAuthenticated = false
       state.loginLoading = false
     },
-    logoutAction(state) {
+    logoutAction(state, action: PayloadAction<boolean>) {
+      if (action.payload && state.isAuthenticated) {
+        message.info('You have been automatically logged out due to inactivity')
+      }
       state.isAuthenticated = false
       state.user = null
       state.userError = ""
@@ -85,15 +90,23 @@ const user = createSlice({
         state.jwtAxiosId = setupJwtInterceptor("Bearer " + token)
       }
     },
+    loadProfileStartAction(state) {
+      state.userLoading = true;
+    },
     loadProfileSuccessAction(state, action: PayloadAction<UserModel>) {
       state.user = action.payload
       state.userError = ""
+      state.userLoading = false;
     },
     loadProfileFailedAction(state, action: PayloadAction<string>) {
       state.userError = action.payload
+      state.userLoading = false;
     },
     signUpFailedAction(state, action: PayloadAction<string>) {
       state.userError = action.payload
+    },
+    clearUserErrorAction(state) {
+      state.userError = ""
     },
     updateAvatarSuccessAction(state, action: PayloadAction<string>) {
       state.user = Object.assign(state.user, {"avatar": action.payload})
@@ -116,9 +129,11 @@ export const {
   loginFailedAction,
   logoutAction,
   setTokenAction,
+  loadProfileStartAction,
   loadProfileSuccessAction,
   loadProfileFailedAction,
   signUpFailedAction,
+  clearUserErrorAction,
   updateAvatarSuccessAction,
   loadAllUsersSuccessAction,
   loadWhitelistSuccessAction,
@@ -157,6 +172,8 @@ export const logIn = (
 }
 
 export const loadProfile = (): AppThunk => async dispatch => {
+  console.log("loadProfile() called");
+  dispatch(loadProfileStartAction())
   apiLoadProfile()
     .then(response => {
       dispatch(loadProfileSuccessAction(response.data))
@@ -166,8 +183,8 @@ export const loadProfile = (): AppThunk => async dispatch => {
       console.log(error.toJSON())
       console.log(error.toString())
       if (error.response) {
-        if (error.response.status === 401) {
-          dispatch(logOut())
+        if (error.response.status === 401) { // Unauthorized
+          dispatch(logOut(true))
           return
         }
         // The request was made and the server responded with a status code
@@ -285,14 +302,15 @@ export const setPassword = (
     })
 }
 
-export const logOut = (): AppThunk => async dispatch => {
+export const logOut = (staleSession?: boolean): AppThunk => async dispatch => {
+  console.log("calling logOut with staleSession: " + staleSession)
   dispatch(setTokenAction(null))
-  dispatch(logoutAction())
   dispatch(resetQuestsStateAction())
   dispatch(resetQuizzesStateAction())
   dispatch(resetSectionStateAction())
   dispatch(resetShortAnswerAssignmentsStateAction())
   document.cookie = "HERO_ENGINEER="
+  dispatch(logoutAction(staleSession || false))
 }
 
 export const signUp = (

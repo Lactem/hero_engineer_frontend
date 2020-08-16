@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
-import { Button, Collapse, Avatar, Checkbox, InputNumber, Tooltip } from "antd"
+import { Button, Collapse, Avatar, Checkbox, InputNumber, Tooltip, Form } from "antd"
 import { QuestionCircleOutlined, UserOutlined } from "@ant-design/icons/lib"
 
 import CopyToClipboard from "react-copy-to-clipboard"
@@ -14,6 +14,9 @@ import { loadQuizzes } from "../../../features/quizzesSlice"
 import { CheckboxChangeEvent } from "antd/es/checkbox"
 import { addXP, getXPBreakdown, resetPassword } from "../../../features/userSlice"
 import TextArea from "antd/es/input/TextArea"
+import { useForm } from "antd/es/form/Form"
+import { saveGradedShortAnswerAssignment } from "../../../features/shortAnswerAssignmentsSlice"
+import { GradedShortAnswerAssignmentModel } from "../../../api/shortAnswerAssignmentsAPI"
 
 
 interface AdminUsersProps {
@@ -50,6 +53,7 @@ interface EditUserProps {
 }
 const EditUser = ({ user }: EditUserProps) => {
   const dispatch = useDispatch()
+  const [gradingForm] = useForm()
   const { quizzes } = useSelector(
     (state: RootState) => state.quizzes
   )
@@ -75,6 +79,22 @@ const EditUser = ({ user }: EditUserProps) => {
 
   function fetchXPBreakdown() {
     dispatch(getXPBreakdown(user.email, setXPBreakdown))
+  }
+
+  function onGradeAssignment(assignment: GradedShortAnswerAssignmentModel, values: any) {
+    console.log('values when grading assignment: ', values)
+    dispatch(saveGradedShortAnswerAssignment(
+      assignment.id,
+      assignment.name,
+      assignment.gradedQuestions,
+      assignment.available,
+      true,
+      values.xpAwarded,
+      assignment.maxXp,
+      values.feedback,
+      user.email,
+      true
+    ))
   }
 
   return (
@@ -137,14 +157,14 @@ const EditUser = ({ user }: EditUserProps) => {
       <br />
       <h3>In-Class Assignments</h3>
       <Collapse style={{width: "100%"}}>
-        {user.gradedShortAnswerAssignments.map(assignment => (
+        {user.gradedShortAnswerAssignments && user.gradedShortAnswerAssignments.map(assignment => (
           <Collapse.Panel
             header={assignment.name + (assignment.graded ? " (graded)" : " (pending grade)")}
             key={assignment.id}
           >
 
             <h4>Student Answers</h4>
-            {assignment.gradedQuestions.map((question, i) => (
+            {assignment.gradedQuestions && assignment.gradedQuestions.map((question, i) => (
               <div key={question.id}>
                 {i + 1}. {question.question}
                 <br />
@@ -152,6 +172,37 @@ const EditUser = ({ user }: EditUserProps) => {
                 <br /><br />
               </div>
             ))}
+
+            <h4>Grading</h4>
+            <Form
+              form={gradingForm}
+              layout="vertical"
+              name="shortAnswerAssignmentGradingForm"
+              onFinish={(values) => onGradeAssignment(assignment, values)}
+              initialValues={{
+                xpAwarded: assignment.xpAwarded,
+                feedback: assignment.feedback
+              }}
+              style={{ width: "50%" }}
+            >
+              <Form.Item
+                name="xpAwarded"
+                label={`Grade (whole number out of ${assignment.maxXp})`}
+              >
+                <InputNumber min={0} max={assignment.maxXp} />
+              </Form.Item>
+
+              <Form.Item
+                name="feedback"
+                label="Feedback (optional)"
+              >
+                <TextArea />
+              </Form.Item>
+
+              <Button htmlType="submit" type="primary">
+                Grade Assignment
+              </Button>
+            </Form>
           </Collapse.Panel>
         ))}
       </Collapse>

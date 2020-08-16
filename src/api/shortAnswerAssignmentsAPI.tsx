@@ -74,18 +74,22 @@ export async function apiSaveGradedShortAnswerAssignment(id: string,
                                                          graded: boolean,
                                                          xpAwarded: number,
                                                          maxXp: number,
-                                                         feedback: string
+                                                         feedback: string,
+                                                         email: string
 ) {
   const url = `${apiBase}/ShortAnswerAssignment/saveGraded`
 
   return await axios.post(url, {
-    id,
-    name,
-    gradedQuestions,
-    available,
-    graded,
-    xpAwarded,
-    maxXp,
-    feedback
+    gradedAssignment: {
+      id,
+      name,
+      gradedQuestions,
+      available,
+      graded,
+      xpAwarded,
+      maxXp,
+      feedback
+    },
+    email
   })
 }

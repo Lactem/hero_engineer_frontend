@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
-import { Button, Tabs, Tag, Tooltip, Form, Radio, Collapse, Input, Menu } from "antd"
+import { Button, Tag, Tooltip, Form, Radio, Collapse, Input, Menu } from "antd"
 import { useForm } from "antd/es/form/Form"
 import { RadioChangeEvent } from "antd/es/radio"
 import { CheckCircleOutlined, ClockCircleOutlined, StarOutlined, LockOutlined, ExclamationCircleOutlined } from "@ant-design/icons"
@@ -14,11 +14,12 @@ import { AnswerModel, QuizModel } from "../../api/quizzesAPI"
 
 import "./Quests.scss"
 import { CheckCircleTwoTone, ClockCircleTwoTone, EyeInvisibleOutlined } from "@ant-design/icons/lib"
+import { loadProfile } from "../../features/userSlice"
 
 export const Quests = () => {
   const dispatch = useDispatch()
   const [selectedQuest, setSelectedQuest] = useState<QuestModel>()
-  const { user, userError } = useSelector(
+  const { user } = useSelector(
     (state: RootState) => state.user
   )
   const { quizzes, quizzesLoading, quizzesError } = useSelector(
@@ -98,6 +99,8 @@ export interface QuestViewProps {
 export const QuestView = ({ quest, quests, quizzes, active, adminView }: QuestViewProps) => {
   const dispatch = useDispatch()
   const [codeForm] = useForm()
+  const [state, setState] = useState('hidden')
+  const [stateTimeout, setStateTimeout] = useState({} as NodeJS.Timeout)
   const [requiredQuests, setRequiredQuests] = useState([] as QuestModel[])
   const [requiredIncompleteQuests, setRequiredIncompleteQuests] = useState([] as QuestModel[])
   const [incompleteQuizzes, setIncompleteQuizzes] = useState([] as QuizModel[])
@@ -115,6 +118,23 @@ export const QuestView = ({ quest, quests, quizzes, active, adminView }: QuestVi
     }
     setIncompleteQuizzes(incompleteQuizzes)
   }, [quest.incompleteQuizIds, quizzes])
+
+  useEffect(() => {
+    clearTimeout(stateTimeout)
+    if (active) {
+      if (state === 'visible') return;
+      setState('fading-in')
+      setStateTimeout(setTimeout(() => {
+        setState('visible')
+      }, 1))
+    } else {
+      if (state === 'hidden') return;
+      setState('fading-out')
+      setStateTimeout(setTimeout(() => {
+        setState('hidden')
+      }, 500))
+    }
+  }, [active])
 
   useEffect(() => {
     let requiredQuests: QuestModel[] = []
@@ -170,7 +190,7 @@ export const QuestView = ({ quest, quests, quizzes, active, adminView }: QuestVi
   }
 
   return (
-    <div className={adminView ? "quest-view-admin" : `quest-view__${active ? 'active' : 'inactive'}`}>
+    <div className={adminView ? "quest-view-admin" : `quest-view__${state}`}>
       <h2 style={{display: "flex", justifyContent: "center"}}>
         <span style={{height: "100%"}}>{quest.name}</span>
         <span>{quest.complete && <Tag style={{marginLeft: "5px"}} color="success" icon={<CheckCircleOutlined />}>Complete</Tag>}</span>
@@ -207,18 +227,20 @@ export const QuestView = ({ quest, quests, quizzes, active, adminView }: QuestVi
             to complete this quest:</h4>
           <div style={{display: "flex", justifyContent: "center"}}>
               {incompleteQuizzes.map((quiz) => (
-                <span key={quiz.id} style={{marginLeft: "2px", marginRight: "2px"}}>
-                  {quiz.locked && <Tooltip title="This quiz is locked. Please wait for Professor Ramsey to unlock it.">
-                    <Button disabled>
-                      <LockOutlined />{quiz.name} ({quiz.numQuestions} questions)
-                    </Button>
-                  </Tooltip>}
-                  {!quiz.locked && <Tooltip title={visible ? "Quiz in progress" : "Click to start this quiz."}>
-                    <Button disabled={visible} onClick={() => startQuiz(quiz)}>
-                      {quiz.name} ({quiz.numQuestions} questions)
-                    </Button>
-                  </Tooltip>}
-                </span>
+                <>
+                  {<span key={quiz.id} style={{marginLeft: "2px", marginRight: "2px"}}>
+                    {quiz.locked && <Tooltip title="This quiz is locked. Please wait for Professor Ramsey to unlock it.">
+                      <Button disabled>
+                        <LockOutlined />{quiz.name} ({quiz.numQuestions} questions)
+                      </Button>
+                    </Tooltip>}
+                    {!quiz.locked && <Tooltip title={visible ? "Quiz in progress" : "Click to start this quiz."}>
+                      <Button disabled={visible} onClick={() => startQuiz(quiz)}>
+                        {quiz.name} ({quiz.numQuestions} questions)
+                      </Button>
+                    </Tooltip>}
+                  </span>}
+                </>
               ))}
           </div>
         </>

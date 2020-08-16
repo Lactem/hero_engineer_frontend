@@ -1,3 +1,5 @@
+@import '../../styles/effects';
+
 #landing-cover {
     width: 100vw;
     height: 100vh;
@@ -16,27 +18,26 @@
     /*box-shadow: inset 0 0 0 100vw rgba(0,0,0,0.5);*/
 }
 
-#button-container {
-    width: 50%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
+.landing-container {
+    text-align: center;
+    height: 100%;
+    width: 100%;
+    z-index: 1;
 }
-@media screen and (min-width: 900px) {
-    #button-container {
-        width: 40%;
-    }
+
+.logo {
+    @include fade-in(0.5s, 0.1s);
+    -webkit-filter: drop-shadow(0 0 3px white);
+    filter: drop-shadow(0 0 3px white);
+    width: 25%;
+    height: 100%;
 }
-@media screen and (min-width: 1200px) {
-    #button-container {
-        width: 30%;
-    }
+
+.sign-up-button {
+    @include fade-in(0.5s, 0.5s);
 }
-@media screen and (min-width: 1700px) {
-    #button-container {
-        width: 20%;
-    }
+.log-in-button {
+    @include fade-in(0.5s, 0.7s);
 }
 
 .ant-btn-primary {

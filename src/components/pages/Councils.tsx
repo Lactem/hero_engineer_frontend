@@ -16,7 +16,7 @@ import apiBase from "../../api/api"
 import axios from "axios"
 import { loadHeroCouncil, saveHeroCouncil } from "../../features/heroCouncilSlice"
 import { HeroCouncilModel } from "../../api/heroCouncilAPI"
-import { loadProfessorAvatar } from "../../features/userSlice"
+import { loadProfessorAvatar, loadProfile } from "../../features/userSlice"
 
 export const Councils = () => {
   const dispatch = useDispatch()

@@ -23,6 +23,15 @@
   justify-content: center;
   margin: 2%;
   @include fade-in(0.5s, 0s);
+  font-family: -apple-system, BlinkMacSystemFont, "Open Sans", "Segoe UI",
+  "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+  "Helvetica Neue", sans-serif;
+}
+
+.ant-card-meta-title {
+  font-family: -apple-system, BlinkMacSystemFont, "Open Sans", "Segoe UI",
+  "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+  "Helvetica Neue", sans-serif;
 }
 
 .card {

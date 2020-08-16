@@ -13,7 +13,7 @@ import {
   ShortAnswerQuestionModel
 } from "../api/shortAnswerAssignmentsAPI"
 import { message } from "antd"
-import { loadProfile } from "./userSlice"
+import { loadAllUsers, loadProfile } from "./userSlice"
 
 interface ShortAnswerAssignmentsState {
   activeAssignment: ShortAnswerAssignmentModel | null
@@ -168,6 +168,7 @@ export const saveGradedShortAnswerAssignment = (
   xpAwarded: number,
   maxXp: number,
   feedback: string,
+  email: string,
   professorInitiated: boolean
 ): AppThunk => async dispatch => {
     apiSaveGradedShortAnswerAssignment(
@@ -178,10 +179,12 @@ export const saveGradedShortAnswerAssignment = (
       graded,
       xpAwarded,
       maxXp,
-      feedback
+      feedback,
+      email
     ).then(_ => {
       if (professorInitiated) {
         message.success("Successfully graded in-class assignment")
+        dispatch(loadAllUsers())
       } else {
         dispatch(loadProfile())
       }
