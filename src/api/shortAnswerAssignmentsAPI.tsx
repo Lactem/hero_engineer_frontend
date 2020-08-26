@@ -6,6 +6,7 @@ export interface ShortAnswerAssignmentModel {
   name: string
   questions: ShortAnswerQuestionModel[]
   sectionIdsAvailableFor: string[]
+  sectionIdsGradesAvailableFor: string[]
   maxXp: number
 }
 
@@ -48,6 +49,7 @@ export async function apiGetShortAnswerAssignments() {
 export async function apiSaveShortAnswerAssignment(name: string,
                                                    questions: ShortAnswerQuestionModel[],
                                                    sectionIdsAvailableFor: string[],
+                                                   sectionIdsGradesAvailableFor: string[],
                                                    maxXp: number,
                                                    id?: string) {
   const url = `${apiBase}/ShortAnswerAssignment/save`
@@ -57,6 +59,7 @@ export async function apiSaveShortAnswerAssignment(name: string,
     name,
     questions,
     sectionIdsAvailableFor,
+    sectionIdsGradesAvailableFor,
     maxXp
   })
 }

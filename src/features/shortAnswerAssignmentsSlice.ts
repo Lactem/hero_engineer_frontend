@@ -22,6 +22,7 @@ interface ShortAnswerAssignmentsState {
   allAssignments: ShortAnswerAssignmentModel[] | null
   allAssignmentsLoading: boolean
   allAssignmentsError: string
+  assignmentSubmitting: boolean
 }
 
 const initialState: ShortAnswerAssignmentsState = {
@@ -30,7 +31,8 @@ const initialState: ShortAnswerAssignmentsState = {
   activeAssignmentError: "",
   allAssignments: null,
   allAssignmentsLoading: false,
-  allAssignmentsError: ""
+  allAssignmentsError: "",
+  assignmentSubmitting: false
 }
 
 const shortAnswerAssignments = createSlice({
@@ -60,6 +62,9 @@ const shortAnswerAssignments = createSlice({
       state.activeAssignmentLoading = false
       state.activeAssignmentError = action.payload
     },
+    setAssignmentSubmittingAction(state, action: PayloadAction<boolean>) {
+      state.assignmentSubmitting = action.payload
+    },
     resetShortAnswerAssignmentsStateAction(state) {
       Object.assign(state, initialState)
     }
@@ -72,6 +77,7 @@ export const {
   loadActiveAssignmentStartAction,
   loadActiveAssignmentSuccessAction,
   loadActiveAssignmentFailedAction,
+  setAssignmentSubmittingAction,
   resetShortAnswerAssignmentsStateAction
 } = shortAnswerAssignments.actions
 
@@ -128,6 +134,7 @@ export const saveShortAnswerAssignment = (
   name: string,
   questions: ShortAnswerQuestionModel[],
   sectionIdsAvailableFor: string[],
+  sectionIdsGradesAvailableFor: string[],
   maxXp: number,
   id?: string
 ): AppThunk => async dispatch => {
@@ -135,6 +142,7 @@ export const saveShortAnswerAssignment = (
     name,
     questions,
     sectionIdsAvailableFor,
+    sectionIdsGradesAvailableFor,
     maxXp,
     id)
     .then(_ => {
@@ -171,6 +179,7 @@ export const saveGradedShortAnswerAssignment = (
   email: string,
   professorInitiated: boolean
 ): AppThunk => async dispatch => {
+  dispatch(setAssignmentSubmittingAction(true))
     apiSaveGradedShortAnswerAssignment(
       id,
       name,
@@ -188,7 +197,13 @@ export const saveGradedShortAnswerAssignment = (
       } else {
         dispatch(loadProfile())
       }
+      setTimeout(() => {
+        dispatch(setAssignmentSubmittingAction(false))
+      }, 500)
     }).catch((error: any) => {
+      setTimeout(() => {
+        dispatch(setAssignmentSubmittingAction(false))
+      }, 500)
       if (error.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx

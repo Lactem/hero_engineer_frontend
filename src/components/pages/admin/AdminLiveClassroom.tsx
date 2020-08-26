@@ -23,6 +23,7 @@ export const AdminLiveClassroom = ({ assignments, sections }: AdminLiveClassroom
       values.name,
       values.questions,
       values.sectionIdsAvailableFor,
+      values.sectionIdsGradesAvailableFor,
       values.maxXp
     ))
     setVisible(false)
@@ -73,6 +74,7 @@ const EditAssignment = ({ assignment, sections }: EditAssignmentProps) => {
           values.name,
           values.questions,
           values.sectionIdsAvailableFor,
+          values.sectionIdsGradesAvailableFor,
           values.maxXp,
           assignment.id
         ))
@@ -94,8 +96,9 @@ const EditAssignment = ({ assignment, sections }: EditAssignmentProps) => {
         name="saveAssignmentForm"
         initialValues={{
           name: assignment.name,
-          questions: assignment.questions,
-          sectionIdsAvailableFor: assignment.sectionIdsAvailableFor,
+          questions: assignment.questions || [],
+          sectionIdsAvailableFor: assignment.sectionIdsAvailableFor || [],
+          sectionIdsGradesAvailableFor: assignment.sectionIdsGradesAvailableFor || [],
           maxXp: assignment.maxXp
         }}
         onFinish={onSaveAssignment}
@@ -175,14 +178,33 @@ const EditAssignment = ({ assignment, sections }: EditAssignmentProps) => {
         <Form.Item
           label={(
             <>
-              Class Sections That Can View
-              <Tooltip title="Choose which class sections can view this assignment. If you've already graded it, this will allow the class section to view your feedback.">
+              Class Sections That View & Submit
+              <Tooltip title="Choose which class sections can view and submit this assignment.">
                 <QuestionCircleOutlined style={{paddingLeft: "5px"}} />
               </Tooltip>
             </>
           )}
         >
           <Form.Item name="sectionIdsAvailableFor">
+            <Select mode="multiple">
+              {sections.map((section, i) => (
+                <Select.Option value={section.id} key={i}>{section.name}</Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Form.Item>
+
+        <Form.Item
+          label={(
+            <>
+              Class Sections That Can See Grades & Feedback
+              <Tooltip title="Choose which class sections can view your feedback and their grade for this assignment.">
+                <QuestionCircleOutlined style={{paddingLeft: "5px"}} />
+              </Tooltip>
+            </>
+          )}
+        >
+          <Form.Item name="sectionIdsGradesAvailableFor">
             <Select mode="multiple">
               {sections.map((section, i) => (
                 <Select.Option value={section.id} key={i}>{section.name}</Select.Option>
@@ -330,14 +352,33 @@ const AddAssignmentModal = ({ sections, visible, onAddAssignment, onCancel }: Ad
         <Form.Item
           label={(
             <>
-              Class Sections That Can View
-              <Tooltip title="Choose which class sections can view this assignment. If you've already graded it, this will allow the class section to view your feedback.">
+              Class Sections That View & Submit
+              <Tooltip title="Choose which class sections can view and submit this assignment.">
                 <QuestionCircleOutlined style={{paddingLeft: "5px"}} />
               </Tooltip>
             </>
           )}
         >
           <Form.Item name="sectionIdsAvailableFor">
+            <Select mode="multiple">
+              {sections.map((section, i) => (
+                <Select.Option value={section.id} key={i}>{section.name}</Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Form.Item>
+
+        <Form.Item
+          label={(
+            <>
+              Class Sections That Can See Grades & Feedback
+              <Tooltip title="Choose which class sections can view your feedback and their grade for this assignment.">
+                <QuestionCircleOutlined style={{paddingLeft: "5px"}} />
+              </Tooltip>
+            </>
+          )}
+        >
+          <Form.Item name="sectionIdsGradesAvailableFor">
             <Select mode="multiple">
               {sections.map((section, i) => (
                 <Select.Option value={section.id} key={i}>{section.name}</Select.Option>

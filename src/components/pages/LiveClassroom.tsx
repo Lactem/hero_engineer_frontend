@@ -10,7 +10,7 @@ import {
   loadActiveShortAnswerAssignment,
   saveGradedShortAnswerAssignment
 } from "../../features/shortAnswerAssignmentsSlice"
-import { LoadingOutlined } from "@ant-design/icons/lib"
+import { CheckCircleTwoTone, LoadingOutlined } from "@ant-design/icons/lib"
 
 import "./LiveClassroom.scss"
 import TextArea from "antd/es/input/TextArea"
@@ -19,7 +19,6 @@ import {
   GradedShortAnswerQuestionModel,
   ShortAnswerAssignmentModel
 } from "../../api/shortAnswerAssignmentsAPI"
-import { loadProfile } from "../../features/userSlice"
 
 export const LiveClassroom = () => {
   const dispatch = useDispatch()
@@ -27,7 +26,7 @@ export const LiveClassroom = () => {
   const { user } = useSelector(
     (state: RootState) => state.user
   )
-  const { activeAssignment, activeAssignmentLoading, activeAssignmentError } = useSelector(
+  const { activeAssignment, activeAssignmentLoading, activeAssignmentError, assignmentSubmitting } = useSelector(
     (state: RootState) => state.shortAnswerAssignments
   )
   useEffect(() => {
@@ -40,10 +39,16 @@ export const LiveClassroom = () => {
     return () => clearTimeout(timer);
   })
 
-  let activeAssignmentDom = null;
+  let activeAssignmentDom
 
   if (activeAssignment) {
-    activeAssignmentDom = <DoAssignment assignment={activeAssignment} />
+    activeAssignmentDom = (
+      <>
+        {user && user.gradedShortAnswerAssignments &&
+        <DoAssignment assignment={activeAssignment} assignmentSubmitting={assignmentSubmitting} gradedAssignments={user.gradedShortAnswerAssignments} />
+        }
+      </>
+    )
   } else {
     if (activeAssignmentError) {
       activeAssignmentDom = (
@@ -69,12 +74,14 @@ export const LiveClassroom = () => {
 
 interface DoAssignmentProps {
   assignment: ShortAnswerAssignmentModel
+  assignmentSubmitting: boolean
+  gradedAssignments: GradedShortAnswerAssignmentModel[]
 }
-export const DoAssignment = ({ assignment }: DoAssignmentProps) => {
+export const DoAssignment = ({ assignment, assignmentSubmitting, gradedAssignments }: DoAssignmentProps) => {
   const dispatch = useDispatch()
   const [form] = useForm()
   const [gradedQuestions, setGradedQuestions] = useState<GradedShortAnswerQuestionModel[]>([]);
-  const [loadingSubmit, setLoadingSubmit] = useState(false);
+  const [assignmentSubmitted, setAssignmentSubbmitted] = useState(false)
 
   /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
@@ -85,6 +92,16 @@ export const DoAssignment = ({ assignment }: DoAssignmentProps) => {
       setGradedQuestions([...gradedQuestions, { id: question.id, question: question.question, answer: "" }])
     }
   }, [assignment.questions])
+
+  useEffect(() => {
+    for (const gradedAssignment of gradedAssignments) {
+      if (gradedAssignment && gradedAssignment.id === assignment.id) {
+        setAssignmentSubbmitted(true)
+        return
+      }
+    }
+    setAssignmentSubbmitted(false)
+  }, [gradedAssignments])
 
   function onSubmitAssignment(values: any) {
     console.log('values when submitting assignment: ', values, '; gradedQuestion: ', gradedQuestions)
@@ -100,7 +117,6 @@ export const DoAssignment = ({ assignment }: DoAssignmentProps) => {
       "",
       false
     ))
-    setLoadingSubmit(true)
   }
 
   function onChangeAnswer(questionId: string, e: React.ChangeEvent<HTMLTextAreaElement>) {
@@ -138,9 +154,13 @@ export const DoAssignment = ({ assignment }: DoAssignmentProps) => {
           </div>
         ))}
 
-        <Button disabled={loadingSubmit} htmlType="submit" type="primary">
-          Submit{loadingSubmit ? <LoadingOutlined /> : <></>}
-        </Button>
+        {assignmentSubmitted && <Button disabled={true} htmlType="submit" type="primary">
+          Submitted <CheckCircleTwoTone twoToneColor="#52c41a" />
+        </Button>}
+
+        {!assignmentSubmitted && <Button disabled={assignmentSubmitting} htmlType="submit" type="primary">
+          Submit {assignmentSubmitting ? <LoadingOutlined /> : <></>}
+        </Button>}
       </Form>
     </div>
   )
