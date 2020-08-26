@@ -72,7 +72,6 @@ const EditSection = ({ section, allUsers }: EditSectionProps) => {
     let users: UserModel[] = []
     let unregisteredEmails: string[] = []
     for (const email of section.emails) {
-      console.log('email: ', email)
       let userExists: boolean = false;
       for (const user of allUsers) {
         if (user.email.toLowerCase() === email.toLowerCase()) {

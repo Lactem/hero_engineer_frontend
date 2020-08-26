@@ -44,8 +44,8 @@ export const LiveClassroom = () => {
   if (activeAssignment) {
     activeAssignmentDom = (
       <>
-        {user && user.gradedShortAnswerAssignments &&
-        <DoAssignment assignment={activeAssignment} assignmentSubmitting={assignmentSubmitting} gradedAssignments={user.gradedShortAnswerAssignments} />
+        {user &&
+        <DoAssignment assignment={activeAssignment} assignmentSubmitting={assignmentSubmitting} gradedAssignments={user.gradedShortAnswerAssignments || []} />
         }
       </>
     )
