@@ -86,11 +86,23 @@ export const DoAssignment = ({ assignment, assignmentSubmitting, gradedAssignmen
   /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     console.log('calling effect for questions: ', assignment.questions, ' with gradedQuestions: ', gradedQuestions)
-    for (let question of assignment.questions) {
-      if (!question.question) continue
-      if (gradedQuestions.find(gradedQuestion => gradedQuestion.id === question.id)) continue
-      setGradedQuestions([...gradedQuestions, { id: question.id, question: question.question, answer: "" }])
+
+    // Update graded questions from the latest active assignment
+    let questionsChanged: boolean = false;
+    for (const question of assignment.questions) {
+      if (!gradedQuestions.find(gradedQuestion => gradedQuestion.id === question.id)) {
+        questionsChanged = true;
+        break;
+      }
     }
+    if (questionsChanged) {
+      let newGradedQuestions: GradedShortAnswerQuestionModel[] = []
+      assignment.questions.forEach(question => {
+        newGradedQuestions = [...newGradedQuestions, { id: question.id, question: question.question, answer: "" }]
+      })
+      setGradedQuestions(newGradedQuestions)
+    }
+
   }, [assignment.questions])
 
   useEffect(() => {
