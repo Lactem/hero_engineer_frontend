@@ -65,17 +65,25 @@ interface EditSectionProps {
 const EditSection = ({ section, allUsers }: EditSectionProps) => {
   const dispatch = useDispatch()
   const [users, setUsers] = useState([] as UserModel[])
+  const [unregisteredEmails, setUnregisteredEmails] = useState([] as string[])
   const [email, setEmail] = useState("")
 
   useEffect(() => {
     let users: UserModel[] = []
+    let unregisteredEmails: string[] = []
     for (const email of section.emails) {
+      console.log('email: ', email)
+      let userExists: boolean = false;
       for (const user of allUsers) {
         if (user.email.toLowerCase() === email.toLowerCase()) {
+          userExists = true;
           users = [...users, user]
+          break;
         }
       }
+      if (!userExists) unregisteredEmails = [...unregisteredEmails, email]
     }
+    setUnregisteredEmails(unregisteredEmails)
     setUsers(users)
   }, [allUsers, section.emails])
 
@@ -95,7 +103,7 @@ const EditSection = ({ section, allUsers }: EditSectionProps) => {
 
   return (
     <>
-      <div style={{display: "flex", flexDirection: "row", width: "25%"}}>
+      <div style={{display: "flex", flexDirection: "row", width: "50%"}}>
         <Input placeholder="ttrojan@usc.edu" onChange={onChangeEmail} />
         <Button onClick={addEmail}>Add</Button>
         <Button onClick={removeEmail}>Remove</Button>
@@ -103,6 +111,17 @@ const EditSection = ({ section, allUsers }: EditSectionProps) => {
 
       <br /> <br />
       <AdminUsers users={users} />
+      {unregisteredEmails.length > 0 && (
+        <>
+          <br />
+          <h3>Unregistered Emails</h3>
+          {unregisteredEmails.map((email) => (
+            <div key={email}>
+              {email}
+            </div>
+          ))}
+          </>
+      )}
     </>
   )
 }

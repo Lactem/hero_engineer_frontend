@@ -9,6 +9,7 @@ import {
   SectionModel
 } from "../api/sectionAPI"
 import { UserModel } from "../api/userAPI"
+import { message } from "antd"
 
 
 interface SectionState {
@@ -119,7 +120,7 @@ export const loadAllSections = (): AppThunk => async dispatch => {
       dispatch(loadAllSectionsSuccessAction(result.data))
     })
     .catch(error => {
-      alert("An error occurred while loading class data")
+      message.error("An error occurred while loading class data (see console for details)")
       console.log(error)
     })
 }
@@ -131,11 +132,11 @@ export const saveSection = (
 ): AppThunk => async dispatch => {
   apiSaveSection(name, emails, id)
     .then(_ => {
-      alert("Successfully saved class section")
+      message.success("Successfully saved class section")
       dispatch(loadAllSections())
     })
     .catch(error => {
-      alert("Error saving class section(see console for details)")
+      message.error("Error saving class section (see console for details)")
       console.log(error)
     })
 }
@@ -143,11 +144,11 @@ export const saveSection = (
 export const removeSection = (id: string): AppThunk => async dispatch => {
   apiRemoveSection(id)
     .then(_ => {
-      alert("Successfully deleted class section")
+      message.success("Successfully deleted class section")
       dispatch(loadAllSections())
     })
     .catch(error => {
-      alert("Error deleting class section(see console for details)")
+      message.error("Error deleting class section (see console for details)")
       console.log(error)
     })
 }
