@@ -274,6 +274,7 @@ const AddAssignmentModal = ({ sections, visible, onAddAssignment, onCancel }: Ad
         initialValues={{
           questions: [],
           sectionIdsAvailableFor: [],
+          sectionIdsGradesAvailableFor: [],
           maxXp: 0
         }}
       >
