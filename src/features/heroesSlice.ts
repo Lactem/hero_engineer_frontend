@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { AppThunk } from "app/store"
 
 import { HeroModel, apiFetchHeroes, apiSaveHero, apiDeleteHero } from "../api/heroesAPI"
+import { message } from "antd"
 
 interface HeroesState {
   heroes: HeroModel[] | null,
@@ -53,10 +54,10 @@ export const saveHero = (
   apiSaveHero(name, desc, id)
     .then(_ => {
       dispatch(loadHeroes())
-      alert("Successfully saved hero")
+      message.success("Successfully saved hero")
     })
     .catch(error => {
-      alert("Error saving hero (info in console)")
+      message.error("Error saving hero (info in console)")
       console.log("error: ", error)
     })
 }
@@ -65,10 +66,10 @@ export const deleteHero = (id: string): AppThunk => async dispatch => {
   apiDeleteHero(id)
     .then(_ => {
       dispatch(loadHeroes())
-      alert("Successfully deleted hero")
+      message.success("Successfully deleted hero")
     })
     .catch(error => {
-      alert("Error deleting hero (info in console)")
+      message.error("Error deleting hero (info in console)")
       console.log("error: ", error)
     })
 }

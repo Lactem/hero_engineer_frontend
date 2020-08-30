@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { useDispatch } from "react-redux"
 
-import { Button, Collapse, Input } from "antd"
+import { Button, Collapse, Input, message } from "antd"
 
 import { UserModel } from "../../../api/userAPI"
 import { SectionModel } from "../../../api/sectionAPI"
@@ -91,12 +91,12 @@ const EditSection = ({ section, allUsers }: EditSectionProps) => {
   }
 
   function removeEmail() {
-    if (!email) alert("Cannot add a blank email")
+    if (!email) message.error("Cannot add a blank email")
     dispatch(saveSection(section.name, section.emails.filter((email1) => email1 !== email), section.id))
   }
 
   function addEmail() {
-    if (!email) alert("Cannot add a blank email")
+    if (!email) message.error("Cannot add a blank email")
     dispatch(saveSection(section.name, [...section.emails, email], section.id))
   }
 

@@ -247,8 +247,8 @@ export const QuestView = ({ quest, quests, quizzes, active, adminView }: QuestVi
       )}
       {quest.completedQuizzes && quest.completedQuizzes.length !== 0 && (!quest.incompleteQuizIds || quest.incompleteQuizIds.length === 0) && (
         <>
-          <h3>Total grade: {totalPercentCorrect.toFixed(2)}%</h3>
-          <h3>XP Reward: {xpReward}/{quest.automaticXpReward}</h3>
+          <h3>Quiz score: {totalPercentCorrect.toFixed(2)}%</h3>
+          {quest.complete && <h3>XP Reward: {xpReward}/{quest.automaticXpReward}</h3>}
         </>
       )}
       {quest.completedQuizzes && quest.completedQuizzes.length !== 0 && (

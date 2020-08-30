@@ -12,6 +12,7 @@ import {
   QuizQuestionModel
 } from "../api/quizzesAPI"
 import { loadProfile } from "./userSlice"
+import { message } from "antd"
 
 interface QuizzesState {
   quizzes: QuizModel[] | null
@@ -103,10 +104,10 @@ export const saveQuiz = (
   )
     .then(_ => {
       dispatch(loadQuizzes())
-      alert("Successfully saved quiz")
+      message.success("Successfully saved quiz")
     })
     .catch(error => {
-      alert("Error saving quiz (info in console)")
+      message.error("Error saving quiz (info in console)")
       console.log("error: ", error)
     })
 }
@@ -115,10 +116,10 @@ export const deleteQuiz = (id: string): AppThunk => async dispatch => {
   apiDeleteQuiz(id)
     .then(_ => {
       dispatch(loadQuizzes())
-      alert("Successfully deleted quiz")
+      message.success("Successfully deleted quiz")
     })
     .catch(error => {
-      alert("Error deleting quiz (info in console)")
+      message.error("Error deleting quiz (info in console)")
       console.log("error: ", error)
     })
 }
