@@ -178,7 +178,7 @@ const EditAssignment = ({ assignment, sections }: EditAssignmentProps) => {
         <Form.Item
           label={(
             <>
-              Class Sections That View & Submit
+              Class Sections That Can View & Submit
               <Tooltip title="Choose which class sections can view and submit this assignment.">
                 <QuestionCircleOutlined style={{paddingLeft: "5px"}} />
               </Tooltip>
@@ -353,7 +353,7 @@ const AddAssignmentModal = ({ sections, visible, onAddAssignment, onCancel }: Ad
         <Form.Item
           label={(
             <>
-              Class Sections That View & Submit
+              Class Sections That Can View & Submit
               <Tooltip title="Choose which class sections can view and submit this assignment.">
                 <QuestionCircleOutlined style={{paddingLeft: "5px"}} />
               </Tooltip>

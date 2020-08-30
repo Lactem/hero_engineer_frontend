@@ -36,6 +36,7 @@ interface UserState {
   jwtAxiosId: number | null
   onLandingPage: boolean
   allUsers: UserModel[] | null
+  allUsersLoading: boolean
   userWhitelist: UserWhitelistModel | null
   professorAvatar: string
 }
@@ -49,6 +50,7 @@ const initialState: UserState = {
   jwtAxiosId: null,
   onLandingPage: true,
   allUsers: null,
+  allUsersLoading: false,
   userWhitelist: null,
   professorAvatar: ""
 }
@@ -111,8 +113,15 @@ const user = createSlice({
     updateAvatarSuccessAction(state, action: PayloadAction<string>) {
       state.user = Object.assign(state.user, {"avatar": action.payload})
     },
+    setAllUsersLoadingAction(state) {
+      state.allUsersLoading = true
+    },
     loadAllUsersSuccessAction(state, action: PayloadAction<UserModel[]>) {
       state.allUsers = action.payload
+      state.allUsersLoading = false
+    },
+    loadAllUsersFailedAction(state) {
+      state.allUsersLoading = false
     },
     loadWhitelistSuccessAction(state, action: PayloadAction<UserWhitelistModel>) {
       state.userWhitelist = action.payload
@@ -135,7 +144,9 @@ export const {
   signUpFailedAction,
   clearUserErrorAction,
   updateAvatarSuccessAction,
+  setAllUsersLoadingAction,
   loadAllUsersSuccessAction,
+  loadAllUsersFailedAction,
   loadWhitelistSuccessAction,
   loadProfessorAvatarSuccessAction
 } = user.actions
@@ -410,6 +421,7 @@ export const setIdeas = (
 
 
 export const loadAllUsers = (): AppThunk => async dispatch => {
+  dispatch(setAllUsersLoadingAction())
   apiLoadAllUsers()
     .then(result => {
       dispatch(loadAllUsersSuccessAction(result.data))
@@ -417,6 +429,7 @@ export const loadAllUsers = (): AppThunk => async dispatch => {
     .catch(error => {
       message.error("An error occurred while loading student data - try refreshing")
       console.log(error)
+      dispatch(loadAllUsersFailedAction())
     })
 }
 
@@ -425,11 +438,11 @@ export const addUserToWhitelist = (
 ): AppThunk => async dispatch => {
   apiAddUserToWhitelist(email)
     .then(_ => {
-      message.success("Added " + email + " to the whitelist")
+      message.success("Added " + email + " to the Allowed List")
       dispatch(loadWhitelist())
     })
     .catch(error => {
-      message.error("Error adding user to whitelist (see console for details)")
+      message.error("Error adding user to Allowed List (see console for details)")
       console.log(error)
     })
 }
@@ -439,11 +452,11 @@ export const removeUserFromWhitelist = (
 ): AppThunk => async dispatch => {
   apiRemoveUserFromWhitelist(email)
     .then(_ => {
-      message.success("Removed " + email + " from the whitelist")
+      message.success("Removed " + email + " from the Allowed List")
       dispatch(loadWhitelist())
     })
     .catch(error => {
-      message.error("Error removing user from whitelist (see console for details)")
+      message.error("Error removing user from Allowed List (see console for details)")
       console.log(error)
     })
 }
@@ -454,7 +467,7 @@ export const loadWhitelist = (): AppThunk => async dispatch => {
       dispatch(loadWhitelistSuccessAction(response.data))
     })
     .catch(error => {
-      message.error("Error fetching whitelist (see console for details) - try refreshing")
+      message.error("Error fetching Allowed List (see console for details) - try refreshing")
       console.log(error)
     })
 }

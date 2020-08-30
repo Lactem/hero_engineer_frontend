@@ -32,7 +32,7 @@ export const Admin = () => {
   const { quizzes, quizzesLoading, quizzesError } = useSelector(
     (state: RootState) => state.quizzes
   )
-  const { allUsers, userWhitelist } = useSelector(
+  const { allUsers, allUsersLoading, userWhitelist } = useSelector(
     (state: RootState) => state.user
   )
   const { allSections } = useSelector(
@@ -47,7 +47,7 @@ export const Admin = () => {
   if (heroes == null) dispatch(loadHeroes())
   if (quests == null) dispatch(loadQuests())
   if (quizzes == null) dispatch(loadQuizzes())
-  if (allUsers == null) dispatch(loadAllUsers())
+  if (allUsers === null && !allUsersLoading) dispatch(loadAllUsers())
   if (userWhitelist == null) dispatch(loadWhitelist())
   if (allSections == null) dispatch(loadAllSections())
   if (allHeroCouncils == null) dispatch(loadAllHeroCouncils())

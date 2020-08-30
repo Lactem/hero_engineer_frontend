@@ -223,7 +223,7 @@ const EditQuiz = ({ quiz }: EditQuizProps) => {
                               name={[field.name, "points"]}
                               noStyle
                             >
-                              <InputNumber min={1} />
+                              <InputNumber min={1} defaultValue={1} />
                             </Form.Item>
                           </Form.Item>
                         </Col>
@@ -503,7 +503,7 @@ const AddQuizModal = ({ visible, onAddQuiz, onCancel }: AddQuizProps) => {
                                 name={[field.name, "points"]}
                                 noStyle
                               >
-                                <InputNumber min={1} />
+                                <InputNumber min={1} defaultValue={1} />
                               </Form.Item>
                             </Form.Item>
                           </Col>
