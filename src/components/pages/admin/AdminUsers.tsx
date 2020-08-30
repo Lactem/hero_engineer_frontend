@@ -1,7 +1,7 @@
-import React, { useState } from "react"
+import React, { ChangeEvent, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
-import { Button, Collapse, Avatar, Checkbox, InputNumber, Tooltip, Form } from "antd"
+import { Button, Collapse, Avatar, Checkbox, InputNumber, Tooltip, Form, Input, message } from "antd"
 import { QuestionCircleOutlined, UserOutlined } from "@ant-design/icons/lib"
 
 import CopyToClipboard from "react-copy-to-clipboard"
@@ -58,6 +58,7 @@ const EditUser = ({ user }: EditUserProps) => {
     (state: RootState) => state.quizzes
   )
   const [addXPValue, setAddXPValue] = useState(0);
+  const [addXpReason, setAddXpReason] = useState('')
   const [xpBreakdown, setXPBreakdown] = useState();
   if (quizzes == null) dispatch(loadQuizzes())
 
@@ -73,8 +74,16 @@ const EditUser = ({ user }: EditUserProps) => {
     setAddXPValue(value || 0)
   }
 
+  function onAddXpReasonChange(event: ChangeEvent<HTMLInputElement>) {
+    setAddXpReason(event.target.value)
+  }
+
   function onAddXP() {
-    dispatch(addXP(user.email, addXPValue))
+    if (addXpReason) {
+      dispatch(addXP(user.email, addXPValue, addXpReason))
+    } else {
+      message.error('Please enter a reason for adding XP to this student')
+    }
   }
 
   function fetchXPBreakdown() {
@@ -101,7 +110,9 @@ const EditUser = ({ user }: EditUserProps) => {
     <>
       Reset Password? <Checkbox defaultChecked={user.resetPasswordOnLogin} onChange={onResetPasswordChange} />
       <br />
-      <InputNumber defaultValue={0} onChange={onAddXPChange} /> <Button onClick={onAddXP}>Add XP</Button>
+      <InputNumber defaultValue={0} onChange={onAddXPChange} />
+      <Input placeholder="Reason for adding XP" defaultValue="" onChange={onAddXpReasonChange} />
+      <Button onClick={onAddXP}>Add XP</Button>
       <br />
       <Button onClick={fetchXPBreakdown}>
         Show XP Breakdown

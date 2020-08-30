@@ -13,6 +13,7 @@ import {
 import { GradedQuizModel } from "../api/quizzesAPI"
 import { loadAllUsers, loadProfile } from "./userSlice"
 import { message } from "antd"
+import { loadActiveAssignmentFailedAction } from "./shortAnswerAssignmentsSlice"
 
 interface QuestsState {
   quests: QuestModel[] | null
@@ -124,13 +125,65 @@ export const enterCode = (
   code: string
 ): AppThunk => async dispatch => {
   apiEnterCode(questId, code)
-    .then(_ => {
+    .then(response => {
       dispatch(loadProfile())
+      if (response.data && response.data.error) {
+        dispatch(handleEnterCodeError(response.data.error))
+      } else {
+        message.success('Code accepted!')
+      }
     })
     .catch(error => {
-      message.error("Invalid code")
-      console.log("Code error: ", error)
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+
+        if (error.response.data && error.response.data.error) {
+          dispatch(handleEnterCodeError(error.response.data.error))
+        } else {
+          message.error('An error occurred while entering your code')
+        }
+        console.log("error.response.data", error.response.data);
+        console.log("error.response.status", error.response.status);
+        console.log("error.response.headers", error.response.headers);
+      } else if (error.request) {
+        // The request was made but no response was received
+        // `error.request` is an instance of XMLHttpRequest in the browser
+        message.error('An error occurred while entering your code')
+        console.log("error.request", error.request);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        message.error('An error occurred while entering your code')
+        console.log("Error", error.message);
+      }
+      console.log("Error.config", error.config);
     })
+}
+
+export const handleEnterCodeError = (error: string): AppThunk => async dispatch => {
+  switch (error) {
+    case 'JWT_NOT_ACCEPTED':
+      message.error('Authorization failed. Please try re-logging in')
+      break
+    case 'NO_QUEST_FOUND':
+      message.error('Error finding your quest. Please try refreshing')
+      break
+    case 'NO_CODE_AVAILABLE':
+      message.error('You don\'t have any code that can be used to complete this quest at this time')
+      break
+    case 'INVALID_CODE':
+      message.error('Code not accepted -- double-check that you entered it correctly')
+      break
+    case 'CODE_ALREADY_ENTERED':
+      message.error('You have already successfully entered your code -- no need to enter it again')
+      break
+    case 'QUEST_ALREADY_COMPLETED':
+      message.error('You have already completed this quest -- no need to enter a code')
+      break
+    default:
+      message.error(error)
+      break
+  }
 }
 
 export const generateCode = (

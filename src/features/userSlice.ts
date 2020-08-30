@@ -472,9 +472,9 @@ export const loadWhitelist = (): AppThunk => async dispatch => {
     })
 }
 
-export const addXP = (email: string, xp: number): AppThunk => async dispatch => {
-  apiAddXP(email, xp)
-    .then(response => {
+export const addXP = (email: string, xp: number, reason: string): AppThunk => async dispatch => {
+  apiAddXP(email, xp, reason)
+    .then(_ => {
       message.success("Added XP. Please refresh.")
     })
     .catch(error => {

@@ -207,12 +207,13 @@ export async function apiRemoveUserFromWhitelist(email: string) {
   })
 }
 
-export async function apiAddXP(email: string, xp: number) {
+export async function apiAddXP(email: string, xp: number, reason: string) {
   const url = `${apiBase}/user/addXP`
 
   return await axios.post<string>(url, {
     email,
-    xp
+    xp,
+    reason
   })
 }
 
