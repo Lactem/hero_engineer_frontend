@@ -234,7 +234,14 @@ export const QuestView = ({ quest, quests, quizzes, active, adminView }: QuestVi
                         <LockOutlined />{quiz.name} ({quiz.numQuestions} questions)
                       </Button>
                     </Tooltip>}
-                    {!quiz.locked && <Tooltip title={visible ? "Quiz in progress" : "Click to start this quiz."}>
+                    {!quiz.locked && quest.completeWithQuizzesAndCode && !quest.codeEnteredSuccessfully
+                    && <Tooltip title="This quiz is locked. Please enter your code above to unlock it.">
+                      <Button disabled>
+                        <LockOutlined />{quiz.name} ({quiz.numQuestions} questions)
+                      </Button>
+                    </Tooltip>}
+                    {!quiz.locked && (!quest.completeWithQuizzesAndCode || quest.codeEnteredSuccessfully)
+                    && <Tooltip title={visible ? "Quiz in progress" : "Click to start this quiz."}>
                       <Button disabled={visible} onClick={() => startQuiz(quiz)}>
                         {quiz.name} ({quiz.numQuestions} questions)
                       </Button>

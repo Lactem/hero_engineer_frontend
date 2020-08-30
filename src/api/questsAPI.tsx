@@ -13,6 +13,7 @@ export interface QuestModel {
   completeWithQuizzes: boolean
   completeWithCode: boolean
   completeWithQuizzesAndCode: boolean
+  codeEnteredSuccessfully: boolean
   code: string
   universalCode: string
   incompleteQuizIds: string[]
@@ -36,6 +37,7 @@ export async function apiSaveQuest(name: string,
                                    completeWithQuizzes: boolean,
                                    completeWithCode: boolean,
                                    completeWithQuizzesAndCode: boolean,
+                                   codeEnteredSuccessfully: boolean,
                                    code: string,
                                    universalCode: string,
                                    incompleteQuizIds: string[],
@@ -55,6 +57,7 @@ export async function apiSaveQuest(name: string,
     completeWithQuizzes,
     completeWithCode,
     completeWithQuizzesAndCode,
+    codeEnteredSuccessfully,
     code,
     universalCode,
     incompleteQuizIds,
