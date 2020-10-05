@@ -16,7 +16,7 @@ import apiBase from "../../api/api"
 import axios from "axios"
 import { loadHeroCouncil, saveHeroCouncil } from "../../features/heroCouncilSlice"
 import { HeroCouncilModel } from "../../api/heroCouncilAPI"
-import { loadProfessorAvatar, loadProfile } from "../../features/userSlice"
+import { loadProfessorAvatar } from "../../features/userSlice"
 
 export const Councils = () => {
   const dispatch = useDispatch()
@@ -123,6 +123,7 @@ const CreateCouncil = ({ user, heroCouncilIntroVisible, setHeroCouncilIntroVisib
           values.emails,
           false,
           "",
+          [],
           []))
         setTimeout(() => {
           dispatch(loadHeroCouncil())

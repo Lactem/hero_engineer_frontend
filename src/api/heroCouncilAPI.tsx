@@ -8,6 +8,7 @@ export interface HeroCouncilModel {
   approved: boolean
   declarationFileName: string
   announcements: AnnouncementModel[]
+  questInfos: QuestInfoModel[]
 }
 export interface GrandChallengeModel {
   id: string
@@ -17,6 +18,10 @@ export interface GrandChallengeModel {
 export interface AnnouncementModel {
   num: number
   text: string
+}
+export interface QuestInfoModel {
+  questId: string
+  code: string
 }
 
 export async function apiLoadAllHeroCouncils() {
@@ -36,6 +41,7 @@ export async function apiSaveHeroCouncil(name: string,
                                          approved: boolean,
                                          declarationFileName: string,
                                          announcements: AnnouncementModel[],
+                                         questInfos: QuestInfoModel[],
                                          id?: string) {
   const url = `${apiBase}/herocouncil/save`
 
@@ -45,7 +51,8 @@ export async function apiSaveHeroCouncil(name: string,
     emails,
     approved,
     declarationFileName,
-    announcements
+    announcements,
+    questInfos
   })
 }
 
@@ -74,13 +81,22 @@ export async function apiSaveGrandChallenge(grandChallenge: string,
 }
 
 export async function apiEnterCodeForGrandChallenge(code: string) {
-  const url = `${apiBase}/herocouncil/enterCode`
+  const url = `${apiBase}/herocouncil/enterGrandChallengeCode`
 
   return await axios.post<string>(url, { code })
 }
 
 export async function apiGenerateCodeForGrandChallenge(grandChallengeId: string) {
-  const url = `${apiBase}/herocouncil/generateCode`
+  const url = `${apiBase}/herocouncil/generateGrandChallengeCode`
 
   return await axios.put<string>(url, { grandChallengeId })
+}
+
+export async function apiGenerateCodeForHeroCouncil(heroCouncilId: string, questId: string) {
+  const url = `${apiBase}/herocouncil/generateHeroCouncilCode`;
+
+  return await axios.put<string>(url, {
+    heroCouncilId,
+    questId
+  })
 }

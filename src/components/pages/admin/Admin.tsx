@@ -86,7 +86,7 @@ export const Admin = () => {
             {!quizzesLoading && quizzes && <AdminQuizzes quizzes={quizzes} />}
           </Tabs.TabPane>
           <Tabs.TabPane tab="Councils & Grand Challenges" key="6">
-            {allHeroCouncils && allGrandChallenges && <AdminHeroCouncils heroCouncils={allHeroCouncils} grandChallenges={allGrandChallenges} />}
+            {allHeroCouncils && allGrandChallenges && quests && <AdminHeroCouncils heroCouncils={allHeroCouncils} grandChallenges={allGrandChallenges} quests={quests} />}
           </Tabs.TabPane>
           <Tabs.TabPane tab="Heroes" key="7">
             {heroes && <AdminHeroes heroes={heroes as HeroModel[]} />}

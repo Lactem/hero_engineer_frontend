@@ -6,14 +6,14 @@ import {
   apiDeleteQuest,
   apiEnterCode,
   apiFetchQuests,
-  apiGenerateCode, apiGenerateUniversalCode,
+  apiGenerateCode,
+  apiGenerateUniversalCode,
   apiSaveQuest,
   QuestModel
 } from "../api/questsAPI"
 import { GradedQuizModel } from "../api/quizzesAPI"
 import { loadAllUsers, loadProfile } from "./userSlice"
 import { message } from "antd"
-import { loadActiveAssignmentFailedAction } from "./shortAnswerAssignmentsSlice"
 
 interface QuestsState {
   quests: QuestModel[] | null
@@ -195,8 +195,8 @@ export const generateCode = (
       dispatch(loadAllUsers())
     })
     .catch(error => {
-      message.error("Invalid code")
-      console.log("Code error: ", error)
+      message.error("Error generating code (see console for details)")
+      console.log("Error generating student code: ", error)
     })
 }
 
@@ -208,7 +208,7 @@ export const generateUniversalCode = (
       dispatch(loadQuests())
     })
     .catch(error => {
-      message.error("Invalid code")
-      console.log("Code error: ", error)
+      message.error("Error generating code (see console for details)")
+      console.log("Error generating universal code: ", error)
     })
 }

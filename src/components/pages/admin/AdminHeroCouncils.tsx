@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux"
 import { GrandChallengeModel, HeroCouncilModel } from "../../../api/heroCouncilAPI"
 import {
   generateCodeForGrandChallenge,
+  generateCodeForHeroCouncil,
   removeHeroCouncil,
   saveGrandChallenge,
   saveHeroCouncil
@@ -21,13 +22,16 @@ import {
 import { CheckboxChangeEvent } from "antd/es/checkbox"
 import { useForm } from "antd/lib/form/Form"
 import TextArea from "antd/es/input/TextArea"
+import { QuestModel } from "../../../api/questsAPI"
+import CopyToClipboard from "react-copy-to-clipboard"
 
 
 interface AdminHeroCouncilsProps {
   heroCouncils: HeroCouncilModel[]
   grandChallenges: GrandChallengeModel[]
+  quests: QuestModel[]
 }
-export const AdminHeroCouncils = ({ heroCouncils, grandChallenges }: AdminHeroCouncilsProps) => {
+export const AdminHeroCouncils = ({ heroCouncils, grandChallenges, quests }: AdminHeroCouncilsProps) => {
   return (
     <>
       <div style={{width: "100%"}}>
@@ -46,7 +50,7 @@ export const AdminHeroCouncils = ({ heroCouncils, grandChallenges }: AdminHeroCo
           <div key={council.id} style={{textAlign: "left"}}>
             <Collapse style={{width: "100%"}}>
               <Collapse.Panel header={council.name + (council.approved ? " (approved)" : " (pending approval)")} key={i}>
-                <EditHeroCouncil heroCouncil={council} />
+                <EditHeroCouncil heroCouncil={council} quests={quests} />
               </Collapse.Panel>
             </Collapse>
           </div>
@@ -105,9 +109,10 @@ const EditCategory = ({ category }: EditCategoryProps) => {
 }
 
 interface EditHeroCouncilProps {
-  heroCouncil: HeroCouncilModel
+  heroCouncil: HeroCouncilModel,
+  quests: QuestModel[]
 }
-const EditHeroCouncil = ({ heroCouncil }: EditHeroCouncilProps) => {
+const EditHeroCouncil = ({ heroCouncil, quests }: EditHeroCouncilProps) => {
   const dispatch = useDispatch()
   const [form] = useForm()
 
@@ -126,6 +131,7 @@ const EditHeroCouncil = ({ heroCouncil }: EditHeroCouncilProps) => {
           values.approved,
           heroCouncil.declarationFileName,
           values.announcements,
+          values.questInfos,
           heroCouncil.id
         ))
       })
@@ -155,6 +161,10 @@ const EditHeroCouncil = ({ heroCouncil }: EditHeroCouncilProps) => {
     })
   }
 
+  function generateHeroCouncilCode(questId: string) {
+    dispatch(generateCodeForHeroCouncil(heroCouncil.id, questId))
+  }
+
   return (
     <>
       <Button type="primary" onClick={onClickDownload}>Download Declaration</Button>
@@ -168,7 +178,8 @@ const EditHeroCouncil = ({ heroCouncil }: EditHeroCouncilProps) => {
           name: heroCouncil.name,
           emails: heroCouncil.emails,
           approved: heroCouncil.approved,
-          announcements: heroCouncil.announcements ? heroCouncil.announcements : []
+          announcements: heroCouncil.announcements || [],
+          questInfos: heroCouncil.questInfos || []
         }}
         onFinish={onSave}
       >
@@ -297,6 +308,35 @@ const EditHeroCouncil = ({ heroCouncil }: EditHeroCouncilProps) => {
               </div>
             )}
           </Form.List>
+        </Form.Item>
+
+        <Form.Item
+          label={(
+            <>
+              Quests (Generate Codes)
+              <Tooltip title="Generate codes that only members of this Hero Council can use to complete quests">
+                <QuestionCircleOutlined style={{paddingLeft: "5px"}} />
+              </Tooltip>
+            </>
+          )}>
+          <Collapse style={{width: "100%"}}>
+            {quests.filter(quest => quest && (quest.completeWithQuizzesAndCode || quest.completeWithCode)).map((quest) => (
+                <Collapse.Panel header={quest.name} key={quest.id}>
+                  <Form.Item>
+                    {heroCouncil.questInfos.filter(questInfo => questInfo.questId === quest.id).map((questInfo) => (
+                      <>
+                        Hero Council Code: {questInfo.code}
+                        <CopyToClipboard text={questInfo.code}>
+                          <Button>Copy to clipboard</Button>
+                        </CopyToClipboard>
+                      </>
+                    ))}
+                    <br />
+                    <Button onClick={() => {generateHeroCouncilCode(quest.id)}}>Generate Hero Council Code</Button>
+                  </Form.Item>
+                </Collapse.Panel>
+            ))}
+          </Collapse>
         </Form.Item>
 
         <Button htmlType="submit">Save</Button>

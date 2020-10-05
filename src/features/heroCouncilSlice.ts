@@ -3,11 +3,11 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { AppThunk } from "app/store"
 import {
   AnnouncementModel,
-  apiEnterCodeForGrandChallenge, apiGenerateCodeForGrandChallenge,
+  apiEnterCodeForGrandChallenge, apiGenerateCodeForGrandChallenge, apiGenerateCodeForHeroCouncil,
   apiLoadAllGrandChallenges, apiLoadAllHeroCouncils,
   apiLoadHeroCouncil, apiRemoveHeroCouncil, apiSaveGrandChallenge, apiSaveHeroCouncil,
   GrandChallengeModel,
-  HeroCouncilModel
+  HeroCouncilModel, QuestInfoModel
 } from "../api/heroCouncilAPI"
 
 import { message } from "antd"
@@ -101,9 +101,10 @@ export const saveHeroCouncil = (
   approved: boolean,
   declarationFileName: string,
   announcements: AnnouncementModel[],
+  questInfos: QuestInfoModel[],
   id?: string
 ): AppThunk => async dispatch => {
-  apiSaveHeroCouncil(name, emails, approved, declarationFileName, announcements, id)
+  apiSaveHeroCouncil(name, emails, approved, declarationFileName, announcements, questInfos, id)
     .then(_ => {
       message.success(successMessage)
       dispatch(loadAllHeroCouncils())
@@ -164,7 +165,7 @@ export const enterCodeForGrandChallenge = (
     })
     .catch(error => {
       message.error("Invalid code")
-      console.log("Code error: ", error)
+      console.log("Error entering code for grand challenge: ", error)
     })
 }
 
@@ -177,7 +178,22 @@ export const generateCodeForGrandChallenge = (
       message.success("Generated random code")
     })
     .catch(error => {
-      message.error("Couldn't generate code (see console for errors)")
+      message.error("Couldn't generate grand challenge code (see console for errors)")
+      console.log("Grand challenge code generation error: ", error)
+    })
+}
+
+export const generateCodeForHeroCouncil = (
+  heroCouncilId: string,
+  questId: string
+): AppThunk => async dispatch => {
+  apiGenerateCodeForHeroCouncil(heroCouncilId, questId)
+    .then(_ => {
+      dispatch(loadAllHeroCouncils())
+      message.success("Generated random code")
+    })
+    .catch(error => {
+      message.error("Couldn't generate Hero Council code (see console for errors)")
       console.log("Grand challenge code generation error: ", error)
     })
 }
