@@ -319,24 +319,24 @@ const EditHeroCouncil = ({ heroCouncil, quests }: EditHeroCouncilProps) => {
               </Tooltip>
             </>
           )}>
-          <Collapse style={{width: "100%"}}>
-            {quests.filter(quest => quest && (quest.completeWithQuizzesAndCode || quest.completeWithCode)).map((quest) => (
-                <Collapse.Panel header={quest.name} key={quest.id}>
-                  <Form.Item>
-                    {heroCouncil.questInfos.filter(questInfo => questInfo.questId === quest.id).map((questInfo) => (
-                      <>
-                        Hero Council Code: {questInfo.code}
-                        <CopyToClipboard text={questInfo.code}>
-                          <Button>Copy to clipboard</Button>
-                        </CopyToClipboard>
-                      </>
-                    ))}
-                    <br />
-                    <Button onClick={() => {generateHeroCouncilCode(quest.id)}}>Generate Hero Council Code</Button>
-                  </Form.Item>
-                </Collapse.Panel>
-            ))}
-          </Collapse>
+          {quests.filter(quest => quest && (quest.completeWithQuizzesAndCode || quest.completeWithCode)).map((quest) => (
+            <Collapse style={{width: "100%"}} key={quest.id}>
+              <Collapse.Panel header={quest.name} key={quest.id}>
+                <Form.Item>
+                  {heroCouncil.questInfos && heroCouncil.questInfos.filter(questInfo => questInfo.questId === quest.id).map((questInfo) => (
+                    <>
+                      Hero Council Code: {questInfo.code}
+                      <CopyToClipboard text={questInfo.code}>
+                        <Button>Copy to clipboard</Button>
+                      </CopyToClipboard>
+                    </>
+                  ))}
+                  <br />
+                  <Button onClick={() => {generateHeroCouncilCode(quest.id)}}>Generate Hero Council Code</Button>
+                </Form.Item>
+              </Collapse.Panel>
+            </Collapse>
+          ))}
         </Form.Item>
 
         <Button htmlType="submit">Save</Button>
