@@ -12,7 +12,7 @@ import { QuestView } from "../Quests"
 import { RootState } from "../../../app/rootReducer"
 import { loadQuizzes } from "../../../features/quizzesSlice"
 import { CheckboxChangeEvent } from "antd/es/checkbox"
-import { addXP, getXPBreakdown, resetPassword } from "../../../features/userSlice"
+import { addXP, getXPBreakdown, getXPHistory, resetPassword } from "../../../features/userSlice"
 import TextArea from "antd/es/input/TextArea"
 import { useForm } from "antd/es/form/Form"
 import { saveGradedShortAnswerAssignment } from "../../../features/shortAnswerAssignmentsSlice"
@@ -53,13 +53,13 @@ interface EditUserProps {
 }
 const EditUser = ({ user }: EditUserProps) => {
   const dispatch = useDispatch()
-  const [gradingForm] = useForm()
   const { quizzes } = useSelector(
     (state: RootState) => state.quizzes
   )
   const [addXPValue, setAddXPValue] = useState(0);
   const [addXpReason, setAddXpReason] = useState('')
   const [xpBreakdown, setXPBreakdown] = useState();
+  const [xpHistory, setXPHistory] = useState();
   if (quizzes == null) dispatch(loadQuizzes())
 
   function generateQuestCode(questId: string) {
@@ -90,30 +90,18 @@ const EditUser = ({ user }: EditUserProps) => {
     dispatch(getXPBreakdown(user.email, setXPBreakdown))
   }
 
-  function onGradeAssignment(assignment: GradedShortAnswerAssignmentModel, values: any) {
-    console.log('values when grading assignment: ', values)
-    dispatch(saveGradedShortAnswerAssignment(
-      assignment.id,
-      assignment.name,
-      assignment.gradedQuestions,
-      assignment.available,
-      true,
-      values.xpAwarded,
-      assignment.maxXp,
-      values.feedback,
-      user.email,
-      true
-    ))
+  function fetchXPHistory() {
+    dispatch(getXPHistory(user.email, setXPHistory))
   }
 
   return (
     <>
       Reset Password? <Checkbox defaultChecked={user.resetPasswordOnLogin} onChange={onResetPasswordChange} />
-      <br />
+      <br /><br />
       <InputNumber defaultValue={0} onChange={onAddXPChange} />
       <Input placeholder="Reason for adding XP" defaultValue="" onChange={onAddXpReasonChange} />
       <Button onClick={onAddXP}>Add XP</Button>
-      <br />
+      <br /><br />
       <Button onClick={fetchXPBreakdown}>
         Show XP Breakdown
       </Button>
@@ -126,11 +114,33 @@ const EditUser = ({ user }: EditUserProps) => {
         <br />
         {Object.keys(xpBreakdown).map((key) => key === "Total" ? null :
             <div key={key}>
-              { key }: { xpBreakdown[key] }
+              { xpBreakdown[key] }XP from { key }
             </div>
         )}
         <hr />
-        Total: { xpBreakdown["Total"] }
+        { xpBreakdown["Total"] }XP Total
+        <br />
+      </>
+      }
+      <br />
+      <Button onClick={fetchXPHistory}>
+        Show XP History
+      </Button>
+      <Tooltip title="Shows the history of all XP changes that have been recorded for the student.">
+        <QuestionCircleOutlined style={{paddingLeft: "5px"}} />
+      </Tooltip>
+      <br />
+      { xpHistory &&
+      <>
+        <br />
+        {xpHistory.map((xpEntry: {xpChangeAmount: number, reasonForChange: string}) => xpEntry.reasonForChange === "Total" ? null :
+          <div>
+            { xpEntry.xpChangeAmount }XP from { xpEntry.reasonForChange }
+          </div>
+        )}
+        <hr />
+        { xpHistory.find((xpEntry: {xpChangeAmount: number, reasonForChange: string}) => xpEntry.reasonForChange === "Total").xpChangeAmount }XP Total
+        <br />
       </>
       }
       <br />
@@ -173,51 +183,82 @@ const EditUser = ({ user }: EditUserProps) => {
             header={assignment.name + (assignment.graded ? " (graded)" : " (pending grade)")}
             key={assignment.id}
           >
-
-            <h4>Student Answers</h4>
-            {assignment.gradedQuestions && assignment.gradedQuestions.map((question, i) => (
-              <div key={question.id}>
-                {i + 1}. {question.question}
-                <br />
-                <TextArea disabled={true} value={question.answer} />
-                <br /><br />
-              </div>
-            ))}
-
-            <h4>Grading</h4>
-            <Form
-              form={gradingForm}
-              layout="vertical"
-              name="shortAnswerAssignmentGradingForm"
-              onFinish={(values) => onGradeAssignment(assignment, values)}
-              initialValues={{
-                xpAwarded: assignment.xpAwarded,
-                feedback: assignment.feedback
-              }}
-              style={{ width: "50%" }}
-            >
-              <Form.Item
-                name="xpAwarded"
-                label={`Grade (whole number out of ${assignment.maxXp})`}
-              >
-                <InputNumber min={0} max={assignment.maxXp} />
-              </Form.Item>
-
-              <Form.Item
-                name="feedback"
-                label="Feedback (optional)"
-              >
-                <TextArea />
-              </Form.Item>
-
-              <Button htmlType="submit" type="primary">
-                Grade Assignment
-              </Button>
-            </Form>
+            <GradeLiveClassroom assignment={assignment} email={user.email} />
           </Collapse.Panel>
         ))}
       </Collapse>
     </>
   )
 }
+
+interface GradeLiveClassroomProps {
+  assignment: GradedShortAnswerAssignmentModel
+  email: string
+}
+const GradeLiveClassroom = ({ assignment, email }: GradeLiveClassroomProps) => {
+  const dispatch = useDispatch()
+  const [gradingForm] = useForm()
+
+  function onGradeAssignment(assignment: GradedShortAnswerAssignmentModel, values: any) {
+    console.log('values when grading assignment: ', values)
+    dispatch(saveGradedShortAnswerAssignment(
+      assignment.id,
+      assignment.name,
+      assignment.gradedQuestions,
+      assignment.available,
+      true,
+      values.xpAwarded,
+      assignment.maxXp,
+      values.feedback,
+      email,
+      true
+    ))
+  }
+
+  return (
+    <>
+      <h4>Student Answers</h4>
+      {assignment.gradedQuestions && assignment.gradedQuestions.map((question, i) => (
+        <div key={question.id}>
+          {i + 1}. {question.question}
+          <br />
+          <TextArea disabled={true} value={question.answer} />
+          <br /><br />
+        </div>
+      ))}
+
+      <h4>Grading</h4>
+      <Form
+        form={gradingForm}
+        layout="vertical"
+        name="shortAnswerAssignmentGradingForm"
+        onFinish={(values) => onGradeAssignment(assignment, values)}
+        initialValues={{
+          xpAwarded: assignment.xpAwarded,
+          feedback: assignment.feedback
+        }}
+        style={{ width: "50%" }}
+      >
+        <Form.Item
+          name="xpAwarded"
+          label={`Grade (whole number out of ${assignment.maxXp})`}
+        >
+          <InputNumber min={0} max={assignment.maxXp} />
+        </Form.Item>
+
+        <Form.Item
+          name="feedback"
+          label="Feedback (optional)"
+        >
+          <TextArea />
+        </Form.Item>
+
+        <Button htmlType="submit" type="primary">
+          Grade Assignment
+        </Button>
+      </Form>
+    </>
+  )
+}
+
 

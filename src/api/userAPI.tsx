@@ -222,3 +222,9 @@ export async function apiGetXPBreakdown(email: string) {
 
   return await axios.get(url)
 }
+
+export async function apiGetXPHistory(email: string) {
+  const url = `${apiBase}/user/XPHistory/${email}`;
+
+  return await axios.get(url)
+}

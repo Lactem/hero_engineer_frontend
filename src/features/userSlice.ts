@@ -21,7 +21,14 @@ import {
   apiAddUserToWhitelist,
   apiRemoveUserFromWhitelist,
   apiGetWhitelist,
-  UserWhitelistModel, apiSetIdeas, apiLoadProfessorAvatar, apiResetPassword, apiSetPassword, apiAddXP, apiGetXPBreakdown
+  UserWhitelistModel,
+  apiSetIdeas,
+  apiLoadProfessorAvatar,
+  apiResetPassword,
+  apiSetPassword,
+  apiAddXP,
+  apiGetXPBreakdown,
+  apiGetXPHistory
 } from "../api/userAPI"
 import { message } from "antd"
 import { resetShortAnswerAssignmentsStateAction } from "./shortAnswerAssignmentsSlice";
@@ -490,6 +497,17 @@ export const getXPBreakdown = (email: string, setXPBreakdown: Function): AppThun
     })
     .catch(error => {
       message.error("Error calculating XP breakdown (see console for details)")
+      console.log(error)
+    })
+}
+
+export const getXPHistory = (email: string, setXPHistory: Function): AppThunk => async dispatch => {
+  apiGetXPHistory(email)
+    .then(response => {
+      setXPHistory(response.data)
+    })
+    .catch(error => {
+      message.error("Error fetching XP history (see console for details)")
       console.log(error)
     })
 }
