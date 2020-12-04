@@ -3,12 +3,14 @@ import { useDispatch } from "react-redux"
 
 import { HeroModel } from "../../../api/heroesAPI"
 import { deleteHero, saveHero } from "../../../features/heroesSlice"
-import { Divider } from "antd"
+import { Button, Divider, Input, Form } from "antd"
+import apiBase from "../../../api/api"
+import axios, { AxiosResponse } from "axios"
 
-interface AdminHeroesProps {
+interface AdminMisc {
   heroes: HeroModel[]
 }
-export const AdminHeroes = ({ heroes }: AdminHeroesProps) => {
+export const AdminMisc = ({ heroes }: AdminMisc) => {
   const [showAdd, setShowAdd] = useState(false)
 
   function handleShowAdd() {
@@ -19,8 +21,28 @@ export const AdminHeroes = ({ heroes }: AdminHeroesProps) => {
     setShowAdd(false)
   }
 
+  function downloadDataDump() {
+    const url = `${apiBase}/statistics/dumpData`
+
+    return axios.get(url, { responseType: 'arraybuffer' }).then((response: AxiosResponse) => {
+      var FileSaver = require('file-saver');
+      var blob = new Blob([response.data], {type: response.headers["content-type"]});
+      FileSaver.saveAs(blob, 'HeroEngineer_Report.pdf');
+    })
+  }
+
   return (
     <>
+      <h2>Statistics</h2>
+      <Button type="primary" onClick={downloadDataDump}>Download Data</Button>
+
+      <br /><br />
+
+      <h2>Heroes</h2>
+      Change the Hero options that students see when they sign up.
+
+      <br /><br />
+
       {heroes.map((hero, i) => (
         <div key={i}>
           <EditHero hero={hero} />
@@ -30,7 +52,9 @@ export const AdminHeroes = ({ heroes }: AdminHeroesProps) => {
       <br />
       <Divider />
       {showAdd && <AddHero done={handleAdded}/>}
-      <button onClick={handleShowAdd}>Add Hero</button>
+
+      <br />
+      <Button onClick={handleShowAdd}>Add New Hero</Button>
     </>
   )
 }
@@ -43,8 +67,7 @@ const AddHero = ({ done }: AddHeroProps) => {
   const [name, setName] = useState("New Hero Name")
   const [desc, setDesc] = useState("New Hero Desc")
 
-  function handleSave(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault()
+  function handleSave() {
     dispatch(saveHero(name, desc))
     done()
     setName("New Hero Name")
@@ -61,21 +84,17 @@ const AddHero = ({ done }: AddHeroProps) => {
 
   return (
     <>
-      <form onSubmit={handleSave}>
-        <label>
-          Name
-          <input type="text"
-                 value={name}
-                 onChange={handleNameChange} />
-        </label>
-        <label>
-          Description
-          <input type="text"
-                 value={desc}
-                 onChange={handleDescChange} />
-        </label>
-        <input type="submit" value="Add Hero" />
-      </form>
+      <Form onFinish={handleSave}>
+        <Input placeholder="Name"
+               type="text"
+               value={name}
+               onChange={handleNameChange} />
+        <Input placeholder="Description"
+               type="text"
+               value={desc}
+               onChange={handleDescChange} />
+        <Button htmlType="submit">Save Hero</Button>
+      </Form>
     </>
   )
 }
@@ -88,8 +107,7 @@ const EditHero = ({ hero }: EditHeroProps) => {
   const [name, setName] = useState(hero.name)
   const [desc, setDesc] = useState(hero.desc)
 
-  function handleSave(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault()
+  function handleSave() {
     dispatch(saveHero(name, desc, hero.id))
   }
 
@@ -107,22 +125,18 @@ const EditHero = ({ hero }: EditHeroProps) => {
 
   return (
     <>
-      <form onSubmit={handleSave}>
-        <label>
-          Name
-          <input type="text"
-                 value={name}
-                 onChange={handleNameChange} />
-        </label>
-        <label>
-          Description
-          <input type="text"
-                 value={desc}
-                 onChange={handleDescChange} />
-        </label>
-        <input type="submit" value="Save Hero" />
-      </form>
-      <button onClick={handleDelete}>Delete Hero</button>
+      <Form onFinish={handleSave}>
+        <Input placeholder="Name"
+               type="text"
+               value={name}
+               onChange={handleNameChange} />
+        <Input placeholder="Description"
+               type="text"
+               value={desc}
+               onChange={handleDescChange} />
+        <Button htmlType="submit">Save Hero</Button>
+      </Form>
+      <Button danger onClick={handleDelete}>Delete Hero</Button>
     </>
   )
 }

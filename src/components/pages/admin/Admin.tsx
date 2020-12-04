@@ -6,7 +6,7 @@ import { Tabs } from "antd"
 import { RootState } from "../../../app/rootReducer"
 import { HeroModel} from "../../../api/heroesAPI"
 import { loadHeroes } from "../../../features/heroesSlice"
-import { AdminHeroes } from "./AdminHero"
+import { AdminMisc } from "./AdminMisc"
 import { loadQuests } from "../../../features/questsSlice"
 import { AdminQuests } from "./AdminQuests"
 import { loadQuizzes } from "../../../features/quizzesSlice"
@@ -88,8 +88,8 @@ export const Admin = () => {
           <Tabs.TabPane tab="Councils & Grand Challenges" key="6">
             {allHeroCouncils && allGrandChallenges && quests && <AdminHeroCouncils heroCouncils={allHeroCouncils} grandChallenges={allGrandChallenges} quests={quests} />}
           </Tabs.TabPane>
-          <Tabs.TabPane tab="Heroes" key="7">
-            {heroes && <AdminHeroes heroes={heroes as HeroModel[]} />}
+          <Tabs.TabPane tab="Misc" key="7">
+            {heroes && <AdminMisc heroes={heroes as HeroModel[]} />}
           </Tabs.TabPane>
         </Tabs>
       </div>
