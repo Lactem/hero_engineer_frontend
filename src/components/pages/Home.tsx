@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
 import { RootState } from "../../app/rootReducer"
-import { loadProfile, logOut, updateAvatar } from "../../features/userSlice"
+import { logOut, updateAvatar } from "../../features/userSlice"
 import history from "../../app/history"
 
 import { Avatar, Card, Layout, message, Modal, Space, Tag, Tooltip } from "antd"
@@ -11,10 +11,10 @@ import Meta from "antd/es/card/Meta"
 
 import "./Home.scss"
 
-import { initAvatars } from "../../avatars/js/svgavatars.core.min"
+import { initAvatars } from "../../avatars/js/svgavatars.core.js"
 import { initTools } from "../../avatars/js/svgavatars.tools"
 import { UserOutlined } from "@ant-design/icons"
-import { AvatarDataColorsModel, AvatarDataFemaleModel, AvatarDataMaleModel, UserModel } from "../../api/userAPI"
+import { AvatarDataColorsModel, AvatarDataModel, UserModel } from "../../api/userAPI"
 import { HeroCouncilIntro } from "./HeroCouncilIntro"
 
 
@@ -31,29 +31,49 @@ export const Home = () => {
     setTimeout(() => {
       initTools(window)
       initAvatars(
-        (user as UserModel).avatarDataMale,
-        (user as UserModel).avatarDataFemale,
+        (user as UserModel).avatarData,
         (user as UserModel).avatarDataColors,
+        (user as UserModel).avatarUnlockedBodyZoneShapes,
+        (user as UserModel).xp,
+        onClickLockedShape,
         saveAvatar,
         resetAvatar)
     }, 1)
   }
 
+  function onClickLockedShape(unlockCost: number,
+                              zone: string,
+                              shape: string) {
+    const xp = (user as UserModel).xp;
+    if (xp >= unlockCost) {
+      message.success("Successfully unlocked avatar option (-" + unlockCost + " XP)!")
+      return true
+    } else {
+      message.info("That avatar option costs " + unlockCost + " XP.")
+      return false
+    }
+  }
+
   function saveAvatar(svg: string,
-                      dataMale: AvatarDataMaleModel | null,
-                      dataFemale: AvatarDataFemaleModel | null,
+                      data: AvatarDataModel | null,
                       colors: AvatarDataColorsModel | null,
                       successCallback: Function) {
     svg = svg.replace(/id="[a-z,-]*"/g, "")
     svg = svg.replace(/class="[a-z,-]*"/g, "")
-    dispatch(updateAvatar(svg, dataMale, dataFemale, colors, () => {
+    dispatch(updateAvatar(svg, data, colors, () => {
       successCallback()
       setAvatarModalVisible(false)
     }))
   }
 
   function resetAvatar() {
-    initAvatars(null, null, null, saveAvatar, resetAvatar)
+    initAvatars(null,
+      null,
+      (user as UserModel).avatarUnlockedBodyZoneShapes,
+      (user as UserModel).xp,
+      onClickLockedShape,
+      saveAvatar,
+      resetAvatar)
   }
 
   function handleQuests() {
@@ -250,7 +270,7 @@ export const Home = () => {
                               <li id="svga-resetavatar">
                                 <div></div>
                                 <span className="svga-mobilehidden">Reset</span></li>
-                              <li id="svga-downloadavatar">
+                              <li id="svga-saveavatar">
                                 <div></div>
                                 <span className="svga-mobilehidden">Save</span>
                               </li>

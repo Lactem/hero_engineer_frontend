@@ -13,7 +13,7 @@ import { QuestModel } from "../../api/questsAPI"
 import { AnswerModel, QuizModel } from "../../api/quizzesAPI"
 
 import "./Quests.scss"
-import { CheckCircleTwoTone, ClockCircleTwoTone, EyeInvisibleOutlined } from "@ant-design/icons/lib"
+import { CheckCircleTwoTone, ClockCircleTwoTone, EyeInvisibleOutlined, UnlockOutlined } from "@ant-design/icons/lib"
 import { loadProfile } from "../../features/userSlice"
 
 export const Quests = () => {
@@ -231,13 +231,13 @@ export const QuestView = ({ quest, quests, quizzes, active, adminView }: QuestVi
                   {<span key={quiz.id} style={{marginLeft: "2px", marginRight: "2px"}}>
                     {quiz.locked && <Tooltip title="This quiz is locked. Please wait for Professor Ramsey to unlock it.">
                       <Button disabled>
-                        <LockOutlined />{quiz.name} ({quiz.numQuestions} questions)
+                        <UnlockOutlined />{quiz.name} ({quiz.numQuestions} questions)
                       </Button>
                     </Tooltip>}
                     {!quiz.locked && quest.completeWithQuizzesAndCode && !quest.codeEnteredSuccessfully
                     && <Tooltip title="This quiz is locked. Please enter your code above to unlock it.">
                       <Button disabled>
-                        <LockOutlined />{quiz.name} ({quiz.numQuestions} questions)
+                        <UnlockOutlined />{quiz.name} ({quiz.numQuestions} questions)
                       </Button>
                     </Tooltip>}
                     {!quiz.locked && (!quest.completeWithQuizzesAndCode || quest.codeEnteredSuccessfully)

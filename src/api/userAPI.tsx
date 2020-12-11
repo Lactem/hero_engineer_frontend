@@ -8,9 +8,9 @@ export interface UserModel {
   username: string
   heroId: number
   avatarSVG: string
-  avatarDataMale: AvatarDataMaleModel
-  avatarDataFemale: AvatarDataFemaleModel
+  avatarData: AvatarDataModel
   avatarDataColors: AvatarDataColorsModel
+  avatarUnlockedBodyZoneShapes: string[]
   xp: number
   points: number
   quests: QuestModel[]
@@ -24,7 +24,7 @@ export interface UserModel {
   resetPasswordOnLogin: boolean
   xpBreakdown?: any
 }
-export interface AvatarDataMaleModel {
+export interface AvatarDataModel {
   backs: number
   chinshadow: number
   clothes: number
@@ -42,23 +42,6 @@ export interface AvatarDataMaleModel {
   nose: number
   beard: number
   mustache: number
-}
-export interface AvatarDataFemaleModel {
-  backs: number
-  chinshadow: number
-  clothes: number
-  ears: number
-  eyebrows: number
-  eyesback: number
-  eyesfront: number
-  eyesiris: number
-  facehighlight: number
-  faceshape: number
-  glasses: number
-  hair: number
-  humanbody: number
-  mouth: number
-  nose: number
 }
 export interface AvatarDataColorsModel {
   backs: number
@@ -135,15 +118,13 @@ export async function signUpUser(email: string,
 }
 
 export async function apiUpdateAvatar(avatarSVG: string,
-                                      avatarDataMale: AvatarDataMaleModel | null,
-                                      avatarDataFemale: AvatarDataFemaleModel | null,
+                                      avatarData: AvatarDataModel | null,
                                       avatarDataColors: AvatarDataColorsModel | null) {
   const url = `${apiBase}/user/updateAvatar`
 
   return await axios.post<string>(url, {
     avatarSVG,
-    "avatarDataMale": avatarDataMale,
-    "avatarDataFemale": avatarDataFemale,
+    "avatarData": avatarData,
     "avatarDataColors": avatarDataColors
   })
 }

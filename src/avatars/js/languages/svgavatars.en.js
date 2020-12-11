@@ -17,7 +17,6 @@ export function svgAvatarsTranslation() {
     saveMsg : "save",
     shareMsg: "share",
     gravatarMsg: "Gravatar",
-    downloadMsg : "save",
     svgFormatMsg: "svg - vector format",
     confirmMsg: "<h3>Are you sure?</h3><p>All current changes will be lost.</p>",
     iosMsg: "<p>Please tap and hold the image and choose Save</p>",

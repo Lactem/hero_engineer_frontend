@@ -13,8 +13,7 @@ import {
   setupJwtInterceptor,
   teardownJwtInterceptor,
   apiUpdateAvatar,
-  AvatarDataFemaleModel,
-  AvatarDataMaleModel,
+  AvatarDataModel,
   AvatarDataColorsModel,
   apiLoadProfile,
   apiLoadAllUsers,
@@ -364,11 +363,10 @@ export const signUp = (
 
 export const updateAvatar = (
   avatar: string,
-  avatarDataMale: AvatarDataMaleModel | null,
-  avatarDataFemale: AvatarDataFemaleModel | null,
+  avatarData: AvatarDataModel | null,
   avatarDataColors: AvatarDataColorsModel | null,
   successCallback: Function): AppThunk => async dispatch => {
-  apiUpdateAvatar(avatar, avatarDataMale, avatarDataFemale, avatarDataColors)
+  apiUpdateAvatar(avatar, avatarData, avatarDataColors)
     .then(_ => {
       dispatch(updateAvatarSuccessAction(avatar))
       dispatch(loadProfile())

@@ -426,6 +426,33 @@
   cursor: pointer;
   position: relative;
 }
+.svga-element-locked-overlay {
+  opacity: 0.9;
+  background-color: gray;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: not-allowed;
+}
+.svga-element-locked-unlockable-overlay {
+  opacity: 0.9;
+  background-color: gray;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.svga-element-locked-icon {
+  height: 25px;
+  width: 25px;
+}
 
 /***************** Body zones *******************/
 .svga-row.row-bodyzones {
@@ -493,7 +520,7 @@
   font-size: 14px;
   height: 60px;
 }
-li#svga-downloadavatar {
+li#svga-saveavatar {
   background-color: #1890ff;
   border: 1px solid #1890ff !important;
   color: white !important;

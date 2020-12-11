@@ -21,9 +21,6 @@ export function svgAvatarsOptions() {
     // the default file name for downloaded avatars
     downloadingName: 'heroengineer_avatar',
 
-    // show either 'both' genders or 'boysonly' or 'girlsonly'
-    showGender: 'both',
-
     // the step of saturation color change in HSV (HSB) mode (10% by default)
     saturationDelta: 0.1,
 
@@ -55,7 +52,7 @@ export function svgAvatarsOptions() {
     gravatarSize: 200,
 
     // true will disable save on your server option
-    hideSaveButton: true,
+    hideSaveButton: false,
 
     // true will disable download SVG option on Android devices (not useful)
     hideSvgDownloadOnAndroid: true,

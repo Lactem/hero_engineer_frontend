@@ -1,21 +1,37 @@
-/**************************************************************************************
- * @name:       svgavatars.core.min.js - jQuery plugin for creating vector avatars
- * @version:    1.5
- * @URL:        https://svgavatars.com
- * @copyright:  (c) 2014-2019 DeeThemes (https://codecanyon.net/user/DeeThemes)
- * @licenses:   https://codecanyon.net/licenses/regular
- *              https://codecanyon.net/licenses/extended
- ***************************************************************************************/
 /* eslint-disable */
 import { svgAvatarsOptions } from "./svgavatars.defaults"
 import { svgAvatarsTranslation } from "./languages/svgavatars.en"
 
-export function initAvatars(initialStateMale, initialStateFemale, initialStateColors, saveFunction, resetFunction) {
+export function initAvatars(initialState, initialStateColors, unlockedBodyZoneShapes, userXP, onClickLockedShape, saveFunction, resetFunction) {
   var a = window.jQuery
+  var c = svgAvatarsOptions()
+
+  // API config. Change when testing locally
   var API = "https://heroengineer.com:8082/api"
-  // var API = "http://localhost:8081/api"
+  //var API = "http://localhost:8081/api"
   var colors = {}
-  function L(A, e) {
+
+  // Fetch avatar data
+  a.ajax({
+    url: API + c.pathToFolder + "json/svgavatars-data",
+    dataType: "json",
+    cache: !0,
+    global: !1
+  })
+    .done(function(boysData) {
+      applyData("boys", boysData)
+      applyInitialState(initialState, initialStateColors)
+    })
+    .fail(function() {
+      a("#svga-message-text")
+        .html(f.alertJsonError)
+        .addClass("svga-error")
+      a("#svga-loader").hide()
+      a("#svga-work-overlay").fadeIn("fast")
+      a("#svga-message").fadeIn("fast")
+    })
+
+  function applyData(gender, bodyPartsConfig) {
     function h() {
       function g(g) {
         for (
@@ -116,17 +132,16 @@ export function initAvatars(initialStateMale, initialStateFemale, initialStateCo
       g(d)
       d = d.group().attr("id", "svga-group-nose-single")
       a(d)
-      "boys" === A &&
-      ((d = f.group().attr("id", "svga-group-beardwrap")),
-        a(d),
-        (d = d.group().attr("id", "svga-group-beard-single-move")),
-        g(d),
-        (d = d.group().attr("id", "svga-group-beard-single")),
-        a(d),
-        (d = f.group().attr("id", "svga-group-mustache-single-move")),
-        g(d),
-        (d = d.group().attr("id", "svga-group-mustache-single")),
-        a(d))
+      d = f.group().attr("id", "svga-group-beardwrap")
+      a(d)
+      d = d.group().attr("id", "svga-group-beard-single-move")
+      g(d)
+      d = d.group().attr("id", "svga-group-beard-single")
+      a(d)
+      d = f.group().attr("id", "svga-group-mustache-single-move")
+      g(d)
+      d = d.group().attr("id", "svga-group-mustache-single")
+      a(d)
       d = f.group().attr("id", "svga-group-hair-front")
       a(d)
       d = f.group().attr("id", "svga-group-glasses-single-move")
@@ -136,7 +151,7 @@ export function initAvatars(initialStateMale, initialStateFemale, initialStateCo
     }
 
     function X(g, a, c, d) {
-      var P = e[a].shapes[c][d],
+      var P = bodyPartsConfig[a].shapes[c][d],
         f,
         A = function(g) {
           for (var d = 0; d < k.gradientStops.length; d++) {
@@ -233,34 +248,34 @@ export function initAvatars(initialStateMale, initialStateFemale, initialStateCo
           b = "none"
           break
         case "tone":
-          b = w[b]
+          b = bodyPartColorMappings[b]
           break
         case "hl05":
-          b = D(w[b], -0.5 * c.saturationDelta, 0.5 * c.brightnessDelta)
+          b = D(bodyPartColorMappings[b], -0.5 * c.saturationDelta, 0.5 * c.brightnessDelta)
           break
         case "hl1":
-          b = D(w[b], -c.saturationDelta, c.brightnessDelta)
+          b = D(bodyPartColorMappings[b], -c.saturationDelta, c.brightnessDelta)
           break
         case "hl2":
-          b = D(w[b], -2 * c.saturationDelta, 2 * c.brightnessDelta)
+          b = D(bodyPartColorMappings[b], -2 * c.saturationDelta, 2 * c.brightnessDelta)
           break
         case "sd05":
-          b = D(w[b], 0.5 * c.saturationDelta, -0.5 * c.brightnessDelta)
+          b = D(bodyPartColorMappings[b], 0.5 * c.saturationDelta, -0.5 * c.brightnessDelta)
           break
         case "sd1":
-          b = D(w[b], c.saturationDelta, -c.brightnessDelta)
+          b = D(bodyPartColorMappings[b], c.saturationDelta, -c.brightnessDelta)
           break
         case "sd2":
-          b = D(w[b], 2 * c.saturationDelta, -2 * c.brightnessDelta)
+          b = D(bodyPartColorMappings[b], 2 * c.saturationDelta, -2 * c.brightnessDelta)
           break
         case "sd3":
-          b = D(w[b], 3 * c.saturationDelta, -3 * c.brightnessDelta)
+          b = D(bodyPartColorMappings[b], 3 * c.saturationDelta, -3 * c.brightnessDelta)
           break
         case "sd35":
-          b = D(w[b], 3.5 * c.saturationDelta, -3.5 * c.brightnessDelta)
+          b = D(bodyPartColorMappings[b], 3.5 * c.saturationDelta, -3.5 * c.brightnessDelta)
           break
         default:
-          ;(b = w[b]), e && (b = a)
+          ;(b = bodyPartColorMappings[b]), e && (b = a)
       }
       return b
     }
@@ -293,11 +308,11 @@ export function initAvatars(initialStateMale, initialStateFemale, initialStateCo
         }
       for (d = 0; d < g; d++) {
         1 < g && "mouth" !== a[d] && "eyesfront" !== a[d]
-          ? (w[a[d]] = c)
-          : (w[p] = c)
+          ? (bodyPartColorMappings[a[d]] = c)
+          : (bodyPartColorMappings[p] = c)
         var h = "facehighlight" === a[d] || "humanbody" === a[d] ? 0 : M[a[d]]
-        for (t in e[a[d]].shapes[h])
-          if (e[a[d]].shapes[h].hasOwnProperty(t)) {
+        for (t in bodyPartsConfig[a[d]].shapes[h])
+          if (bodyPartsConfig[a[d]].shapes[h].hasOwnProperty(t)) {
             var P = b.get("svga-group-" + a[d] + "-" + t)
             P.each(f)
           }
@@ -330,9 +345,9 @@ export function initAvatars(initialStateMale, initialStateFemale, initialStateCo
       }
     }
 
-    function Y() {
-      w =
-        "boys" === A
+    function resetAvatar() {
+      bodyPartColorMappings =
+        "boys" === gender
           ? {
             backs: "#ecf0f1",
             humanbody: "#f0c7b1",
@@ -369,10 +384,10 @@ export function initAvatars(initialStateMale, initialStateFemale, initialStateCo
           }
       a("#svga-svgmain").empty()
       h()
-      for (var g in e) {
-        e.hasOwnProperty(g) &&
+      for (var g in bodyPartsConfig) {
+        bodyPartsConfig.hasOwnProperty(g) &&
         ((u = "backs" === g || "hair" === g ? 1 : 0),
-        e.hasOwnProperty(g) &&
+        bodyPartsConfig.hasOwnProperty(g) &&
         a("#svga-elements-" + g + "-" + u).trigger("click"))
       }
       a("#svga-colors-faceshape > div:nth-child(1)").trigger("click")
@@ -380,41 +395,41 @@ export function initAvatars(initialStateMale, initialStateFemale, initialStateCo
       R = !1
     }
 
-    function N() {
-      Y()
-      var g = y(0, 19)
-      if (1 < y(0, 2)) {
-        if (0 === y(0, 1)) {
+    function randomAvatar() {
+      resetAvatar()
+      var g = randomNumber(0, 19)
+      if (1 < randomNumber(0, 2)) {
+        if (0 === randomNumber(0, 1)) {
           var b = !0
           var c = !1
         } else (b = !1), (c = !0)
       }
-      for (var d in e) {
-        if (e.hasOwnProperty(d)) {
+      for (var d in bodyPartsConfig) {
+        if (bodyPartsConfig.hasOwnProperty(d)) {
           var f = !1
           switch (d) {
             case "ears":
-              f = y(0, 6)
+              f = randomNumber(0, 6)
               break
             case "eyesiris":
-              f = y(0, 7)
+              f = randomNumber(0, 7)
               break
             case "hair":
-              f = "boys" === A ? y(0, 17) : y(0, 14)
+              f = randomNumber(0, 17 + 14)
               break
             case "mustache":
-              b && (f = y(1, 12))
+              b && (f = randomNumber(1, 12))
               break
             case "beard":
-              c && (f = y(1, 12))
+              c && (f = randomNumber(1, 12))
               break
             case "glasses":
-              1 < y(0, 2) && (f = y(0, 17))
+              1 < randomNumber(0, 2) && (f = randomNumber(0, 17))
               break
             default:
-              f = y(0, 14)
+              f = randomNumber(0, 14)
           }
-          var h = y(0, 19)
+          var h = randomNumber(0, 19)
           f &&
           ("hair" === d ||
           "mustache" === d ||
@@ -464,12 +479,12 @@ export function initAvatars(initialStateMale, initialStateFemale, initialStateCo
       return Q(a).toHexString()
     }
 
-    function y(a, b) {
-      return Math.floor(Math.random() * (b - a + 1)) + a
+    function randomNumber(start, end) {
+      return Math.floor(Math.random() * (end - start + 1)) + start
     }
 
-    if ("boys" === A) {
-      var w = {
+    if ("boys" === gender) {
+      var bodyPartColorMappings = {
         backs: "#ecf0f1",
         humanbody: "#f0c7b1",
         clothes: "#386e77",
@@ -488,8 +503,8 @@ export function initAvatars(initialStateMale, initialStateFemale, initialStateCo
         mouth: "#da7c87"
       }
       a("#svga-container").addClass("svga-boys")
-    } else if ("girls" === A)
-      (w = {
+    } else if ("girls" === gender)
+      (bodyPartColorMappings = {
         backs: "#ecf0f1",
         humanbody: "#F3D4CF",
         clothes: "#09aac5",
@@ -508,14 +523,7 @@ export function initAvatars(initialStateMale, initialStateFemale, initialStateCo
         a("#svga-container").addClass("svga-girls")
     else return
     var z = ["face", "eyes", "hair", "clothes", "backs"]
-    var F =
-      "boys" === A
-        ? "backs faceshape chinshadow facehighlight humanbody clothes hair ears eyebrows eyesback eyesiris eyesfront glasses mouth mustache beard nose".split(
-        " "
-        )
-        : "backs faceshape chinshadow facehighlight humanbody clothes hair ears eyebrows eyesback eyesiris eyesfront glasses mouth nose".split(
-        " "
-        )
+    var bodyParts = "backs faceshape chinshadow facehighlight humanbody clothes hair ears eyebrows eyesback eyesiris eyesfront glasses mouth mustache beard nose".split(" ")
     var M = {},
       x = {
         up:
@@ -565,7 +573,7 @@ export function initAvatars(initialStateMale, initialStateFemale, initialStateCo
         " "
       ),
       K = "up down left right scaledown scaleup tiltleft tiltright".split(" "),
-      Z = "random reset save download".split(" "),
+      Z = "random reset save".split(" "),
       W = ["#19A6CA", "#CB2028"],
       O = {
         backs: "backs",
@@ -595,30 +603,26 @@ export function initAvatars(initialStateMale, initialStateFemale, initialStateCo
     a(".svga-blocks:last").addClass("svga-last")
     a("#svga-blocks-backs").data("bodyzones", "backs")
     a("#svga-blocks-face").data("bodyzones", "faceshape,nose,mouth,ears")
-    a("#svga-blocks-eyes").data(
-      "bodyzones",
-      "eyesfront,eyesiris,eyebrows,glasses"
-    )
-    "boys" === A
-      ? a("#svga-blocks-hair").data("bodyzones", "hair,mustache,beard")
-      : a("#svga-blocks-hair").data("bodyzones", "hair")
+    a("#svga-blocks-eyes").data("bodyzones", "eyesfront,eyesiris,eyebrows,glasses")
+    a("#svga-blocks-hair").data("bodyzones", "hair,mustache,beard")
     a("#svga-blocks-clothes").data("bodyzones", "clothes")
-    for (var n in e)
-      e.hasOwnProperty(n) &&
-      (a("#svga-bodyzones").append(
-        '<div id="svga-bodyzones-' +
-        n +
-        '" class="svga-bodyzones" data-bodyzone="' +
-        n +
-        '" data-controls="' +
-        e[n].controls +
-        '" data-block="' +
-        e[n].block +
-        '">' +
-        f.bodyZoneTitles[n] +
-        "</div>"
-      ),
-        a("#svga-bodyzones-" + n).hide())
+    for (var bodyZone in bodyPartsConfig)
+      if (bodyPartsConfig.hasOwnProperty(bodyZone)) {
+        a("#svga-bodyzones").append(
+          '<div id="svga-bodyzones-' +
+          bodyZone +
+          '" class="svga-bodyzones" data-bodyzone="' +
+          bodyZone +
+          '" data-controls="' +
+          bodyPartsConfig[bodyZone].controls +
+          '" data-block="' +
+          bodyPartsConfig[bodyZone].block +
+          '">' +
+          f.bodyZoneTitles[bodyZone] +
+          "</div>"
+        )
+        a("#svga-bodyzones-" + bodyZone).hide()
+      }
     for (var B in x)
       x.hasOwnProperty(B) &&
       -1 < T.indexOf(B) &&
@@ -647,80 +651,95 @@ export function initAvatars(initialStateMale, initialStateFemale, initialStateCo
         '"/></svg>'
       )
     var t
-    for (n in e)
-      if (e.hasOwnProperty(n)) {
-        x = e[n].scaleFactor
-        T = e[n].colors
-        a("#svga-elements").append(
-          '<div class="svga-elements-wrap" id="svga-elements-' + n + '"></div>'
-        )
-        for (m = 0; m < e[n].shapes.length; m++) {
-          a("#svga-elements-" + n).append(
-            '<div class="svga-elements" id="svga-elements-' +
-            n +
-            "-" +
-            m +
-            '" data-zone="' +
-            n +
-            '" data-shape="' +
-            m +
-            '"></div>'
-          )
-          z = b("svga-elements-" + n + "-" + m)
-            .size("100%", "100%")
-            .attr({
-              id: "svga-svgcanvas-elements-" + n + "-" + m,
-              width: null,
-              height: null,
-              class: "svga-svg",
-              viewBox: "0 0 200 200",
-              preserveAspectRatio: "xMinYMin meet"
-            })
-            .group()
-          var u = m
-          for (t in e[n].shapes[u])
-            !e[n].shapes[u].hasOwnProperty(t) ||
-            ("right" !== t &&
-              "single" !== t &&
-              "back" !== t &&
-              "front" !== t) ||
-            (e[n].shapes[u][t].length
-              ? (X(z, n, u, t),
-                (K = z.bbox()),
-                z
-                  .transform({ scale: x })
-                  .transform({ x: -K.x * x + (200 - K.width * x) / 2 })
-                  .transform({ y: -K.y * x + (200 - K.height * x) / 2 }),
-              "clothes" === n && z.move(10, 5),
-              "hair" === n && 0 < u && z.move(0, 20))
-              : a("#svga-elements-" + n + "-" + m)
-                .empty()
-                .append("<div></div>")
-                .addClass("empty"))
+    for (bodyZone in bodyPartsConfig) {
+      if (!bodyPartsConfig.hasOwnProperty(bodyZone)) continue;
+      x = bodyPartsConfig[bodyZone].scaleFactor
+      T = bodyPartsConfig[bodyZone].colors
+      a("#svga-elements").append(
+        '<div class="svga-elements-wrap" id="svga-elements-' + bodyZone + '"></div>'
+      )
+      for (m = 0; m < bodyPartsConfig[bodyZone].shapes.length; m++) {
+        let shape = bodyPartsConfig[bodyZone].shapes[m]
+        let locked = false
+        let lockedOverlay = ""
+        let unlockCost = 0;
+        if (shape.unlockInfo && shape.unlockInfo.defaultLocked) {
+          if (!unlockedBodyZoneShapes
+            || unlockedBodyZoneShapes.indexOf(shape.unlockInfo.lockedId) < 0) {
+            locked = true;
+            unlockCost = shape.unlockInfo.unlockXPCost;
+            if (userXP >= unlockCost) {
+              lockedOverlay = "<div class=\"svga-element-locked-unlockable-overlay\"><svg viewBox=\"64 64 896 896\" focusable=\"false\" class=\"svga-element-locked-icon\" data-icon=\"unlock\" fill=\"green\" aria-hidden=\"true\"><path d=\"M832 464H332V240c0-30.9 25.1-56 56-56h248c30.9 0 56 25.1 56 56v68c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8v-68c0-70.7-57.3-128-128-128H388c-70.7 0-128 57.3-128 128v224h-68c-17.7 0-32 14.3-32 32v384c0 17.7 14.3 32 32 32h640c17.7 0 32-14.3 32-32V496c0-17.7-14.3-32-32-32zm-40 376H232V536h560v304zM484 701v53c0 4.4 3.6 8 8 8h40c4.4 0 8-3.6 8-8v-53a48.01 48.01 0 10-56 0z\"></path></svg></div>";
+            } else {
+              lockedOverlay = "<div class=\"svga-element-locked-overlay\"><svg viewBox=\"64 64 896 896\" focusable=\"false\" class=\"svga-element-locked-icon\" data-icon=\"lock\" fill=\"black\" aria-hidden=\"true\"><path d=\"M832 464h-68V240c0-70.7-57.3-128-128-128H388c-70.7 0-128 57.3-128 128v224h-68c-17.7 0-32 14.3-32 32v384c0 17.7 14.3 32 32 32h640c17.7 0 32-14.3 32-32V496c0-17.7-14.3-32-32-32zM332 240c0-30.9 25.1-56 56-56h248c30.9 0 56 25.1 56 56v224H332V240zm460 600H232V536h560v304zM484 701v53c0 4.4 3.6 8 8 8h40c4.4 0 8-3.6 8-8v-53a48.01 48.01 0 10-56 0z\"></path></svg></div>";
+            }
+          }
         }
-        a("#svga-elements-" + n).hide()
-        a("#svga-colors").append(
-          '<div id="svga-colors-' + n + '" class="svga-colors-set"></div>'
+        a("#svga-elements-" + bodyZone).append(
+          '<div class="svga-elements"' +
+          'id="svga-elements-' + bodyZone + "-" + m +
+          '" data-zone="' + bodyZone +
+          '" data-shape="' + m +
+          '" data-locked="' + locked +
+          '" data-unlockcost="' + unlockCost +
+          '">' + lockedOverlay + '</div>'
         )
-        for (m = 0; m < T.length; m++)
-          a("#svga-colors-" + n).append("<div></div>"),
-            a("#svga-colors-" + n + " div:last-child").css(
-              "background-color",
-              T[m]
-            )
-        a("#svga-colors-" + n).hide()
+        z = b("svga-elements-" + bodyZone + "-" + m)
+          .size("100%", "100%")
+          .attr({
+            id: "svga-svgcanvas-elements-" + bodyZone + "-" + m,
+            width: null,
+            height: null,
+            class: "svga-svg",
+            viewBox: "0 0 200 200",
+            preserveAspectRatio: "xMinYMin meet"
+          })
+          .group()
+        var u = m
+        for (t in bodyPartsConfig[bodyZone].shapes[u])
+          !bodyPartsConfig[bodyZone].shapes[u].hasOwnProperty(t) ||
+          ("right" !== t &&
+            "single" !== t &&
+            "back" !== t &&
+            "front" !== t) ||
+          (bodyPartsConfig[bodyZone].shapes[u][t].length
+            ? (X(z, bodyZone, u, t),
+              (K = z.bbox()),
+              z
+                .transform({ scale: x })
+                .transform({ x: -K.x * x + (200 - K.width * x) / 2 })
+                .transform({ y: -K.y * x + (200 - K.height * x) / 2 }),
+            "clothes" === bodyZone && z.move(10, 5),
+            "hair" === bodyZone && 0 < u && z.move(0, 20))
+            : a("#svga-elements-" + bodyZone + "-" + m)
+              .empty()
+              .append("<div></div>")
+              .addClass("empty"))
       }
+      a("#svga-elements-" + bodyZone).hide()
+      a("#svga-colors").append(
+        '<div id="svga-colors-' + bodyZone + '" class="svga-colors-set"></div>'
+      )
+      for (m = 0; m < T.length; m++)
+        a("#svga-colors-" + bodyZone).append("<div></div>"),
+          a("#svga-colors-" + bodyZone + " div:last-child").css(
+            "background-color",
+            T[m]
+          )
+      a("#svga-colors-" + bodyZone).hide()
+    }
+
     a("#svga-custom-color").hide()
-    for (m = u = 0; m < F.length; m++) {
-      if ("backs" === F[m] || "hair" === F[m]) u = 1
-      for (t in e[F[m]].shapes[u])
-        e[F[m]].shapes[u].hasOwnProperty(t) &&
-        ((n = "svga-group-" + F[m] + "-" + t),
-          a("#" + n).empty(),
-          (z = b.get(n)),
+    for (m = u = 0; m < bodyParts.length; m++) {
+      if ("backs" === bodyParts[m] || "hair" === bodyParts[m]) u = 1
+      for (t in bodyPartsConfig[bodyParts[m]].shapes[u])
+        bodyPartsConfig[bodyParts[m]].shapes[u].hasOwnProperty(t) &&
+        ((bodyZone = "svga-group-" + bodyParts[m] + "-" + t),
+          a("#" + bodyZone).empty(),
+          (z = b.get(bodyZone)),
           (H = !0),
-          X(z, F[m], u, t))
-      M[F[m]] = u
+          X(z, bodyParts[m], u, t))
+      M[bodyParts[m]] = u
       u = 0
     }
     a(".svga-colors-set > div").on("click", function() {
@@ -819,7 +838,7 @@ export function initAvatars(initialStateMale, initialStateFemale, initialStateCo
         .children()
         .hide()
       a("#svga-custom-color").hide()
-      e[p].colors &&
+      bodyPartsConfig[p].colors &&
       (a("#svga-colors-" + p).show(), a("#svga-custom-color").show())
       a("#svga-controls")
         .children()
@@ -833,28 +852,36 @@ export function initAvatars(initialStateMale, initialStateFemale, initialStateCo
         .trigger("click")
     })
     a(".svga-elements").on("click", function() {
-      var g = a(this),
-        f = g.data(),
-        c = f.zone
-      c =
-        "eyesfront" === c
+      const jQuerySelector = a(this);
+      const jQuerySelectorData = jQuerySelector.data();
+      let bodyZone = jQuerySelectorData.zone
+
+      if (jQuerySelectorData.locked) {
+        if (onClickLockedShape(jQuerySelectorData.unlockcost, jQuerySelectorData.zone, jQuerySelectorData.shape)) {
+          jQuerySelector.find(".svga-element-locked-unlockable-overlay").remove();
+        }
+        return;
+      }
+
+      bodyZone =
+        "eyesfront" === bodyZone
           ? ["eyesback", "eyesfront"]
-          : "faceshape" === c
+          : "faceshape" === bodyZone
           ? ["faceshape", "chinshadow"]
-          : c.split()
-      for (var d = 0; d < c.length; d++) {
-        a("#svga-custom-color > input").spectrum("set", w[c[d]])
-        u = "facehighlight" === c[d] || "humanbody" === c[d] ? 0 : f.shape
-        for (t in e[c[d]].shapes[u])
-          if (e[c[d]].shapes[u].hasOwnProperty(t)) {
-            var h = b.get("svga-group-" + c[d] + "-" + t)
-            a("#svga-group-" + c[d] + "-" + t).empty()
+          : bodyZone.split()
+      for (var d = 0; d < bodyZone.length; d++) {
+        a("#svga-custom-color > input").spectrum("set", bodyPartColorMappings[bodyZone[d]])
+        u = "facehighlight" === bodyZone[d] || "humanbody" === bodyZone[d] ? 0 : jQuerySelectorData.shape
+        for (t in bodyPartsConfig[bodyZone[d]].shapes[u])
+          if (bodyPartsConfig[bodyZone[d]].shapes[u].hasOwnProperty(t)) {
+            var h = b.get("svga-group-" + bodyZone[d] + "-" + t)
+            a("#svga-group-" + bodyZone[d] + "-" + t).empty()
             H = !0
-            X(h, c[d], u, t)
+            X(h, bodyZone[d], u, t)
           }
-        g.siblings().removeClass("svga-active-element")
-        g.addClass("svga-active-element")
-        M[c[d]] = u
+        jQuerySelector.siblings().removeClass("svga-active-element")
+        jQuerySelector.addClass("svga-active-element")
+        M[bodyZone[d]] = u
       }
       l = ++l
     })
@@ -1043,8 +1070,8 @@ export function initAvatars(initialStateMale, initialStateFemale, initialStateCo
           a.svgaScaleUp(2, 0.02, 1e-4)
           a = b.get("svga-group-hair-front")
           a.svgaScaleUp(2, 0.02, 1e-4)
-          "boys" === A &&
-          ((a = b.get("svga-group-beardwrap")), a.svgaScaleUp(2, 0.02, 1e-4))
+          a = b.get("svga-group-beardwrap")
+          a.svgaScaleUp(2, 0.02, 1e-4)
           a = b.get("svga-group-ears-left-move")
           a.svgaLeft(2, 1.5)
           a = b.get("svga-group-ears-right-move")
@@ -1104,9 +1131,8 @@ export function initAvatars(initialStateMale, initialStateFemale, initialStateCo
           a.svgaScaleDown(2, 0.02, 1e-4)
           a = b.get("svga-group-hair-front")
           a.svgaScaleDown(2, 0.02, 1e-4)
-          "boys" === A &&
-          ((a = b.get("svga-group-beardwrap")),
-            a.svgaScaleDown(2, 0.02, 1e-4))
+          a = b.get("svga-group-beardwrap")
+          a.svgaScaleDown(2, 0.02, 1e-4)
           a = b.get("svga-group-ears-left-move")
           a.svgaRight(2, 1.5)
           a = b.get("svga-group-ears-right-move")
@@ -1230,7 +1256,7 @@ export function initAvatars(initialStateMale, initialStateFemale, initialStateCo
     })
     a("#svga-randomavatar").on("click", function() {
       2 >= l
-        ? N()
+        ? randomAvatar()
         : ((U = "random"),
           a("#svga-work-overlay").fadeIn("fast"),
           a("#svga-dialog").fadeIn("fast"))
@@ -1241,7 +1267,7 @@ export function initAvatars(initialStateMale, initialStateFemale, initialStateCo
           a("#svga-work-overlay").fadeOut("fast"),
           a("#svga-dialog").fadeOut("fast"))
         : "random" === U &&
-        (N(),
+        (randomAvatar(),
           a("#svga-work-overlay").fadeOut("fast"),
           a("#svga-dialog").fadeOut("fast"))
     })
@@ -1254,137 +1280,15 @@ export function initAvatars(initialStateMale, initialStateFemale, initialStateCo
       a("#svga-message").hide()
       a("#svga-ios").hide()
     })
+
     a("#svga-saveavatar").on("click", function() {
       a("#svga-work-overlay").fadeIn("fast")
-      a("#svga-canvas").attr({ width: c.savingSize, height: c.savingSize })
       q && q.hide()
       r && r.hide()
       var b = a("#svga-svgmain").html()
-      b =
-        '<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="' +
-        c.savingSize +
-        'px" height="' +
-        c.savingSize +
-        'px" viewBox="0 0 200 200" style="overflow:hidden!important;">' +
-        b
-          .replace(/<svg(.*?)>/, "")
-          .replace(/data-(.*?)"(.*?)"/g, "")
-          .replace(/   /g, " ")
-          .replace(/  /g, " ")
-          .replace(/  /g, " ")
-      if (c.userPro && !0 === c.userPro) {
-        var e = document.getElementById("svga-canvas")
-        G(e, b, { ignoreMouse: !0, ignoreDimensions: !0 })
-        e = e.toDataURL("image/png")
-        var h = "svgA" + (Math.random() + "").replace("0.", "") + ".png"
-        a("#svga-canvas").attr({ width: 200, height: 200 })
-        a.ajax({
-          url: API + c.pathToFolder + "php/save-userpro-avatar.php",
-          type: "post",
-          dataType: "text",
-          data: { imgdata: e, filename: h },
-          cache: !1
-        })
-          .done(function(b) {
-            "saved" === b
-              ? (a("#svga-message-text")
-                .html(f.alertUserProSuccess)
-                .removeClass("svga-error"),
-                a("#svga-work-overlay").fadeIn("fast"))
-              : "error_wordpress" === b
-              ? (a("#svga-work-overlay").fadeIn("fast"),
-                a("#svga-message-text")
-                  .html(f.alertWordpressFail)
-                  .addClass("svga-error"))
-              : "login_fail" === b
-                ? (a("#svga-work-overlay").fadeIn("fast"),
-                  a("#svga-message-text")
-                    .html(f.alertUserProPngFail)
-                    .addClass("svga-error"))
-                : "png_fail" === b
-                  ? (a("#svga-work-overlay").fadeIn("fast"),
-                    a("#svga-message-text")
-                      .html(f.alertUserProLoginFail)
-                      .addClass("svga-error"))
-                  : (a("#svga-work-overlay").fadeIn("fast"),
-                    a("#svga-message-text")
-                      .html(f.alertUserProRequireFail)
-                      .addClass("svga-error"))
-            a("#svga-message").fadeIn("fast")
-          })
-          .fail(function() {
-            a("#svga-message-text")
-              .html(f.alertError)
-              .addClass("svga-error")
-            a("#svga-work-overlay").fadeIn("fast")
-            a("#svga-message").fadeIn("fast")
-          })
-      } else
-        "png" === c.saveFileFormat
-          ? ((e = document.getElementById("svga-canvas")),
-            G(e, b, { ignoreMouse: !0, ignoreDimensions: !0 }),
-            (e = e.toDataURL("image/png")),
-            (h = "svgA" + (Math.random() + "").replace("0.", "") + ".png"))
-          : "svg" === c.saveFileFormat &&
-          ((e = b),
-            (h = "svgA" + (Math.random() + "").replace("0.", "") + ".svg")),
-          a("#svga-canvas").attr({ width: 200, height: 200 }),
-          a
-            .ajax({
-              url: API + c.pathToFolder + "php/save-ready-avatar.php",
-              type: "post",
-              dataType: "text",
-              data: { imgdata: e, filename: h },
-              cache: !1
-            })
-            .done(function(b) {
-              "saved" === b
-                ? (a("#svga-message-text")
-                  .html(f.alertSuccess)
-                  .removeClass("svga-error"),
-                  a("#svga-work-overlay").fadeIn("fast"))
-                : "error_wordpress" === b
-                ? (a("#svga-work-overlay").fadeIn("fast"),
-                  a("#svga-message-text")
-                    .html(f.alertWordpressFail)
-                    .addClass("svga-error"))
-                : "error_uploads_dir" === b
-                  ? (a("#svga-work-overlay").fadeIn("fast"),
-                    a("#svga-message-text")
-                      .html(f.alertErrorUploadsDir)
-                      .addClass("svga-error"))
-                  : "error_file_data" === b
-                    ? (a("#svga-work-overlay").fadeIn("fast"),
-                      a("#svga-message-text")
-                        .html(f.alertErrorFileData)
-                        .addClass("svga-error"))
-                    : "error_file_type" === b
-                      ? (a("#svga-work-overlay").fadeIn("fast"),
-                        a("#svga-message-text")
-                          .html(f.alertErrorFileType)
-                          .addClass("svga-error"))
-                      : (a("#svga-work-overlay").fadeIn("fast"),
-                        a("#svga-message-text")
-                          .html(f.alertError)
-                          .addClass("svga-error"))
-              a("#svga-message").fadeIn("fast")
-            })
-            .fail(function() {
-              a("#svga-work-overlay").fadeIn("fast")
-              a("#svga-message-text")
-                .html(f.alertError)
-                .addClass("svga-error")
-              a("#svga-message").fadeIn("fast")
-            })
-    })
-    a("#svga-downloadavatar").on("click", function() {
-      a("#svga-work-overlay").fadeIn("fast")
-      q && q.hide()
-      r && r.hide()
-      var b = a("#svga-svgmain").html()
-      saveFunction(b, A === "boys" ? M : null, A === "girls" ? M : null, colors, function() {
-        a("#svga-message-text").removeClass("svga-error"),
-          a("#svga-work-overlay").fadeOut("fast")
+      saveFunction(b, M, colors, function() {
+        a("#svga-message-text").removeClass("svga-error")
+        a("#svga-work-overlay").fadeOut("fast")
       })
     })
     a(".svga-col-left .sp-dd").remove()
@@ -1531,15 +1435,10 @@ export function initAvatars(initialStateMale, initialStateFemale, initialStateCo
       f.resetMsg,
       '</span></li><li id="svga-saveavatar"><div></div><span class="svga-mobilehidden">',
       f.saveMsg,
-      '</span></li><li id="svga-downloadavatar"><div></div><span class="svga-mobilehidden">',
-      f.downloadMsg,
       '</span></li></ul></div></div></div></div><div id="svga-start-overlay">&nbsp;</div><div id="svga-work-overlay">&nbsp;</div><div id="svga-loader">',
       f.waitMsg,
-      '</div><div id="svga-gender">',
-      f.welcomeSlogan,
-      '<div id="svga-starticons-wrap"><div id="svga-start-boys"></div><div id="svga-start-girls"></div></div>',
-      f.welcomeMsg,
-      '</div><div id="svga-dialog">',
+      '</div>',
+      '<div id="svga-dialog">',
       f.confirmMsg,
       '<div id="svga-dialog-btns"><div id="svga-dialog-ok">',
       f.okMsg,
@@ -1576,14 +1475,6 @@ export function initAvatars(initialStateMale, initialStateFemale, initialStateCo
   }
   b.supported &&
     (a("#svga-canvas").attr({ width: 200, height: 200 }),
-    c.hideSaveButton && a("#svga-saveavatar").remove(),
-    c.hideSvgDownloadButton &&
-    c.hidePngFirstDownloadButton &&
-    c.hidePngSecondDownloadButton
-      ? a("#svga-downloadavatar").remove()
-      : (c.hidePngFirstDownloadButton && a("#svga-png-one").remove(),
-        c.hidePngSecondDownloadButton && a("#svga-png-two").remove(),
-        c.hideSvgDownloadButton && a("#svga-svgfile").remove()),
     ba &&
       (a("#svga-container").removeClass("svga-no-touch"),
       a("#svga-downloadavatar > ul").remove()),
@@ -1592,67 +1483,11 @@ export function initAvatars(initialStateMale, initialStateFemale, initialStateCo
     ca &&
       (a("#svga-container").addClass("svga-win8tablet"),
       a("#svga-downloadavatar > ul").remove()),
-    a("#svga-start-boys").append(
-      '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="80px" height="80px" viewBox="0 0 80 80"><path class="svga-icon-boy" d="M73.22,72.6c-1.05-6.99-8.49-9.28-14.35-10.97c-3.07-0.89-6.98-1.58-9.48-3.72C47.3,56.13,47.5,50.9,49,49.8c3.27-2.39,5.26-7.51,6.14-11.25c0.25-1.07-0.36-0.46,0.81-0.64c0.71-0.11,2.13-2.3,2.64-3.21c1.02-1.83,2.41-4.85,2.42-8.02c0.01-2.23-1.09-2.51-2.41-2.29c-0.43,0.07-0.93,0.21-0.93,0.21c1.42-1.84,1.71-8.22-0.67-13.4C53.56,3.71,44.38,2,40,2c-2.35,0-7.61,1.63-7.81,3.31c-3.37,0.19-7.7,2.55-9.2,5.89c-2.41,5.38-1.48,11.4-0.68,13.4c0,0-0.5-0.14-0.93-0.21c-1.32-0.21-2.42,0.07-2.41,2.29c0.01,3.16,1.41,6.19,2.43,8.02c0.51,0.91,1.93,3.1,2.64,3.21c1.17,0.18,0.56-0.42,0.81,0.64c0.89,3.74,3.09,9.03,6.14,11.25c1.69,2.04,1.7,6.33-0.39,8.11c-2.84,2.43-7.37,3.07-10.84,4.12c-5.86,1.77-13.29,4.9-13.27,12.25C6.51,76.73,7.7,78,10.13,78h59.74c2.43,0,3.68-1.27,3.63-3.72C73.5,74.28,73.4,73.81,73.22,72.6C72.63,68.73,73.4,73.81,73.22,72.6z"/></svg>'
-    ),
-    a("#svga-start-girls").append(
-      '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="80px" height="80px" viewBox="0 0 80 80"><path class="svga-icon-girl" d="M71,74.56c-0.08-5.44-4.21-7.67-8.81-9.63c-3.65-1.55-12.07-2.23-13.83-6.23c-0.83-1.89-0.22-3.15,0.11-5.85c6.95,0.23,17.72-5.29,19.02-10.4c0.65-2.55-2.79-4.44-4.22-6.01c-1.86-2.04-3.3-4.5-4.29-7.07c-2.17-5.61-0.2-11.18-2.14-16.7C54.18,5.14,46.53,2.01,40,2.01l0,0c0,0,0,0,0,0s0,0,0,0l0,0c-6.53,0-14.18,3.13-16.83,10.66c-1.94,5.51,0.03,11.09-2.14,16.7c-0.99,2.57-2.44,5.03-4.29,7.07c-1.43,1.58-4.87,3.46-4.22,6.01c1.3,5.1,12.07,10.62,19.02,10.4c0.34,2.7,0.94,3.95,0.11,5.85c-1.75,3.99-10.18,4.67-13.83,6.23c-4.6,1.96-8.74,4.2-8.81,9.63c-0.04,2.79-0.04,3.43,3.49,3.43H67.5C71.04,77.99,71.04,77.35,71,74.56z"/></svg>'
-    ),
-    a("#svga-start-boys").on("click", function() {
-      a("#svga-gender").hide()
-      a.ajax({
-        url: API + c.pathToFolder + "json/svgavatars-male-data",
-        dataType: "json",
-        cache: !0,
-        global: !1
-      })
-        .done(function(boysData) {
-          L("boys", boysData)
-          applyInitialState(initialStateMale, initialStateColors)
-        })
-        .fail(function() {
-          a("#svga-message-text")
-            .html(f.alertJsonError)
-            .addClass("svga-error")
-          a("#svga-loader").hide()
-          a("#svga-work-overlay").fadeIn("fast")
-          a("#svga-message").fadeIn("fast")
-        })
-    }),
-    a("#svga-start-girls").on("click", function() {
-      a("#svga-gender").hide()
-      a.ajax({
-        url: API + c.pathToFolder + "json/svgavatars-female-data",
-        cache: !0,
-        global: !1
-      })
-        .done(function(girlsData) {
-          L("girls", girlsData)
-          applyInitialState(initialStateFemale, initialStateColors)
-        })
-        .fail(function() {
-          a("#svga-message-text")
-            .html(f.alertJsonError)
-            .addClass("svga-error")
-          a("#svga-loader").hide()
-          a("#svga-work-overlay").fadeIn("fast")
-          a("#svga-message").fadeIn("fast")
-        })
-    }),
-    "boysonly" === c.showGender
-      ? a("#svga-start-boys").trigger("click")
-      : "girlsonly" === c.showGender && a("#svga-start-girls").trigger("click"),
     a(window).on("resize orientationchange", function() {
       da()
     }),
     a(".scrollbar").scrollbar({ showArrows: !1, ignoreMobile: !1 }))
 
-  if (initialStateMale !== null) {
-    a("#svga-start-boys").trigger("click")
-  }
-  if (initialStateFemale !== null) {
-    a("#svga-start-girls").trigger("click")
-  }
   function applyInitialState(initialBody, initialColors) {
     for (var bodyPart in initialBody) {
       a("#svga-elements-" + bodyPart + "-" + initialBody[bodyPart]).trigger("click")
