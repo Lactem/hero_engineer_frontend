@@ -7,8 +7,8 @@ export function initAvatars(initialState, initialStateColors, unlockedBodyZoneSh
   var c = svgAvatarsOptions()
 
   // API config. Change when testing locally
-  var API = "https://heroengineer.com:8082/api"
-  //var API = "http://localhost:8081/api"
+  //var API = "https://heroengineer.com:8082/api"
+  var API = "http://localhost:8081/api"
   var colors = {}
 
   // Fetch avatar data
@@ -1251,7 +1251,6 @@ export function initAvatars(initialState, initialStateColors, unlockedBodyZoneSh
     })
     a("#svga-resetavatar").on("click", function() {
       U = "reset"
-      a("#svga-work-overlay").fadeIn("fast")
       a("#svga-dialog").fadeIn("fast")
     })
     a("#svga-randomavatar").on("click", function() {
@@ -1272,7 +1271,6 @@ export function initAvatars(initialState, initialStateColors, unlockedBodyZoneSh
           a("#svga-dialog").fadeOut("fast"))
     })
     a("#svga-dialog-cancel").on("click", function() {
-      a("#svga-work-overlay").fadeOut("fast")
       a("#svga-dialog").fadeOut("fast")
     })
     a("#svga-tryagain").on("click", function() {
@@ -1427,39 +1425,7 @@ export function initAvatars(initialState, initialStateColors, unlockedBodyZoneSh
     V = 1,
     N = 1,
     W = 0.05,
-    C = 15,
-    O = [
-      '<div id="svga-container" class="svga-no-touch"><div id="svga-canvas-wrap"><canvas id="svga-canvas"></canvas></div><div class="svga-row"><div class="svga-col-left"><div class="svga-vert-order-glob-controls"><div class="svga-row row-glob-controls"><div id="svga-glob-controls" class="scrollbar scroll-simple_outer"></div></div></div><div class="svga-vert-order-colors"><div class="svga-row row-colors"><div id="svga-custom-color"><input type="text"></div><div id="svga-colors-wrap"><div id="svga-colors" class="scrollbar scroll-simple_outer"></div></div></div></div><div class="svga-vert-order-svgcanvas"><div class="svga-row row-svgcanvas"><div id="svga-svgmain"></div></div></div></div><div class="svga-col-right"><div class="svga-vert-order-controls"><div class="svga-row row-controls"><div id="svga-controls" class="scrollbar scroll-simple_outer"></div></div></div><div class="svga-vert-order-main"><div class="svga-android-hack"><div class="svga-vert-order-elements"><div class="svga-row row-elements"><div id="svga-elements" class="scrollbar scroll-simple_outer"></div></div></div><div class="svga-vert-order-bodyzones"><div class="svga-row row-bodyzones"><div id="svga-bodyzones"></div></div></div><div class="svga-vert-order-blocks"><div class="svga-row"><div id="svga-blocks" class="scrollbar scroll-simple_outer"></div></div></div></div></div><div class="svga-row"><div id="svga-footermenu"><ul><li id="svga-randomavatar"><div></div><span class="svga-mobilehidden">',
-      f.randomMsg,
-      '</span></li><li id="svga-resetavatar"><div></div><span class="svga-mobilehidden">',
-      f.resetMsg,
-      '</span></li><li id="svga-saveavatar"><div></div><span class="svga-mobilehidden">',
-      f.saveMsg,
-      '</span></li></ul></div></div></div></div><div id="svga-start-overlay">&nbsp;</div><div id="svga-work-overlay">&nbsp;</div><div id="svga-loader">',
-      f.waitMsg,
-      '</div>',
-      '<div id="svga-dialog">',
-      f.confirmMsg,
-      '<div id="svga-dialog-btns"><div id="svga-dialog-ok">',
-      f.okMsg,
-      '</div><div id="svga-dialog-cancel">',
-      f.cancelMsg,
-      '</div></div></div>',
-      '<div id="svga-ios"><div id="svga-ios-text">',
-      f.iosMsg,
-      '</div><div id="svga-ios-image"></div>',
-      '</div>',
-      "</div>"
-    ].join("")
-  b.supported ||
-    (O = [
-      '<div id="svga-container" class="svga-no-touch"><h3 class="svga-nosvg">',
-      f.alertSvgSupportError,
-      "</h3></div>"
-    ].join(""))
-  a("#svgAvatars")
-    .empty()
-    .html(O)
+    C = 15
   switch (c.colorScheme) {
     case "light":
       a("#svga-container").addClass("svga-light")
