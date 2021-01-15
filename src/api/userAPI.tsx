@@ -25,6 +25,7 @@ export interface UserModel {
   xpBreakdown?: any
 }
 export interface AvatarDataModel {
+  [index: string]: number
   backs: number
   chinshadow: number
   clothes: number
@@ -44,23 +45,18 @@ export interface AvatarDataModel {
   mustache: number
 }
 export interface AvatarDataColorsModel {
-  backs: number
-  chinshadow: number
-  clothes: number
-  ears: number
-  eyebrows: number
-  eyesback: number
-  eyesfront: number
-  eyesiris: number
-  facehighlight: number
-  faceshape: number
-  glasses: number
-  hair: number
-  humanbody: number
-  mouth: number
-  nose: number
-  beard: number
-  mustache: number
+  [index: string]: string
+  backs: string
+  skin: string
+  mouth: string
+  clothes: string
+  eyebrows: string
+  eyesback: string
+  eyesfront: string
+  eyesiris: string
+  glasses: string
+  hair: string
+  mustache: string
 }
 
 export interface UserWhitelistModel {
@@ -126,6 +122,14 @@ export async function apiUpdateAvatar(avatarSVG: string,
     avatarSVG,
     "avatarData": avatarData,
     "avatarDataColors": avatarDataColors
+  })
+}
+
+export async function apiUpdateUnlockedAvatarOptions(unlockedAvatarOptions: string[]) {
+  const url = `${apiBase}/user/updateUnlockedAvatarOptions`
+
+  return await axios.post<string>(url, {
+    unlockedAvatarOptions
   })
 }
 

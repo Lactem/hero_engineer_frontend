@@ -347,6 +347,12 @@
   cursor: pointer;
   position: relative;
 }
+.svga-elements-wrap-display {
+  display: block !important;
+}
+.svga-elements-wrap-hidden {
+  display: none;
+}
 .svga-element-locked-overlay {
   opacity: 0.9;
   background-color: gray;
@@ -391,6 +397,12 @@
   vertical-align: middle;
   text-align: center;
   cursor: pointer;
+}
+.svga-bodyzone-display {
+  display: table-cell;
+}
+.svga-bodyzone-hidden {
+  display: none;
 }
 
 /******************** Blocks ********************/
@@ -545,11 +557,16 @@ p.svga-credit {
   &__fading-in, &__fading-out {
     @extend .svga-work-overlay;
     opacity: 0;
-    z-index: 0;
+    z-index: 999;
+  }
+
+  &__fading-out {
+    transition: opacity 0.2s ease-out;
   }
 
   &__visible {
     @extend .svga-work-overlay;
+    transition: opacity 0.2s ease-in;
     opacity: 0.7;
     z-index: 999;
   }
@@ -567,30 +584,6 @@ p.svga-credit {
   text-align: center;
   z-index:1000;
 }
-#svga-gender {
-  display: block;
-  width: 70%;
-  height: 270px;
-  min-width: 260px;
-  overflow: hidden;
-  margin: auto;
-  position: absolute;
-  top: 0; left: 0; bottom: 0; right: 0;
-  z-index:1000;
-  text-align: center;
-}
-#svga-gender h1,
-#svga-gender h2,
-#svga-gender h3 {
-  padding: 0;
-  margin-bottom: 40px;
-  color: inherit;
-}
-#svga-gender p {
-  font-size: 14px;
-  line-height: 1;
-  color: inherit;
-}
 #svga-starticons-wrap {
   display: inline-block;
 }
@@ -602,16 +595,37 @@ p.svga-credit {
   margin: 0 10px 0;
   cursor: pointer;
 }
-#svga-dialog{
-  display: none;
+.svga-dialog{
   height: auto;
   width: 90%;
   overflow: hidden;
   margin: auto;
   position: absolute;
   bottom: 15%; left: 0; right: 0;
-  padding:20px 30px 40px;
-  z-index:1000;
+  padding: 20px 30px 40px;
+
+  &__hidden {
+    opacity: 0;
+    z-index: 0;
+    display: none;
+  }
+
+  &__fading-in, &__fading-out {
+    @extend .svga-dialog;
+    opacity: 0;
+    z-index: 0;
+  }
+
+  &__fading-out {
+    transition: opacity 0.2s ease-out;
+  }
+
+  &__visible {
+    @extend .svga-dialog;
+    transition: opacity 0.3s ease-in;
+    opacity: 1;
+    z-index: 1000;
+  }
 }
 #svga-dialog-btns {
   width: 100%;
@@ -793,8 +807,6 @@ p.svga-credit {
 #svga-gravatar-cancel,
 .svga-close,
 #svga-tryagain,
-.svga-icon-boy,
-.svga-icon-girl,
 .svga-share-icons-path {
   -webkit-transition: all 0.2s ease;
   -moz-transition: all 0.2s ease;
@@ -1195,10 +1207,6 @@ p.svga-credit {
 }
 .svga-light .svga-control-icon-path,
 .svga-light .svga-menu-icon-path,
-.svga-light .svga-icon-boy,
-.svga-light .svga-icon-girl {
-  fill: #aaa;
-}
 .svga-light .svga-credit a {
   color: #999;
 }
@@ -1277,10 +1285,6 @@ p.svga-credit {
 }
 .svga-dark .svga-control-icon-path,
 .svga-dark .svga-menu-icon-path,
-.svga-dark .svga-icon-boy,
-.svga-dark .svga-icon-girl {
-  fill: #ecf0f1;
-}
 .svga-dark .svga-credit a {
   color: #8da2a7;
 }
@@ -1309,9 +1313,6 @@ p.svga-credit {
 .svga-no-touch.svga-girls #svga-tryagain:hover,
 .svga-girls .scroll-simple_outer > .scroll-element .scroll-bar {
   background-color: #e74c3c;
-}
-#svga-start-girls:hover .svga-icon-girl {
-  fill: #e74c3c;
 }
 .svga-no-touch.svga-girls .svga-elements:hover,
 .svga-no-touch.svga-girls .svga-colors-set > div:hover,
@@ -1344,9 +1345,6 @@ p.svga-credit {
 .svga-no-touch.svga-boys #svga-tryagain:hover,
 .svga-boys .scroll-simple_outer > .scroll-element .scroll-bar {
   background-color: #3498db;
-}
-#svga-start-boys:hover .svga-icon-boy {
-  fill: #3498db;
 }
 .svga-no-touch.svga-boys .svga-elements:hover,
 .svga-no-touch.svga-boys .svga-colors-set > div:hover,

@@ -1,5 +1,6 @@
 import { combineReducers } from "@reduxjs/toolkit"
 
+import avatarsReducer from "features/avatarsSlice"
 import userReducer from "features/userSlice"
 import heroesReducer from "features/heroesSlice"
 import questsReducer from "features/questsSlice"
@@ -9,6 +10,7 @@ import heroCouncilReducer from "features/heroCouncilSlice"
 import shortAnswerAssignmentsReducer from "features/shortAnswerAssignmentsSlice"
 
 const rootReducer = combineReducers({
+  avatars: avatarsReducer,
   user: userReducer,
   heroes: heroesReducer,
   quests: questsReducer,

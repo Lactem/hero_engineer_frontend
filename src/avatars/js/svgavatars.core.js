@@ -2,7 +2,7 @@
 import { svgAvatarsOptions } from "./svgavatars.defaults"
 import { svgAvatarsTranslation } from "./languages/svgavatars.en"
 
-export function initAvatars(initialState, initialStateColors, unlockedBodyZoneShapes, userXP, onClickLockedShape, saveFunction, resetFunction) {
+export function initAvatars(initialState, initialStateColors, unlockedBodyZoneShapes, userXP, onClickLockedShape, saveFunction, SVG, color, colorsSetFunction) {
   var a = window.jQuery
   var c = svgAvatarsOptions()
 
@@ -31,24 +31,25 @@ export function initAvatars(initialState, initialStateColors, unlockedBodyZoneSh
       a("#svga-message").fadeIn("fast")
     })
 
-  function applyData(gender, bodyPartsConfig) {
-    function h() {
-      function g(g) {
-        for (
-          var a = ["updown", "leftright", "rotate"], d = 0;
-          d < a.length;
-          d++
-        )
-          g.data(a[d], 0, !0)
-        g.attr("transform", "matrix(1,0,0,1,0,0)")
+  function applyData(gender, bodyZoneConfig) {
+    function addMovingAndScalingDataAttributes() {
+      function setDataAttributesForMoving(node) {
+        let attributes = ["updown", "leftright", "rotate"];
+        for (let i = 0; i < attributes.length; i++) {
+          node.data(attributes[i], 0)
+        }
+        node.attr("transform", "matrix(1,0,0,1,0,0)")
       }
 
-      function a(g) {
-        for (var a = ["scaleX", "scaleY"], d = 0; d < a.length; d++)
-          g.data(a[d], 1, !0)
-        g.attr("transform", "matrix(1,0,0,1,0,0)")
+      function setDataAttributesForScaling(node) {
+        let attributes = ["scaleX", "scaleY"];
+        for (let i = 0; i < attributes.length; i++) {
+          node.data(attributes[i], 1)
+        }
+        node.attr("transform", "matrix(1,0,0,1,0,0)")
       }
 
+      /*
       var e = b("svga-svgmain").attr({
         id: "svga-svgcanvas",
         width: null,
@@ -60,427 +61,136 @@ export function initAvatars(initialState, initialStateColors, unlockedBodyZoneSh
       e = e.group().attr("id", "svga-group-wrapper")
       e.group().attr("id", "svga-group-backs-single")
       e = e.group().attr("id", "svga-group-humanwrap-move")
-      g(e)
+      setDataAttributesForMoving(e)
       e = e.group().attr("id", "svga-group-humanwrap")
-      a(e)
+      setDataAttributesForScaling(e)
       var d = e.group().attr("id", "svga-group-hair-back-move")
-      g(d)
+      setDataAttributesForMoving(d)
       d = d.group().attr("id", "svga-group-hair-back")
-      a(d)
+      setDataAttributesForScaling(d)
       e.group().attr("id", "svga-group-humanbody-single")
       e.group().attr("id", "svga-group-chinshadow-single")
       e.group().attr("id", "svga-group-clothes-single")
       var f = e.group().attr("id", "svga-group-head")
-      g(f)
+      setDataAttributesForMoving(f)
       d = e.group().attr("id", "svga-group-ears-left-move")
-      g(d)
+      setDataAttributesForMoving(d)
       f.add(d)
       d = d.group().attr("id", "svga-group-ears-left")
-      a(d)
+      setDataAttributesForScaling(d)
       d = e.group().attr("id", "svga-group-ears-right-move")
-      g(d)
+      setDataAttributesForMoving(d)
       f.add(d)
       d = d.group().attr("id", "svga-group-ears-right")
-      a(d)
+      setDataAttributesForScaling(d)
       d = e.group().attr("id", "svga-group-faceshape-wrap")
-      a(d)
+      setDataAttributesForScaling(d)
       f.add(d)
       d.group().attr("id", "svga-group-faceshape-single")
       d = e.group().attr("id", "svga-group-mouth-single-move")
-      g(d)
+      setDataAttributesForMoving(d)
       f.add(d)
       d = d.group().attr("id", "svga-group-mouth-single")
-      a(d)
+      setDataAttributesForScaling(d)
       d = e.group().attr("id", "svga-group-eyes-left-move")
-      g(d)
+      setDataAttributesForMoving(d)
       f.add(d)
       d = d.group().attr("id", "svga-group-eyes-left")
-      a(d)
+      setDataAttributesForScaling(d)
       d.group().attr("id", "svga-group-eyesback-left")
       var h = d.group().attr("id", "svga-group-eyesiriswrapper-left")
       h = h.group().attr("id", "svga-group-eyesiriscontrol-left")
-      g(h)
+      setDataAttributesForMoving(h)
       h = h.group().attr("id", "svga-group-eyesiris-left")
-      a(h)
+      setDataAttributesForScaling(h)
       d.group().attr("id", "svga-group-eyesfront-left")
       d = e.group().attr("id", "svga-group-eyes-right-move")
-      g(d)
+      setDataAttributesForMoving(d)
       f.add(d)
       d = d.group().attr("id", "svga-group-eyes-right")
-      a(d)
+      setDataAttributesForScaling(d)
       d.group().attr("id", "svga-group-eyesback-right")
       h = d.group().attr("id", "svga-group-eyesiriswrapper-right")
       h = h.group().attr("id", "svga-group-eyesiriscontrol-right")
-      g(h)
+      setDataAttributesForMoving(h)
       h = h.group().attr("id", "svga-group-eyesiris-right")
-      a(h)
+      setDataAttributesForScaling(h)
       d.group().attr("id", "svga-group-eyesfront-right")
       f.group().attr("id", "svga-group-facehighlight-single")
       d = f.group().attr("id", "svga-group-eyebrows-left-move")
-      g(d)
+      setDataAttributesForMoving(d)
       d = d.group().attr("id", "svga-group-eyebrows-left-rotate")
-      g(d)
+      setDataAttributesForMoving(d)
       d = d.group().attr("id", "svga-group-eyebrows-left")
-      a(d)
+      setDataAttributesForScaling(d)
       d = f.group().attr("id", "svga-group-eyebrows-right-move")
-      g(d)
+      setDataAttributesForMoving(d)
       d = d.group().attr("id", "svga-group-eyebrows-right-rotate")
-      g(d)
+      setDataAttributesForMoving(d)
       d = d.group().attr("id", "svga-group-eyebrows-right")
-      a(d)
+      setDataAttributesForScaling(d)
       d = f.group().attr("id", "svga-group-nose-single-move")
-      g(d)
+      setDataAttributesForMoving(d)
       d = d.group().attr("id", "svga-group-nose-single")
-      a(d)
+      setDataAttributesForScaling(d)
       d = f.group().attr("id", "svga-group-beardwrap")
-      a(d)
+      setDataAttributesForScaling(d)
       d = d.group().attr("id", "svga-group-beard-single-move")
-      g(d)
+      setDataAttributesForMoving(d)
       d = d.group().attr("id", "svga-group-beard-single")
-      a(d)
+      setDataAttributesForScaling(d)
       d = f.group().attr("id", "svga-group-mustache-single-move")
-      g(d)
+      setDataAttributesForMoving(d)
       d = d.group().attr("id", "svga-group-mustache-single")
-      a(d)
+      setDataAttributesForScaling(d)
       d = f.group().attr("id", "svga-group-hair-front")
-      a(d)
+      setDataAttributesForScaling(d)
       d = f.group().attr("id", "svga-group-glasses-single-move")
-      g(d)
+      setDataAttributesForMoving(d)
       d = d.group().attr("id", "svga-group-glasses-single")
-      a(d)
+      setDataAttributesForScaling(d)
+       */
     }
 
-    function X(g, a, c, d) {
-      var P = bodyPartsConfig[a].shapes[c][d],
-        f,
-        A = function(g) {
-          for (var d = 0; d < k.gradientStops.length; d++) {
-            var b = k.gradientStops[d].color
-            m = !0
-            var e = J(b, k.fromskin ? "faceshape" : a, m)
-            var c = g.at(k.gradientStops[d])
-            c.update({ color: e })
-            c.data("stoptype", b)
-          }
-        }
-      for (f = 0; f < P.length; f++) {
-        var k = P[f]
-        var v = g.path(k.path, !0)
-        v.data("colored", k.colored, !0)
-        v.data("transparence", k.transparence, !0)
-        v.data("fillType", k.fill)
-        v.data("strokeType", k.stroke)
-        k.fromskin && v.data("fromskin", k.fromskin, !0)
-        if (!0 === v.data("colored")) {
-          var h = k.fromskin ? "faceshape" : a
-          var l = v.data("fillType")
-          var m = !1
-          l = J(l, h, m)
-          v.attr("fill", l)
-          l = v.data("strokeType")
-          h = J(l, h, m)
-          v.attr({
-            stroke: h,
-            "stroke-width": k.strokeWidth,
-            "stroke-linecap": k.strokeLinecap,
-            "stroke-linejoin": k.strokeLinejoin,
-            "stroke-miterlimit": k.strokeMiterlimit
-          })
-        } else
-          "gradient" === k.fill
-            ? (H
-            ? V("svga-on-canvas-" + a + "-gradient-" + d + "-" + f)
-            : (h = document.getElementById(
-            "svga-" + a + "-gradient-" + d + "-" + c + "-" + f
-            )) && h.parentNode.removeChild(h),
-              (h = g.gradient(k.type, A)),
-            k.x1 && h.attr({ x1: k.x1 }),
-            k.y1 && h.attr({ y1: k.y1 }),
-            k.x2 && h.attr({ x2: k.x2 }),
-            k.y2 && h.attr({ y2: k.y2 }),
-            k.cx && h.attr({ cx: k.cx }),
-            k.cy && h.attr({ cy: k.cy }),
-            k.fx && h.attr({ fx: k.fx }),
-            k.fy && h.attr({ fy: k.fy }),
-            k.r && h.attr({ r: k.r }),
-            k.gradientTransform &&
-            h.attr({ gradientTransform: k.gradientTransform }),
-            k.gradientUnits && h.attr({ gradientUnits: k.gradientUnits }),
-              H
-                ? h.attr(
-                "class",
-                "svga-on-canvas-" + a + "-gradient-" + d + "-" + f
-                )
-                : h.attr(
-                "id",
-                "svga-" + a + "-gradient-" + d + "-" + c + "-" + f
-                ),
-              v.attr({ fill: h }))
-            : (v.attr({ fill: k.fill }),
-              v.attr({
-                stroke: k.stroke,
-                "stroke-width": k.strokeWidth,
-                "stroke-linecap": k.strokeLinecap,
-                "stroke-linejoin": k.strokeLinejoin,
-                "stroke-miterlimit": k.strokeMiterlimit
-              }))
-        k.opacity && v.attr({ opacity: k.opacity })
-        H &&
-        (k.id && v.attr("id", k.id + "-" + d),
-        "eyesback" === a &&
-        b.get("svga-group-eyesiriswrapper-" + d).transform({ x: 0, y: 0 }),
-        (k.irisx || k.irisy) &&
-        b.get("svga-group-eyesiriswrapper-" + d).move(k.irisx, k.irisy),
-          "hair" === a && k.hideears
-            ? (b.get("svga-group-ears-left-move").hide(),
-              b.get("svga-group-ears-right-move").hide())
-            : "hair" === a &&
-            (b.get("svga-group-ears-left-move").show(),
-              b.get("svga-group-ears-right-move").show()))
-        !H && k.hideonthumbs && v.remove()
-        H && k.hideoncanvas && v.remove()
-      }
-    }
-
-    function J(a, b, e) {
-      switch (a) {
-        case "none":
-          b = "none"
-          break
-        case "tone":
-          b = bodyPartColorMappings[b]
-          break
-        case "hl05":
-          b = D(bodyPartColorMappings[b], -0.5 * c.saturationDelta, 0.5 * c.brightnessDelta)
-          break
-        case "hl1":
-          b = D(bodyPartColorMappings[b], -c.saturationDelta, c.brightnessDelta)
-          break
-        case "hl2":
-          b = D(bodyPartColorMappings[b], -2 * c.saturationDelta, 2 * c.brightnessDelta)
-          break
-        case "sd05":
-          b = D(bodyPartColorMappings[b], 0.5 * c.saturationDelta, -0.5 * c.brightnessDelta)
-          break
-        case "sd1":
-          b = D(bodyPartColorMappings[b], c.saturationDelta, -c.brightnessDelta)
-          break
-        case "sd2":
-          b = D(bodyPartColorMappings[b], 2 * c.saturationDelta, -2 * c.brightnessDelta)
-          break
-        case "sd3":
-          b = D(bodyPartColorMappings[b], 3 * c.saturationDelta, -3 * c.brightnessDelta)
-          break
-        case "sd35":
-          b = D(bodyPartColorMappings[b], 3.5 * c.saturationDelta, -3.5 * c.brightnessDelta)
-          break
-        default:
-          ;(b = bodyPartColorMappings[b]), e && (b = a)
-      }
-      return b
-    }
-
-    function E(a, c) {
-      var g = a.length,
-        d,
-        f = function(g, e) {
-          if (this.data("colored")) {
-            var c = !0 === this.data("fromskin") ? "faceshape" : a[d]
-            var f = this.data("fillType")
-            var h = !1
-            f = J(f, c, h)
-            this.attr("fill", f)
-            f = this.data("strokeType")
-            f = J(f, c, h)
-            this.stroke(f)
-          } else
-            "gradient" === this.data("fillType") &&
-            ((f = this.attr("fill")),
-              (f = f.replace(/url\(#/, "").replace(/\)/, "")),
-              (f = b.get(f))) &&
-            ((c = !0 === this.data("fromskin") ? "faceshape" : a[d]),
-              f.each(function(a, g) {
-                h = !0
-                var d = this.data("stoptype")
-                d = J(d, c, h)
-                this.update({ color: d })
-              }))
-        }
-      for (d = 0; d < g; d++) {
-        1 < g && "mouth" !== a[d] && "eyesfront" !== a[d]
-          ? (bodyPartColorMappings[a[d]] = c)
-          : (bodyPartColorMappings[p] = c)
-        var h = "facehighlight" === a[d] || "humanbody" === a[d] ? 0 : M[a[d]]
-        for (t in bodyPartsConfig[a[d]].shapes[h])
-          if (bodyPartsConfig[a[d]].shapes[h].hasOwnProperty(t)) {
-            var P = b.get("svga-group-" + a[d] + "-" + t)
-            P.each(f)
-          }
-      }
-    }
-
-    function L(a) {
-      a = Q(a).toHexString()
-      switch (p) {
-        case "faceshape":
-          var g = "faceshape humanbody chinshadow facehighlight ears mouth nose eyesfront".split(
-            " "
-          )
-          E(g, a)
-          break
-        case "ears":
-          g = "faceshape humanbody chinshadow facehighlight ears mouth nose eyesfront".split(
-            " "
-          )
-          E(g, a)
-          break
-        case "nose":
-          g = "faceshape humanbody chinshadow facehighlight ears mouth nose eyesfront".split(
-            " "
-          )
-          E(g, a)
-          break
-        default:
-          ;(g = [p]), E(g, a)
-      }
-    }
-
-    function resetAvatar() {
-      bodyPartColorMappings =
-        "boys" === gender
-          ? {
-            backs: "#ecf0f1",
-            humanbody: "#f0c7b1",
-            clothes: "#386e77",
-            hair: "#2a232b",
-            ears: "#f0c7b1",
-            faceshape: "#f0c7b1",
-            chinshadow: "#f0c7b1",
-            facehighlight: "#f0c7b1",
-            eyebrows: "#2a232b",
-            eyesback: "#000000",
-            eyesfront: "#000000",
-            eyesiris: "#4e60a3",
-            glasses: "#26120B",
-            mustache: "#2a232b",
-            beard: "#2a232b",
-            mouth: "#da7c87"
-          }
-          : {
-            backs: "#ecf0f1",
-            humanbody: "#F3D4CF",
-            clothes: "#09aac5",
-            hair: "#2a232b",
-            ears: "#F3D4CF",
-            faceshape: "#F3D4CF",
-            chinshadow: "#F3D4CF",
-            facehighlight: "#F3D4CF",
-            eyebrows: "#2a232b",
-            eyesback: "#000000",
-            eyesfront: "#000000",
-            eyesiris: "#4e60a3",
-            glasses: "#26120B",
-            mouth: "#f771a9"
-          }
-      a("#svga-svgmain").empty()
-      h()
-      for (var g in bodyPartsConfig) {
-        bodyPartsConfig.hasOwnProperty(g) &&
-        ((u = "backs" === g || "hair" === g ? 1 : 0),
-        bodyPartsConfig.hasOwnProperty(g) &&
-        a("#svga-elements-" + g + "-" + u).trigger("click"))
-      }
-      a("#svga-colors-faceshape > div:nth-child(1)").trigger("click")
-      l = 2
-      R = !1
-    }
-
-    function randomAvatar() {
-      resetAvatar()
-      var g = randomNumber(0, 19)
-      if (1 < randomNumber(0, 2)) {
-        if (0 === randomNumber(0, 1)) {
-          var b = !0
-          var c = !1
-        } else (b = !1), (c = !0)
-      }
-      for (var d in bodyPartsConfig) {
-        if (bodyPartsConfig.hasOwnProperty(d)) {
-          var f = !1
-          switch (d) {
-            case "ears":
-              f = randomNumber(0, 6)
-              break
-            case "eyesiris":
-              f = randomNumber(0, 7)
-              break
-            case "hair":
-              f = randomNumber(0, 17 + 14)
-              break
-            case "mustache":
-              b && (f = randomNumber(1, 12))
-              break
-            case "beard":
-              c && (f = randomNumber(1, 12))
-              break
-            case "glasses":
-              1 < randomNumber(0, 2) && (f = randomNumber(0, 17))
-              break
-            default:
-              f = randomNumber(0, 14)
-          }
-          var h = randomNumber(0, 19)
-          f &&
-          ("hair" === d ||
-          "mustache" === d ||
-          "beard" === d ||
-          "eyebrows" === d
-            ? (a("#svga-elements-" + d + "-" + f).trigger("click"),
-              (p = d),
-              a("#svga-colors-" + p + " > div:nth-child(" + g + ")").trigger(
-                "click"
-              ))
-            : (a("#svga-elements-" + d + "-" + f).trigger("click"),
-              (p = d),
-              a("#svga-colors-" + p + " > div:nth-child(" + h + ")").trigger(
-                "click"
-              )))
-        }
-      }
-      a("#svga-blocks-face").trigger("click")
-      a("#svga-bodyzones-faceshape").trigger("click")
-      a("#svga-colors-faceshape .svga-active").trigger("click")
-      l = 2
-      R = !0
-    }
-
-    function I(g) {
-      a("#svga-loader").hide()
-      a("#svga-gravatar-message-text")
-        .html(g)
-        .addClass("svga-error")
-      a("#svga-work-overlay").fadeIn("fast")
-      a("#svga-gravatar-message").fadeIn("fast")
-    }
-
-    function V(a) {
-      for (a = document.getElementsByClassName(a); 0 < a.length;)
-        a[0].parentNode.removeChild(a[0])
-    }
 
     function D(a, b, e) {
+      //console.log("[js] hexColor: " + a)
       a = Q(a).toHsv()
+      //console.log("[js] hsv: " + a)
       a.s += b
       0 > a.s && (a.s = 0)
       1 < a.s && (a.s = 1)
       a.v += e
       0 > a.v && (a.v = 0)
       1 < a.v && (a.v = 1)
+      //console.log("[js] hex: " + Q(a).toHexString())
       return Q(a).toHexString()
     }
 
-    function randomNumber(start, end) {
-      return Math.floor(Math.random() * (end - start + 1)) + start
+    function L(a) {
+      a = Q(a).toHexString()
+      switch (activeBodyZone) {
+        case "faceshape":
+          var g = "faceshape humanbody chinshadow facehighlight ears mouth nose eyesfront".split(
+            " "
+          )
+          color(g, a)
+          break
+        case "ears":
+          g = "faceshape humanbody chinshadow facehighlight ears mouth nose eyesfront".split(
+            " "
+          )
+          color(g, a)
+          break
+        case "nose":
+          g = "faceshape humanbody chinshadow facehighlight ears mouth nose eyesfront".split(
+            " "
+          )
+          color(g, a)
+          break
+        default:
+          ;(g = [activeBodyZone]), color(g, a)
+      }
     }
 
     if ("boys" === gender) {
@@ -502,9 +212,8 @@ export function initAvatars(initialState, initialStateColors, unlockedBodyZoneSh
         beard: "#2a232b",
         mouth: "#da7c87"
       }
-      a("#svga-container").addClass("svga-boys")
     } else if ("girls" === gender)
-      (bodyPartColorMappings = {
+      bodyPartColorMappings = {
         backs: "#ecf0f1",
         humanbody: "#F3D4CF",
         clothes: "#09aac5",
@@ -519,12 +228,11 @@ export function initAvatars(initialState, initialStateColors, unlockedBodyZoneSh
         eyesiris: "#4e60a3",
         glasses: "#26120B",
         mouth: "#f771a9"
-      }),
-        a("#svga-container").addClass("svga-girls")
+      }
     else return
-    var z = ["face", "eyes", "hair", "clothes", "backs"]
-    var bodyParts = "backs faceshape chinshadow facehighlight humanbody clothes hair ears eyebrows eyesback eyesiris eyesfront glasses mouth mustache beard nose".split(" ")
-    var M = {},
+    //var blocks = ["face", "eyes", "hair", "clothes", "backs"]
+    var bodyZones = "backs faceshape chinshadow facehighlight humanbody clothes hair ears eyebrows eyesback eyesiris eyesfront glasses mouth mustache beard nose".split(" ")
+    var selectedAvatarElements = {},
       x = {
         up:
           "M8.425,3.176c-0.235-0.234-0.614-0.234-0.849,0L2.769,7.984c-0.235,0.234-0.235,0.613,0,0.85l0.565,0.564c0.234,0.235,0.614,0.235,0.849,0L7,6.58V12.4C7,12.732,7.268,13,7.6,13H8.4C8.731,13,9,12.73,9,12.4V6.58l2.818,2.819c0.234,0.234,0.614,0.234,0.849,0l0.565-0.566c0.234-0.234,0.234-0.613,0-0.848L8.425,3.176z",
@@ -573,40 +281,41 @@ export function initAvatars(initialState, initialStateColors, unlockedBodyZoneSh
         " "
       ),
       K = "up down left right scaledown scaleup tiltleft tiltright".split(" "),
-      Z = "random reset save".split(" "),
+      randomResetSaveControls = "random reset save".split(" "),
       W = ["#19A6CA", "#CB2028"],
-      O = {
+      blocksNamesMapping = {
         backs: "backs",
         face: "faceshape",
         eyes: "eyesfront",
         hair: "hair",
         clothes: "clothes"
       },
-      l = 1,
-      H = !1,
-      p = "faceshape",
+      onCanvas = false,
+      activeBodyZone = "faceshape",
       U,
-      R = !1,
       q,
       r
-    h()
-    for (var m = 0; m < z.length; m++)
+    /*
+    addMovingAndScalingDataAttributes()
+    for (var i = 0; i < blocks.length; i++) {
       a("#svga-blocks").append(
-        '<div id="svga-blocks-' +
-        z[m] +
-        '" class="svga-blocks" data-blockname="' +
-        z[m] +
+        '<div id="svga-blocks-' + blocks[i] +
+        '" class="svga-blocks" data-blockname="' + blocks[i] +
         '">' +
-        f.blockTitles[z[m]] +
+        f.blockTitles[blocks[i]] +
         "</div>"
       )
+    }
+
     a(".svga-blocks:last").addClass("svga-last")
+
     a("#svga-blocks-backs").data("bodyzones", "backs")
     a("#svga-blocks-face").data("bodyzones", "faceshape,nose,mouth,ears")
     a("#svga-blocks-eyes").data("bodyzones", "eyesfront,eyesiris,eyebrows,glasses")
     a("#svga-blocks-hair").data("bodyzones", "hair,mustache,beard")
     a("#svga-blocks-clothes").data("bodyzones", "clothes")
-    for (var bodyZone in bodyPartsConfig)
+
+    for (var bodyZone in bodyPartsConfig) {
       if (bodyPartsConfig.hasOwnProperty(bodyZone)) {
         a("#svga-bodyzones").append(
           '<div id="svga-bodyzones-' +
@@ -623,6 +332,7 @@ export function initAvatars(initialState, initialStateColors, unlockedBodyZoneSh
         )
         a("#svga-bodyzones-" + bodyZone).hide()
       }
+    }*/
     for (var B in x)
       x.hasOwnProperty(B) &&
       -1 < T.indexOf(B) &&
@@ -644,22 +354,23 @@ export function initAvatars(initialState, initialStateColors, unlockedBodyZoneSh
         x[B] +
         '"/></svg></div>'
       )
-    for (m = 0; m < Z.length; m++)
-      a("#svga-" + Z[m] + "avatar > div").append(
+    for (let i = 0; i < randomResetSaveControls.length; i++)
+      a("#svga-" + randomResetSaveControls[i] + "avatar > div").append(
         '<svg class="svga-menu-icon" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 28 28" preserveAspectRatio="xMinYMin meet"><path class="svga-menu-icon-path" d="' +
-        x[Z[m]] +
+        x[randomResetSaveControls[i]] +
         '"/></svg>'
       )
-    var t
-    for (bodyZone in bodyPartsConfig) {
-      if (!bodyPartsConfig.hasOwnProperty(bodyZone)) continue;
-      x = bodyPartsConfig[bodyZone].scaleFactor
-      T = bodyPartsConfig[bodyZone].colors
-      a("#svga-elements").append(
-        '<div class="svga-elements-wrap" id="svga-elements-' + bodyZone + '"></div>'
-      )
-      for (m = 0; m < bodyPartsConfig[bodyZone].shapes.length; m++) {
-        let shape = bodyPartsConfig[bodyZone].shapes[m]
+    var segmentOfShape
+    /*
+    for (let bodyZone in bodyZoneConfig) {
+      if (!bodyZoneConfig.hasOwnProperty(bodyZone)) continue;
+      let bodyZoneScaleFactor = bodyZoneConfig[bodyZone].scaleFactor
+      let bodyZoneColors = bodyZoneConfig[bodyZone].colors
+      //a("#svga-elements").append(
+      //  '<div id="svga-elements-' + bodyZone + '"></div>'
+      //)
+      for (let i = 0; i < bodyZoneConfig[bodyZone].shapes.length; i++) {
+        let shape = bodyZoneConfig[bodyZone].shapes[i]
         let locked = false
         let lockedOverlay = ""
         let unlockCost = 0;
@@ -675,19 +386,24 @@ export function initAvatars(initialState, initialStateColors, unlockedBodyZoneSh
             }
           }
         }
+        a("#svga-elements-" + bodyZone).show()
+        a("#svga-colors-" + bodyZone).show()
+        /*
         a("#svga-elements-" + bodyZone).append(
           '<div class="svga-elements"' +
-          'id="svga-elements-' + bodyZone + "-" + m +
+          'id="svga-elements-' + bodyZone + "-" + i +
           '" data-zone="' + bodyZone +
-          '" data-shape="' + m +
+          '" data-shape="' + i +
           '" data-locked="' + locked +
           '" data-unlockcost="' + unlockCost +
           '">' + lockedOverlay + '</div>'
         )
-        z = b("svga-elements-" + bodyZone + "-" + m)
+         */
+    /*
+        let svgElement = b("svga-elements-" + bodyZone + "-" + i)
           .size("100%", "100%")
           .attr({
-            id: "svga-svgcanvas-elements-" + bodyZone + "-" + m,
+            id: "svga-svgcanvas-elements-" + bodyZone + "-" + i,
             width: null,
             height: null,
             class: "svga-svg",
@@ -695,103 +411,71 @@ export function initAvatars(initialState, initialStateColors, unlockedBodyZoneSh
             preserveAspectRatio: "xMinYMin meet"
           })
           .group()
-        var u = m
-        for (t in bodyPartsConfig[bodyZone].shapes[u])
-          !bodyPartsConfig[bodyZone].shapes[u].hasOwnProperty(t) ||
-          ("right" !== t &&
-            "single" !== t &&
-            "back" !== t &&
-            "front" !== t) ||
-          (bodyPartsConfig[bodyZone].shapes[u][t].length
-            ? (X(z, bodyZone, u, t),
-              (K = z.bbox()),
-              z
-                .transform({ scale: x })
-                .transform({ x: -K.x * x + (200 - K.width * x) / 2 })
-                .transform({ y: -K.y * x + (200 - K.height * x) / 2 }),
-            "clothes" === bodyZone && z.move(10, 5),
-            "hair" === bodyZone && 0 < u && z.move(0, 20))
-            : a("#svga-elements-" + bodyZone + "-" + m)
+          .attr({
+            id: "svga-svgcanvas-elements-" + bodyZone + "-" + i + "-g"
+          })
+        var shapeIndex = i
+        for (segmentOfShape in bodyZoneConfig[bodyZone].shapes[shapeIndex]) {
+          if (!bodyZoneConfig[bodyZone].shapes[shapeIndex].hasOwnProperty(segmentOfShape)) continue;
+          if ("right" !== segmentOfShape &&
+            "single" !== segmentOfShape &&
+            "back" !== segmentOfShape &&
+            "front" !== segmentOfShape) continue;
+
+          if (bodyZoneConfig[bodyZone].shapes[shapeIndex][segmentOfShape].length) {
+            drawBodyPartOnCanvas(bodyZone, shapeIndex, segmentOfShape, onCanvas)
+            K = svgElement.bbox()
+            svgElement
+              .transform({ scale: bodyZoneScaleFactor })
+              .transform({ x: -K.x * bodyZoneScaleFactor + (200 - K.width * bodyZoneScaleFactor) / 2 })
+              .transform({ y: -K.y * bodyZoneScaleFactor + (200 - K.height * bodyZoneScaleFactor) / 2 })
+            if ("clothes" === bodyZone) {
+              svgElement.move(10, 5)
+            }
+            if ("hair" === bodyZone && 0 < shapeIndex) {
+              svgElement.move(0, 20)
+            }
+          } else {
+            a("#svga-elements-" + bodyZone + "-" + i)
               .empty()
               .append("<div></div>")
-              .addClass("empty"))
+              .addClass("empty")
+          }
+        }
       }
       a("#svga-elements-" + bodyZone).hide()
-      a("#svga-colors").append(
+      /*a("#svga-colors").append(
         '<div id="svga-colors-' + bodyZone + '" class="svga-colors-set"></div>'
       )
-      for (m = 0; m < T.length; m++)
+      for (let i = 0; i < bodyZoneColors.length; i++)
         a("#svga-colors-" + bodyZone).append("<div></div>"),
           a("#svga-colors-" + bodyZone + " div:last-child").css(
             "background-color",
-            T[m]
+            bodyZoneColors[i]
           )
+       */
+    /*
       a("#svga-colors-" + bodyZone).hide()
-    }
+    }*/
 
     a("#svga-custom-color").hide()
-    for (m = u = 0; m < bodyParts.length; m++) {
-      if ("backs" === bodyParts[m] || "hair" === bodyParts[m]) u = 1
-      for (t in bodyPartsConfig[bodyParts[m]].shapes[u])
-        bodyPartsConfig[bodyParts[m]].shapes[u].hasOwnProperty(t) &&
-        ((bodyZone = "svga-group-" + bodyParts[m] + "-" + t),
-          a("#" + bodyZone).empty(),
-          (z = b.get(bodyZone)),
-          (H = !0),
-          X(z, bodyParts[m], u, t))
-      M[bodyParts[m]] = u
-      u = 0
-    }
-    a(".svga-colors-set > div").on("click", function() {
-      var g = a(this)
-      g.siblings().removeClass("svga-active")
-      g.addClass("svga-active")
-
-      // Find n for use in nth-child so that we can call the div's click function when we reload
-      var clickedNChild = -1
-      var i = 0
-      for (var i = 0; i < g.siblings().length; i++) {
-        if (g.siblings()[i] === g[0].nextSibling) {
-          clickedNChild = i + 1
+    /*for (let i = shapeIndex = 0; i < bodyZones.length; i++) {
+      if ("backs" === bodyZones[i] || "hair" === bodyZones[i]) shapeIndex = 1
+      for (segmentOfShape in bodyZoneConfig[bodyZones[i]].shapes[shapeIndex]) {
+        let bodyZone, blocks
+        if (bodyZoneConfig[bodyZones[i]].shapes[shapeIndex].hasOwnProperty(segmentOfShape)) {
+          bodyZone = "svga-group-" + bodyZones[i] + "-" + segmentOfShape
+          a("#" + bodyZone).empty()
+          blocks = b.get(bodyZone)
+          onCanvas = true
+          drawBodyPartOnCanvas(blocks, bodyZones[i], shapeIndex, segmentOfShape, onCanvas)
         }
       }
-      if (clickedNChild === -1) clickedNChild = i + 1
-      // Ears, nose, and faceshape all share the same color
-      if (p === "faceshape" || p === "nose" || p === "ears") {
-        colors["faceshape"] = clickedNChild
-        colors["nose"] = clickedNChild
-        colors["ears"] = clickedNChild
-      } else {
-        colors[p] = clickedNChild
-      }
-
-      u = 0
-      var b = g.css("background-color")
-      b = Q(b).toHexString()
-      a("#svga-custom-color > input").spectrum("set", b)
-      switch (p) {
-        case "faceshape":
-          g = "faceshape humanbody chinshadow facehighlight ears mouth nose eyesfront".split(
-            " "
-          )
-          E(g, b)
-          break
-        case "ears":
-          g = "faceshape humanbody chinshadow facehighlight ears mouth nose eyesfront".split(
-            " "
-          )
-          E(g, b)
-          break
-        case "nose":
-          g = "faceshape humanbody chinshadow facehighlight ears mouth nose eyesfront".split(
-            " "
-          )
-          E(g, b)
-          break
-        default:
-          ;(g = [p]), E(g, b)
-      }
-      l = ++l
+      selectedAvatarElements[bodyZones[i]] = shapeIndex
+      shapeIndex = 0
+    }*/
+    a(".svga-colors-set > div").on("click", function() {
+      //colorsSetFunction(a(this))
     })
     a("#svga-custom-color > input").spectrum({
       color: "#000000",
@@ -803,56 +487,56 @@ export function initAvatars(initialState, initialStateColors, unlockedBodyZoneSh
       change: L
     })
     a(".sp-replacer").on("click", function() {
-      a("#svga-colors-" + p + " div.svga-active").removeClass("svga-active")
-      l = ++l
+      a("#svga-colors-" + activeBodyZone + " div.svga-active").removeClass("svga-active")
+      
     })
     a(".svga-blocks").on("click", function() {
-      var g = a(this),
-        b = g.data("bodyzones").split(","),
-        e = g.data("blockname")
-      g.siblings().removeClass("svga-active")
-      g.addClass("svga-active")
-      a("#svga-bodyzones")
-        .children()
-        .hide()
-      for (g = 0; g < b.length; g++) a("#svga-bodyzones-" + b[g]).show()
-      a("#svga-bodyzones")
-        .children()
-        .removeClass("svga-active")
-      a("#svga-bodyzones-" + O[e])
-        .addClass("svga-active")
+      var node = a(this),
+        b = node.data("bodyzones").split(","),
+        e = node.data("blockname")
+      //node.siblings().removeClass("svga-active")
+      //node.addClass("svga-active")
+      //a("#svga-bodyzones")
+      //  .children()
+      //  .hide()
+      //for (node = 0; node < b.length; node++) a("#svga-bodyzones-" + b[node]).show()
+      //a("#svga-bodyzones")
+      //  .children()
+      //  .removeClass("svga-active")
+      a("#svga-bodyzones-" + blocksNamesMapping[e])
+      //  .addClass("svga-active")
         .trigger("click")
     })
     a(".svga-bodyzones").on("click", function() {
       var g = a(this)
-      p = g.data("bodyzone")
+      activeBodyZone = g.data("bodyzone")
       var b = g.data("block"),
         f = g.data("controls").split(",")
-      g.siblings().removeClass("svga-active")
-      g.addClass("svga-active")
+      //g.siblings().removeClass("svga-active")
+      //g.addClass("svga-active")
       a("#svga-elements")
         .children()
         .hide()
-      a("#svga-elements-" + p).show()
+      a("#svga-elements-" + activeBodyZone).show()
       a("#svga-colors")
         .children()
         .hide()
       a("#svga-custom-color").hide()
-      bodyPartsConfig[p].colors &&
-      (a("#svga-colors-" + p).show(), a("#svga-custom-color").show())
+      bodyZoneConfig[activeBodyZone].colors &&
+      (a("#svga-colors-" + activeBodyZone).show(), a("#svga-custom-color").show())
       a("#svga-controls")
         .children()
         .hide()
       for (g = 0; g < f.length; g++)
         a("#svga-controls-" + f[g]).css("display", "inline-block")
-      O[b] = p
-      l = --l
-      a("#svga-elements-" + p + "-" + M[p])
+      blocksNamesMapping[b] = activeBodyZone
+      
+      a("#svga-elements-" + activeBodyZone + "-" + selectedAvatarElements[activeBodyZone])
         .addClass("svga-active-element")
         .trigger("click")
     })
     a(".svga-elements").on("click", function() {
-      const jQuerySelector = a(this);
+      /*const jQuerySelector = a(this);
       const jQuerySelectorData = jQuerySelector.data();
       let bodyZone = jQuerySelectorData.zone
 
@@ -869,21 +553,21 @@ export function initAvatars(initialState, initialStateColors, unlockedBodyZoneSh
           : "faceshape" === bodyZone
           ? ["faceshape", "chinshadow"]
           : bodyZone.split()
-      for (var d = 0; d < bodyZone.length; d++) {
-        a("#svga-custom-color > input").spectrum("set", bodyPartColorMappings[bodyZone[d]])
-        u = "facehighlight" === bodyZone[d] || "humanbody" === bodyZone[d] ? 0 : jQuerySelectorData.shape
-        for (t in bodyPartsConfig[bodyZone[d]].shapes[u])
-          if (bodyPartsConfig[bodyZone[d]].shapes[u].hasOwnProperty(t)) {
-            var h = b.get("svga-group-" + bodyZone[d] + "-" + t)
-            a("#svga-group-" + bodyZone[d] + "-" + t).empty()
-            H = !0
-            X(h, bodyZone[d], u, t)
+      for (var i = 0; i < bodyZone.length; i++) {
+        a("#svga-custom-color > input").spectrum("set", bodyPartColorMappings[bodyZone[i]])
+        //shapeIndex = "facehighlight" === bodyZone[i] || "humanbody" === bodyZone[i] ? 0 : jQuerySelectorData.shape
+        shapeIndex = jQuerySelectorData.shape
+        for (segmentOfShape in bodyZoneConfig[bodyZone[i]].shapes[shapeIndex])
+          if (bodyZoneConfig[bodyZone[i]].shapes[shapeIndex].hasOwnProperty(segmentOfShape)) {
+            a("#svga-group-" + bodyZone[i] + "-" + segmentOfShape).empty()
+            onCanvas = true
+            drawBodyPartOnCanvas(b.get("svga-group-" + bodyZone[i] + "-" + segmentOfShape), bodyZone[i], shapeIndex, segmentOfShape, onCanvas)
           }
         jQuerySelector.siblings().removeClass("svga-active-element")
         jQuerySelector.addClass("svga-active-element")
-        M[bodyZone[d]] = u
-      }
-      l = ++l
+        selectedAvatarElements[bodyZone[i]] = shapeIndex
+      }*/
+      
     })
     a(".svga-glob-controls").on("click", function() {
       var g = a(this).attr("id"),
@@ -915,10 +599,10 @@ export function initAvatars(initialState, initialStateColors, unlockedBodyZoneSh
           b.get("svga-group-hair-back-move").svgaRotateRight(1, 3, 100, 150),
             b.get("svga-group-head").svgaRotateRight(1, 3, 100, 150)
       }
-      l = ++l
+      
     })
     a("#svga-controls-up").on("click", function() {
-      switch (p) {
+      switch (activeBodyZone) {
         case "mouth":
           var a = b.get("svga-group-mouth-single-move")
           a.svgaUp()
@@ -962,10 +646,10 @@ export function initAvatars(initialState, initialStateColors, unlockedBodyZoneSh
         case "glasses":
           ;(a = b.get("svga-group-glasses-single-move")), a.svgaUp(5)
       }
-      l = ++l
+      
     })
     a("#svga-controls-down").on("click", function() {
-      switch (p) {
+      switch (activeBodyZone) {
         case "mouth":
           var a = b.get("svga-group-mouth-single-move")
           a.svgaDown()
@@ -1009,10 +693,10 @@ export function initAvatars(initialState, initialStateColors, unlockedBodyZoneSh
         case "glasses":
           ;(a = b.get("svga-group-glasses-single-move")), a.svgaDown(5)
       }
-      l = ++l
+      
     })
     a("#svga-controls-left").on("click", function() {
-      switch (p) {
+      switch (activeBodyZone) {
         case "mouth":
           var a = b.get("svga-group-mouth-single-move")
           a.svgaLeft(2, 0.5)
@@ -1034,10 +718,10 @@ export function initAvatars(initialState, initialStateColors, unlockedBodyZoneSh
         case "beard":
           ;(a = b.get("svga-group-beard-single-move")), a.svgaLeft(2, 0.5)
       }
-      l = ++l
+      
     })
     a("#svga-controls-right").on("click", function() {
-      switch (p) {
+      switch (activeBodyZone) {
         case "mouth":
           var a = b.get("svga-group-mouth-single-move")
           a.svgaRight(2, 0.5)
@@ -1059,10 +743,10 @@ export function initAvatars(initialState, initialStateColors, unlockedBodyZoneSh
         case "beard":
           ;(a = b.get("svga-group-beard-single-move")), a.svgaRight(2, 0.5)
       }
-      l = ++l
+      
     })
     a("#svga-controls-scaleup").on("click", function() {
-      switch (p) {
+      switch (activeBodyZone) {
         case "faceshape":
           var a = b.get("svga-group-faceshape-wrap")
           a.svgaScaleUp(2, 0.02, 1e-4)
@@ -1120,10 +804,10 @@ export function initAvatars(initialState, initialStateColors, unlockedBodyZoneSh
         case "glasses":
           ;(a = b.get("svga-group-glasses-single")), a.svgaScaleUp(3)
       }
-      l = ++l
+      
     })
     a("#svga-controls-scaledown").on("click", function() {
-      switch (p) {
+      switch (activeBodyZone) {
         case "faceshape":
           var a = b.get("svga-group-faceshape-wrap")
           a.svgaScaleDown(2, 0.02, 1e-4)
@@ -1181,10 +865,10 @@ export function initAvatars(initialState, initialStateColors, unlockedBodyZoneSh
         case "glasses":
           ;(a = b.get("svga-group-glasses-single")), a.svgaScaleDown(3)
       }
-      l = ++l
+      
     })
     a("#svga-controls-tightly").on("click", function() {
-      switch (p) {
+      switch (activeBodyZone) {
         case "eyebrows":
           var a = b.get("svga-group-eyebrows-left-move")
           a.svgaRight()
@@ -1197,10 +881,10 @@ export function initAvatars(initialState, initialStateColors, unlockedBodyZoneSh
           (a = b.get("svga-group-eyes-right-move")),
           a.svgaLeft()
       }
-      l = ++l
+      
     })
     a("#svga-controls-wider").on("click", function() {
-      switch (p) {
+      switch (activeBodyZone) {
         case "eyebrows":
           var a = b.get("svga-group-eyebrows-left-move")
           a.svgaLeft()
@@ -1213,35 +897,35 @@ export function initAvatars(initialState, initialStateColors, unlockedBodyZoneSh
           (a = b.get("svga-group-eyes-right-move")),
           a.svgaRight()
       }
-      l = ++l
+      
     })
     a("#svga-controls-eb1").on("click", function() {
       var a = b.get("svga-group-eyebrows-left-rotate")
       a.svgaCancelRotate().svgaRotateRight(1, C / 2)
       a = b.get("svga-group-eyebrows-right-rotate")
       a.svgaCancelRotate().svgaRotateRight(1, C / 4)
-      l = ++l
+      
     })
     a("#svga-controls-eb2").on("click", function() {
       var a = b.get("svga-group-eyebrows-left-rotate")
       a.svgaCancelRotate().svgaRotateLeft(1, C / 4)
       a = b.get("svga-group-eyebrows-right-rotate")
       a.svgaCancelRotate().svgaRotateLeft(1, C / 2)
-      l = ++l
+      
     })
     a("#svga-controls-eb3").on("click", function() {
       var a = b.get("svga-group-eyebrows-left-rotate")
       a.svgaCancelRotate().svgaRotateRight(1, C / 2)
       a = b.get("svga-group-eyebrows-right-rotate")
       a.svgaCancelRotate().svgaRotateLeft(1, C / 2)
-      l = ++l
+      
     })
     a("#svga-controls-eb4").on("click", function() {
       var a = b.get("svga-group-eyebrows-left-rotate")
       a.svgaCancelRotate().svgaRotateLeft(1, C / 1.4)
       a = b.get("svga-group-eyebrows-right-rotate")
       a.svgaCancelRotate().svgaRotateRight(1, C / 1.4)
-      l = ++l
+      
     })
     a("#svga-controls-ebcancel").on("click", function() {
       var a = b.get("svga-group-eyebrows-left-rotate")
@@ -1251,27 +935,14 @@ export function initAvatars(initialState, initialStateColors, unlockedBodyZoneSh
     })
     a("#svga-resetavatar").on("click", function() {
       U = "reset"
-      a("#svga-dialog").fadeIn("fast")
     })
     a("#svga-randomavatar").on("click", function() {
-      2 >= l
-        ? randomAvatar()
-        : ((U = "random"),
-          a("#svga-work-overlay").fadeIn("fast"),
-          a("#svga-dialog").fadeIn("fast"))
+      U = "random"
     })
     a("#svga-dialog-ok").on("click", function() {
-      "reset" === U
-        ? (resetFunction(),
-          a("#svga-work-overlay").fadeOut("fast"),
-          a("#svga-dialog").fadeOut("fast"))
-        : "random" === U &&
-        (randomAvatar(),
-          a("#svga-work-overlay").fadeOut("fast"),
-          a("#svga-dialog").fadeOut("fast"))
-    })
-    a("#svga-dialog-cancel").on("click", function() {
-      a("#svga-dialog").fadeOut("fast")
+      /*"reset" === U
+        ? (resetAvatar() && resetFunction())
+        : "random" === U && randomAvatar()*/
     })
     a("#svga-tryagain").on("click", function() {
       a("#svga-loader").hide()
@@ -1280,32 +951,30 @@ export function initAvatars(initialState, initialStateColors, unlockedBodyZoneSh
     })
 
     a("#svga-saveavatar").on("click", function() {
-      a("#svga-work-overlay").fadeIn("fast")
-      q && q.hide()
-      r && r.hide()
+      //a("#svga-work-overlay").fadeIn("fast")
+      //q && q.hide()
+      //r && r.hide()
       var b = a("#svga-svgmain").html()
-      saveFunction(b, M, colors, function() {
+      /*saveFunction(b, selectedAvatarElements, colors, function() {
         a("#svga-message-text").removeClass("svga-error")
         a("#svga-work-overlay").fadeOut("fast")
-      })
+      })*/
     })
     a(".svga-col-left .sp-dd").remove()
     a("#svga-blocks-face").trigger("click")
     a("#svga-bodyzones-faceshape").trigger("click")
-    a("#svga-elements-faceshape-" + M.faceshape)
+    a("#svga-elements-faceshape-" + selectedAvatarElements.faceshape)
       .trigger("click")
       .addClass("svga-active-element")
-    a("#svga-colors-faceshape > div:nth-child(1)").trigger("click")
+    //a("#svga-colors-faceshape > div:nth-child(1)").trigger("click")
     a("#svga-loader").hide()
-    l = 2
-    R = !1
     setTimeout(function() {
       da()
     }, 100)
     a("#svga-start-overlay").hide()
   }
   function da() {
-    var b = a(".svga-col-left"),
+    /*var b = a(".svga-col-left"),
       e = a(".svga-col-right")
     b.height("auto")
     e.height("auto")
@@ -1313,10 +982,10 @@ export function initAvatars(initialState, initialStateColors, unlockedBodyZoneSh
       var c = b.height(),
         f = e.height()
       c >= f ? e.height(c) : b.height(f)
-    }
+    }*/
   }
   var c = svgAvatarsOptions(),
-    b = window.SVG,
+    b = SVG,
     Q = window.tinycolor,
     G = window.canvg
   c.version = "1.4"
@@ -1455,9 +1124,10 @@ export function initAvatars(initialState, initialStateColors, unlockedBodyZoneSh
     a(".scrollbar").scrollbar({ showArrows: !1, ignoreMobile: !1 }))
 
   function applyInitialState(initialBody, initialColors) {
-    for (var bodyPart in initialBody) {
-      a("#svga-elements-" + bodyPart + "-" + initialBody[bodyPart]).trigger("click")
-      if (initialColors) {
+
+    //for (var bodyPart in initialBody) {
+      //a("#svga-elements-" + bodyPart + "-" + initialBody[bodyPart]).trigger("click")
+      /*if (initialColors) {
         a("#svga-blocks-" + (bodyPart === "backs" ? "backs"
           : (bodyPart === "beard" || bodyPart === "chinshadow" || bodyPart === "facehighlight" || bodyPart === "mustache" || bodyPart === "mouth" || bodyPart === "nose" || bodyPart === "ears") ? "face"
             : bodyPart === "hair" ? "hair"
@@ -1466,9 +1136,9 @@ export function initAvatars(initialState, initialStateColors, unlockedBodyZoneSh
         ).trigger("click")
         a("#svga-bodyzones-" + bodyPart).trigger("click")
         a("#svga-colors-" + bodyPart + " > div:nth-child(" + initialColors[bodyPart] + ")").trigger("click")
-      }
-    }
-    a("#svga-blocks-face").trigger("click")
-    a("#svga-bodyzones-faceshape").trigger("click")
+      }*/
+    //}
+    //a("#svga-blocks-face").trigger("click")
+    //a("#svga-bodyzones-faceshape").trigger("click")
   }
 }
