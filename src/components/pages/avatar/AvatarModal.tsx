@@ -169,6 +169,11 @@ export const AvatarModal = ({
         setMaleType(true)
         setMaleType(false)
         setMaleType(user.avatarData ? user.avatarData["clothes"] < 10 : true)
+        setTimeout(() => {
+          if (!user.avatarData) {
+            resetAvatar()
+          }
+        }, 1)
       }, 10)
     }
   }, [visible, avatarsConfigLoading])
@@ -230,6 +235,11 @@ export const AvatarModal = ({
     }*/
 
     if (!avatarsConfig) return
+    if (!initialBody) {
+      resetAvatar()
+      return
+    }
+
     let bodyZones = "backs faceshape chinshadow facehighlight humanbody clothes hair ears eyebrows eyesback eyesiris eyesfront glasses mouth mustache beard nose".split(" ")
     for (let i = 0; i < bodyZones.length; i++) {
       for (let segmentOfShape in avatarsConfig[bodyZones[i]].shapes[initialBody[bodyZones[i]]]) {
@@ -516,7 +526,7 @@ export const AvatarModal = ({
 
     for (let bodyZone in avatarsConfig) {
       if (bodyZone === "unlockInfo") continue
-      const shapeIndex = bodyZone === "backs" || bodyZone === "hair" ? 1 : 0;
+      const shapeIndex = bodyZone === "hair" ? 1 : 0;
       (window as any).jQuery("#svga-elements-" + bodyZone + "-" + shapeIndex).trigger("click");
     }
     (window as any).jQuery("#svga-blocks-face").trigger("click");
