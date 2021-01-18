@@ -154,16 +154,13 @@ export function initAvatars(initialState, initialStateColors, unlockedBodyZoneSh
 
 
     function D(a, b, e) {
-      //console.log("[js] hexColor: " + a)
       a = Q(a).toHsv()
-      //console.log("[js] hsv: " + a)
       a.s += b
       0 > a.s && (a.s = 0)
       1 < a.s && (a.s = 1)
       a.v += e
       0 > a.v && (a.v = 0)
       1 < a.v && (a.v = 1)
-      //console.log("[js] hex: " + Q(a).toHexString())
       return Q(a).toHexString()
     }
 
@@ -333,7 +330,7 @@ export function initAvatars(initialState, initialStateColors, unlockedBodyZoneSh
         a("#svga-bodyzones-" + bodyZone).hide()
       }
     }*/
-    for (var B in x)
+    for (var B in x) {
       x.hasOwnProperty(B) &&
       -1 < T.indexOf(B) &&
       (a("#svga-controls").append(
@@ -344,7 +341,8 @@ export function initAvatars(initialState, initialStateColors, unlockedBodyZoneSh
         '"/></svg></div>'
       ),
         a("#svga-controls-" + B).hide())
-    for (B in x)
+    }
+    for (B in x) {
       x.hasOwnProperty(B) &&
       -1 < K.indexOf(B) &&
       a("#svga-glob-controls").append(
@@ -354,6 +352,7 @@ export function initAvatars(initialState, initialStateColors, unlockedBodyZoneSh
         x[B] +
         '"/></svg></div>'
       )
+    }
     for (let i = 0; i < randomResetSaveControls.length; i++)
       a("#svga-" + randomResetSaveControls[i] + "avatar > div").append(
         '<svg class="svga-menu-icon" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 28 28" preserveAspectRatio="xMinYMin meet"><path class="svga-menu-icon-path" d="' +

@@ -10,7 +10,6 @@ import {
 } from "../../../api/userAPI"
 import {
   AllAvatarBodyZonesModel,
-  AvatarBodyZoneShapeModel,
   AvatarBodyZoneShapeSegmentModel
 } from "../../../api/avatarsAPI"
 import { updateAvatar, updateUnlockedAvatarOptions } from "../../../features/userSlice"
@@ -130,63 +129,42 @@ export const AvatarModal = ({
     }
 
     if (visible && !initialized.current) {
+      initialized.current = true
       const tempMaleType = user.avatarData ? user.avatarData["clothes"] < 10 : true
       setUpdatedConfig({ ...avatarsConfig,
         "faceshape": { ...avatarsConfig["faceshape"], shapes: avatarsConfig["faceshape"].shapes.slice(tempMaleType ? 0 : 15, tempMaleType ? 15 : 30) },
         "chinshadow": { ...avatarsConfig["chinshadow"], shapes: avatarsConfig["chinshadow"].shapes.slice(tempMaleType ? 0 : 15, tempMaleType ? 15 : 30) }
       })
       setMaleType(tempMaleType)
-      initialized.current = true
     }
   }, [visible, avatarsConfigLoading])
 
   useEffect(() => {
-    if (updatedConfig && maleTypeInitialized && !elementsInitialized) {
+    if (Object.keys(updatedConfig).length && initialized.current && maleTypeInitialized && !elementsInitialized) {
+      initTools(window)
+      initAvatars(
+        user.avatarData,
+        user.avatarDataColors,
+        user.avatarUnlockedBodyZoneShapes,
+        user.xp,
+        onClickLockedShape,
+        saveAvatar,
+        SVG,
+        color,
+        colorsSet
+      )
+
+      initElements()
+      /*initZones(user.avatarData)
+      initColors(user.avatarDataColors)
+      setMaleType(true)
+      setMaleType(false)
+      setMaleType(user.avatarData ? user.avatarData["clothes"] < 10 : true)
       setTimeout(() => {
-        initTools(window)
-
-        /*
-        let shapeIndex: number
-        let bodyZones = "backs faceshape chinshadow facehighlight humanbody clothes hair ears eyebrows eyesback eyesiris eyesfront glasses mouth mustache beard nose".split(" ")
-        for (let i = shapeIndex = 0; i < bodyZones.length; i++) {
-          if ("backs" === bodyZones[i] || "hair" === bodyZones[i]) shapeIndex = 1
-          for (let segmentOfShape in avatarsConfig[bodyZones[i]].shapes[shapeIndex]) {
-            let bodyZone, blocks
-            if (avatarsConfig[bodyZones[i]].shapes[shapeIndex].hasOwnProperty(segmentOfShape)) {
-              bodyZone = "svga-group-" + bodyZones[i] + "-" + segmentOfShape;
-              (window as any).jQuery("#" + bodyZone).empty()
-              blocks = SVG.get(bodyZone)
-              drawBodyPartOnCanvas(blocks as SVG.Container, bodyZones[i], shapeIndex, segmentOfShape, true)
-            }
-          }
-          selectedElements[bodyZones[i]] = shapeIndex
-          shapeIndex = 0
-        }*/
-
-        initAvatars(
-          user.avatarData,
-          user.avatarDataColors,
-          user.avatarUnlockedBodyZoneShapes,
-          user.xp,
-          onClickLockedShape,
-          saveAvatar,
-          SVG,
-          color,
-          colorsSet
-        )
-
-        initElements()
-        /*initZones(user.avatarData)
-        initColors(user.avatarDataColors)
-        setMaleType(true)
-        setMaleType(false)
-        setMaleType(user.avatarData ? user.avatarData["clothes"] < 10 : true)
-        setTimeout(() => {
-          if (!user.avatarData) {
-            resetAvatar()
-          }
-        }, 1)*/
-      }, 10)
+        if (!user.avatarData) {
+          resetAvatar()
+        }
+      }, 1)*/
     }
   }, [updatedConfig, maleTypeInitialized])
   useEffect(() => {
@@ -225,7 +203,6 @@ export const AvatarModal = ({
     if (!previousBodyPartColorMappings) return
     for (let bodyZone of Object.keys(bodyPartColorMappings)) {
       if (bodyPartColorMappings[bodyZone] !== previousBodyPartColorMappings[bodyZone]) {
-        console.log(bodyPartColorMappings)
         if (bodyZone === "skin") {
           let bodyZonesToColor = "faceshape humanbody chinshadow facehighlight ears nose eyesfront".split(" ")
           for (let i = 0; i < bodyZonesToColor.length; i++) {
@@ -256,20 +233,10 @@ export const AvatarModal = ({
         "faceshape": { ...avatarsConfig["faceshape"], shapes: avatarsConfig["faceshape"].shapes.slice(maleType ? 0 : 15, maleType ? 15 : 30) },
         "chinshadow": { ...avatarsConfig["chinshadow"], shapes: avatarsConfig["chinshadow"].shapes.slice(maleType ? 0 : 15, maleType ? 15 : 30) }
       })
-      onClickElement("faceshape", selectedElements["faceshape"])
+      if (elementsInitialized) onClickElement("faceshape", selectedElements["faceshape"])
   }, [maleType])
 
   function initZones(initialBody: AvatarDataModel) {
-    console.log("zones init")
-    /*for (let bodyZone in initialBody) {
-      if (bodyZone === "humanbody" || bodyZone === "clothes") continue
-      (window as any).jQuery("#svga-elements-" + bodyZone + "-" + initialBody[bodyZone]).trigger("click")
-    }
-    // Changing clothes also changes humanbody, so we just set clothes (and in effect humanbody as well) at the end)
-    if (initialBody) {
-      (window as any).jQuery("#svga-elements-clothes-" + initialBody["clothes"]).trigger("click")
-    }*/
-
     if (!avatarsConfig) return
     if (!initialBody) {
       resetAvatar()
@@ -293,14 +260,12 @@ export const AvatarModal = ({
   }
 
   function initColors(colors: AvatarDataColorsModel) {
-    console.log("init colors")
     setColorChanging(true)
     setBodyPartColorMappings({ ...colors })
   }
 
   function initElements() {
     if (!avatarsConfig) return
-    console.log("init elements")
 
     for (let bodyZone in avatarsConfig) {
       if (!avatarsConfig.hasOwnProperty(bodyZone)) continue;
@@ -310,7 +275,6 @@ export const AvatarModal = ({
       //  '<div id="svga-elements-' + bodyZone + '"></div>'
       //)
       for (let i = 0; i < avatarsConfig[bodyZone].shapes.length; i++) {
-        console.log(bodyZone + i)
         if ((bodyZone === "faceshape" || bodyZone === "chinshadow") && i > 14) break
         (window as any).jQuery("#svga-elements-" + bodyZone).show();
         (window as any).jQuery("#svga-colors-" + bodyZone).show()
@@ -1050,7 +1014,6 @@ export const AvatarModal = ({
 
   //function colorsSet(jQuerySelector: any) {
   function colorsSet(bgColor: string, clickedNChild: number) {
-    console.log("active zone: " + activeBodyZone)
     /*
     jQuerySelector.siblings().removeClass("svga-active")
     jQuerySelector.addClass("svga-active")
