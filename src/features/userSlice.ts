@@ -31,6 +31,7 @@ import {
 } from "../api/userAPI"
 import { message } from "antd"
 import { resetShortAnswerAssignmentsStateAction } from "./shortAnswerAssignmentsSlice";
+import { resetAvatarStateAction } from "./avatarsSlice";
 
 
 interface UserState {
@@ -332,6 +333,7 @@ export const logOut = (staleSession?: boolean): AppThunk => async dispatch => {
   dispatch(resetShortAnswerAssignmentsStateAction())
   document.cookie = "HERO_ENGINEER="
   dispatch(logoutAction(staleSession || false))
+  dispatch(resetAvatarStateAction())
 }
 
 export const signUp = (

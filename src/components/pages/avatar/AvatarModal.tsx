@@ -93,6 +93,7 @@ export const AvatarModal = ({
   const [elementsInitialized, setElementsInitialized] = useState(false)
   const [zonesInitialized, setZonesInitialized] = useState(false)
   const [colorsInitialized, setColorsInitialized] = useState(false)
+  const [maleTypeInitialized, setMaleTypeInitialized] = useState(false)
   const { avatarsConfig, avatarsConfigLoading } = useSelector(
     (state: RootState) => state.avatars
   )
@@ -129,8 +130,18 @@ export const AvatarModal = ({
     }
 
     if (visible && !initialized.current) {
-      setUpdatedConfig(avatarsConfig)
+      const tempMaleType = user.avatarData ? user.avatarData["clothes"] < 10 : true
+      setUpdatedConfig({ ...avatarsConfig,
+        "faceshape": { ...avatarsConfig["faceshape"], shapes: avatarsConfig["faceshape"].shapes.slice(tempMaleType ? 0 : 15, tempMaleType ? 15 : 30) },
+        "chinshadow": { ...avatarsConfig["chinshadow"], shapes: avatarsConfig["chinshadow"].shapes.slice(tempMaleType ? 0 : 15, tempMaleType ? 15 : 30) }
+      })
+      setMaleType(tempMaleType)
       initialized.current = true
+    }
+  }, [visible, avatarsConfigLoading])
+
+  useEffect(() => {
+    if (updatedConfig && maleTypeInitialized && !elementsInitialized) {
       setTimeout(() => {
         initTools(window)
 
@@ -177,8 +188,7 @@ export const AvatarModal = ({
         }, 1)*/
       }, 10)
     }
-  }, [visible, avatarsConfigLoading])
-
+  }, [updatedConfig, maleTypeInitialized])
   useEffect(() => {
     if (elementsInitialized) {
       initZones(user.avatarData)
@@ -240,6 +250,7 @@ export const AvatarModal = ({
   }
   const previousMaleType: boolean | undefined = usePreviousFace(false)
   useEffect(() => {
+    if (!maleTypeInitialized) setMaleTypeInitialized(true)
     if (previousMaleType === undefined || !avatarsConfig) return
       setUpdatedConfig({ ...avatarsConfig,
         "faceshape": { ...avatarsConfig["faceshape"], shapes: avatarsConfig["faceshape"].shapes.slice(maleType ? 0 : 15, maleType ? 15 : 30) },
@@ -1164,7 +1175,7 @@ export const AvatarModal = ({
                             <div
                               id="svga-elements"
                               className="scrollbar scroll-simple_outer">
-                              {avatarsConfig && Object.keys(avatarsConfig).map(bodyZone =>
+                              {updatedConfig && Object.keys(updatedConfig).map(bodyZone =>
                                 <AvatarBodyZoneElement
                                   key={"svga-elements-" + bodyZone}
                                   config={updatedConfig[bodyZone]}

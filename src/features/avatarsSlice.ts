@@ -32,6 +32,9 @@ const avatars = createSlice({
       state.avatarsConfig = null
       state.avatarsConfigLoading = false
       state.error = action.payload
+    },
+    resetAvatarStateAction(state) {
+      Object.assign(state, initialState)
     }
   }
 })
@@ -39,7 +42,8 @@ const avatars = createSlice({
 export const {
   setAvatarsConfigLoading,
   fetchAvatarsConfigSuccessAction,
-  fetchAvatarsConfigFailedAction
+  fetchAvatarsConfigFailedAction,
+  resetAvatarStateAction
 } = avatars.actions
 
 export default avatars.reducer
