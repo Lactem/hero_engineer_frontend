@@ -90,6 +90,9 @@ export const AvatarModal = ({
 
   // Initialization values
   const initialized = useRef(false)
+  const [elementsInitialized, setElementsInitialized] = useState(false)
+  const [zonesInitialized, setZonesInitialized] = useState(false)
+  const [colorsInitialized, setColorsInitialized] = useState(false)
   const { avatarsConfig, avatarsConfigLoading } = useSelector(
     (state: RootState) => state.avatars
   )
@@ -100,8 +103,6 @@ export const AvatarModal = ({
   const [selectedElements, setSelectedElements] = useState({} as AvatarDataModel)
   const [colorChanging, setColorChanging] = useState(false)
   const [maleType, setMaleType] = useState(false)
-  const [faceshapeShapes, setFaceshapeShapes] = useState([] as AvatarBodyZoneShapeModel[])
-  const [chinshadowShapes, setChinshadowShapes] = useState([] as AvatarBodyZoneShapeModel[])
   const [updatedConfig, setUpdatedConfig] = useState({} as AllAvatarBodyZonesModel)
 
   const [bodyPartColorMappings, setBodyPartColorMappings] = useState(initialBodyPartColorMappings)
@@ -164,7 +165,7 @@ export const AvatarModal = ({
         )
 
         initElements()
-        initZones(user.avatarData)
+        /*initZones(user.avatarData)
         initColors(user.avatarDataColors)
         setMaleType(true)
         setMaleType(false)
@@ -173,10 +174,33 @@ export const AvatarModal = ({
           if (!user.avatarData) {
             resetAvatar()
           }
-        }, 1)
+        }, 1)*/
       }, 10)
     }
   }, [visible, avatarsConfigLoading])
+
+  useEffect(() => {
+    if (elementsInitialized) {
+      initZones(user.avatarData)
+    }
+  }, [elementsInitialized])
+  useEffect(() => {
+    if (zonesInitialized) {
+      initColors(user.avatarDataColors)
+    }
+  }, [zonesInitialized])
+  useEffect(() => {
+    if (colorsInitialized) {
+      setMaleType(true)
+      setMaleType(false)
+      setMaleType(user.avatarData ? user.avatarData["clothes"] < 10 : true)
+      setTimeout(() => {
+        if (!user.avatarData) {
+          resetAvatar()
+        }
+      }, 1)
+    }
+  }, [colorsInitialized])
 
   // Redraw avatar body zones when a new color is selected for a zone
   const usePrevious = (value: AvatarDataColorsModel): AvatarDataColorsModel | undefined => {
@@ -202,6 +226,7 @@ export const AvatarModal = ({
         }
       }
     }
+    if (!colorsInitialized) setColorsInitialized(true)
     setColorChanging(false)
   }, [bodyPartColorMappings])
 
@@ -253,15 +278,18 @@ export const AvatarModal = ({
       }
       selectedElements[bodyZones[i]] = initialBody[bodyZones[i]]
     }
+    setZonesInitialized(true)
   }
 
   function initColors(colors: AvatarDataColorsModel) {
+    console.log("init colors")
     setColorChanging(true)
     setBodyPartColorMappings({ ...colors })
   }
 
   function initElements() {
     if (!avatarsConfig) return
+    console.log("init elements")
 
     for (let bodyZone in avatarsConfig) {
       if (!avatarsConfig.hasOwnProperty(bodyZone)) continue;
@@ -333,6 +361,8 @@ export const AvatarModal = ({
        */
         (window as any).jQuery("#svga-colors-" + bodyZone).hide()
     }
+
+    setElementsInitialized(true)
   }
 
   function onClickLockedShape(unlockCost: number, id: string) {
@@ -584,7 +614,7 @@ export const AvatarModal = ({
           bodyZoneOption = randomNumber(0, 24)
           break
         case "backs":
-          bodyZoneOption = randomNumber(0, 4)
+          bodyZoneOption = 0
           break
         default:
           bodyZoneOption = randomNumber(0, 14)
@@ -895,7 +925,7 @@ export const AvatarModal = ({
     }
 
     let returnColor: string
-    let baseColor = defaultColor === "bodyZone" ? bodyPartColorMappings[bodyZone] : defaultColor
+    let baseColor = defaultColor === "bodyZone" ? bodyPartColorMappings[bodyZone] || initialBodyPartColorMappings[bodyZone] : defaultColor
 
     switch (a) {
       case "none":
@@ -1061,7 +1091,7 @@ export const AvatarModal = ({
     setBodyPartColorMappings({ ...bodyPartColorMappingsCopy })
   }
 
-  return (
+  return !avatarsConfig || avatarsConfigLoading ? <></> : (
     <Modal
       visible={visible}
       onCancel={() => setVisible(false)}
@@ -1099,6 +1129,7 @@ export const AvatarModal = ({
                             {avatarsConfig && Object.keys(avatarsConfig).map(bodyZone =>
                               bodyZone === "backs" ? <></> :
                               <AvatarColors
+                                key={"svga-colors-" + bodyZone}
                                 colors={avatarsConfig[bodyZone].colors}
                                 bodyZone={bodyZone}
                                 activeColor={bodyZone === "faceshape" ||
@@ -1135,6 +1166,7 @@ export const AvatarModal = ({
                               className="scrollbar scroll-simple_outer">
                               {avatarsConfig && Object.keys(avatarsConfig).map(bodyZone =>
                                 <AvatarBodyZoneElement
+                                  key={"svga-elements-" + bodyZone}
                                   config={updatedConfig[bodyZone]}
                                   name={bodyZone}
                                   active={activeBodyZone === bodyZone}
@@ -1151,6 +1183,7 @@ export const AvatarModal = ({
                             <div id="svga-bodyzones">
                               {avatarsConfig && Object.keys(avatarsConfig).map(bodyZone =>
                                 <AvatarBodyZone
+                                  key={"svga-bodyzones-" + bodyZone}
                                   config={avatarsConfig[bodyZone]}
                                   name={bodyZone}
                                   title={bodyZoneTitles[bodyZone]}
@@ -1169,7 +1202,7 @@ export const AvatarModal = ({
                               className="scrollbar scroll-simple_outer">
                               {blockNames.map((blockName, i) => (
                                 <AvatarBlock
-                                  key={blockName}
+                                  key={"svga-blocks-" + blockName}
                                   name={blockName}
                                   active={activeBlock === blockName}
                                   classes={"svga-blocks" + (i === blockNames.length - 1 ? " svga-last" : "")}

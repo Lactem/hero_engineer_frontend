@@ -57,6 +57,7 @@ export interface AvatarDataColorsModel {
   glasses: string
   hair: string
   mustache: string
+  beard: string
 }
 
 export interface UserWhitelistModel {

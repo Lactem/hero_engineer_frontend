@@ -12,7 +12,6 @@ export const AvatarBlock = ({ name, active, classes, bodyZones, onClick }: Avata
   return (
     <div
       id={`svga-blocks-${name}`}
-      key={`svga-blocks-${name}`}
       className={classes + (active ? " svga-active" : "")}
       data-blockname={name}
       data-bodyzones={bodyZones}

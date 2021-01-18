@@ -65,7 +65,6 @@ export const AvatarBodyZoneElement = ({
   return (
     <div
       id={"svga-elements-" + name}
-      key={"svga-elements-" + name}
       className={`svga-elements-wrap-${zoneActive ? "display" : "hidden"}`}
     >
       {Object.keys(config.shapes).map((_, i) => (

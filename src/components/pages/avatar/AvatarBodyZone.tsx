@@ -16,7 +16,6 @@ export const AvatarBodyZone = ({ config, name, title, active, blockActive, onCli
   return (
     <div
       id={"svga-bodyzones-" + name}
-      key={"svga-bodyzones-" + name}
       className={"svga-bodyzones" + (active ? " svga-active" : "") + (blockActive ? " svga-bodyzone-display" : " svga-bodyzone-hidden")}
       data-bodyzone={name}
       data-controls={config.controls}

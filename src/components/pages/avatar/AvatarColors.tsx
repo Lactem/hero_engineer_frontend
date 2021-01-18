@@ -20,7 +20,6 @@ export const AvatarColors = ({
   return (
     <div
       id={"svga-colors-" + bodyZone}
-      key={"svga-colors-" + bodyZone}
       className={`svga-colors-set svga-elements-wrap-${zoneActive ? "display" : "hidden"}`}
     >
       {colors.map((color, i) => (
