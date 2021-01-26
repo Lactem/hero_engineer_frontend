@@ -33,8 +33,10 @@ export const Home = () => {
 
   function handleHeroCouncil() {
     if (user) {
-      if (user.grandChallengeCategory) history.push("/councils")
-      else setHeroCouncilIntroVisible(true)
+      // TODO: Intro modal is temporarily disabled in order to make the whole class into one giant hero council
+      // if (user.grandChallengeCategory) history.push("/councils")
+      // else setHeroCouncilIntroVisible(true)
+      history.push("/councils")
     }
   }
 
@@ -115,7 +117,7 @@ export const Home = () => {
             </Space>
             <Space className="card__profile">
               {user && (
-                <div onClick={() => setAvatarModalVisible(true)}>
+                <div style={{cursor: "pointer"}} onClick={() => setAvatarModalVisible(true)}>
                   <Tooltip title="Edit Avatar">
                     <Avatar size={75} icon={user.avatarSVG
                       ? <span dangerouslySetInnerHTML={{__html: user.avatarSVG}} />

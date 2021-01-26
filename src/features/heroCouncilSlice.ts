@@ -15,6 +15,7 @@ import { loadProfile } from "./userSlice"
 
 
 interface HeroCouncilState {
+  heroCouncilLoading: boolean
   heroCouncil: HeroCouncilModel | null
   allHeroCouncils: HeroCouncilModel[] | null
   allGrandChallenges: GrandChallengeModel[] | null
@@ -22,6 +23,7 @@ interface HeroCouncilState {
 }
 
 const initialState: HeroCouncilState = {
+  heroCouncilLoading: false,
   heroCouncil: null,
   allHeroCouncils: null,
   allGrandChallenges: null,
@@ -32,8 +34,15 @@ const heroCouncil = createSlice({
   name: "heroCouncil",
   initialState,
   reducers: {
+    startLoadingHeroCouncilAction(state) {
+      state.heroCouncilLoading = true
+    },
     loadHeroCouncilSuccessAction(state, action: PayloadAction<HeroCouncilModel>) {
       state.heroCouncil = action.payload
+      state.heroCouncilLoading = false
+    },
+    loadHeroCouncilFailedAction(state) {
+      state.heroCouncilLoading = false
     },
     loadAllHeroCouncilsSuccessAction(state, action: PayloadAction<HeroCouncilModel[]>) {
       state.allHeroCouncils = action.payload
@@ -48,7 +57,9 @@ const heroCouncil = createSlice({
 })
 
 export const {
+  startLoadingHeroCouncilAction,
   loadHeroCouncilSuccessAction,
+  loadHeroCouncilFailedAction,
   loadAllHeroCouncilsSuccessAction,
   loadAllGrandChallengesSuccessAction,
   loadFailedAction
@@ -57,11 +68,13 @@ export const {
 export default heroCouncil.reducer
 
 export const loadHeroCouncil = (): AppThunk => async dispatch => {
+  dispatch(startLoadingHeroCouncilAction())
   apiLoadHeroCouncil()
     .then(response => {
       dispatch(loadHeroCouncilSuccessAction(response.data))
     })
     .catch(error => {
+      dispatch(loadHeroCouncilFailedAction())
       console.log(error.toJSON())
       console.log(error.toString())
       if (error.response) {

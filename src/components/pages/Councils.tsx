@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react"
 
-import { Avatar, Button, Comment, Empty, Form, Input, message, Select, Upload } from "antd"
+import { Avatar, Button, Comment, Empty, Form, Input, message, Modal, Select, Spin, Tooltip, Upload } from "antd"
 
 import { useDispatch, useSelector } from "react-redux"
 import { UserModel } from "../../api/userAPI"
 import { RootState } from "../../app/rootReducer"
-import { InboxOutlined, RedoOutlined, RollbackOutlined, UserOutlined } from "@ant-design/icons/lib"
+import { InboxOutlined, RedoOutlined, RollbackOutlined, TeamOutlined, UserOutlined } from "@ant-design/icons/lib"
 import { HeroCouncilIntro } from "./HeroCouncilIntro"
 import { loadClassmates } from "../../features/sectionSlice"
 
@@ -22,10 +22,12 @@ export const Councils = () => {
   const dispatch = useDispatch()
   const [heroCouncilIntroVisible, setHeroCouncilIntroVisible] = useState(false)
   const [categoryClassmates, setCategoryClassmates] = useState([] as UserModel[])
+  const [requestedHeroCouncil, setRequestedHeroCouncil] = useState(false)
+  const [initialized, setInitialized] = useState(false)
   const { user, professorAvatar } = useSelector(
     (state: RootState) => state.user
   )
-  const { heroCouncil } = useSelector(
+  const { heroCouncil, heroCouncilLoading } = useSelector(
     (state: RootState) => state.heroCouncil
   )
   const { classmates } = useSelector(
@@ -34,11 +36,18 @@ export const Councils = () => {
   useEffect(() => {
     const timer = setInterval(() => {
       dispatch(loadHeroCouncil())
+      if (!requestedHeroCouncil) setRequestedHeroCouncil(true)
     }, 1000);
     return () => clearTimeout(timer);
   })
   if (!classmates) dispatch(loadClassmates())
   if (!professorAvatar) dispatch(loadProfessorAvatar())
+
+  useEffect(() => {
+    if (!initialized && !heroCouncilLoading && requestedHeroCouncil) {
+      setInitialized(true)
+    }
+  }, [heroCouncilLoading, requestedHeroCouncil])
 
   useEffect(() => {
     let categoryClassmates: UserModel[] = []
@@ -57,22 +66,24 @@ export const Councils = () => {
 
   return (
     <>
-      {user && (!heroCouncil || !heroCouncil.name || !heroCouncil.declarationFileName) && <CreateCouncil
+      {!initialized && <div className="loading-container"><Spin size={"large"} /></div>}
+      {initialized && user && (!heroCouncil || !heroCouncil.name || !heroCouncil.declarationFileName) && <CreateCouncil
         user={user}
         heroCouncilIntroVisible={heroCouncilIntroVisible}
         setHeroCouncilIntroVisible={setHeroCouncilIntroVisible}
         categoryClassmates={categoryClassmates}
       />}
 
-      {user && heroCouncil && heroCouncil.name && heroCouncil.declarationFileName && !heroCouncil.approved &&
+      {initialized && user && heroCouncil && heroCouncil.name && heroCouncil.declarationFileName && !heroCouncil.approved &&
       <PendingCouncilView
         user={user}
       />}
-      {user && heroCouncil && heroCouncil.name && heroCouncil.declarationFileName && heroCouncil.approved &&
+      {initialized && user && heroCouncil && heroCouncil.name && heroCouncil.declarationFileName && heroCouncil.approved &&
       <ApprovedCouncilView
         user={user}
         professorAvatar={professorAvatar}
         council={heroCouncil}
+        classmates={classmates || []}
       />}
     </>
   )
@@ -245,26 +256,78 @@ interface ApprovedCouncilViewProps {
   user: UserModel
   professorAvatar: string
   council: HeroCouncilModel
+  classmates: UserModel[]
 }
-const ApprovedCouncilView = ({ user, professorAvatar, council }: ApprovedCouncilViewProps) => {
-  return <>
+const ApprovedCouncilView = ({ user, professorAvatar, council, classmates }: ApprovedCouncilViewProps) => {
+  const [membersModalVisible, setMembersModalVisible] = useState(false)
+  const [members, setMembers] = useState([] as UserModel[])
+
+  useEffect(() => {
+    console.log("classmates: ")
+    console.log(classmates)
+    console.log("emails: ")
+    console.log(council.emails)
+    let updatedMembers: UserModel[] = []
+
+    for (const classmate of classmates) {
+      if (council.emails && council.emails.indexOf(classmate.email) >= 0) {
+        updatedMembers = [...updatedMembers, classmate]
+      }
+    }
+    setMembers(updatedMembers)
+  }, [council, classmates])
+
+  return (<>
+    <Modal
+      visible={membersModalVisible}
+      onCancel={() => setMembersModalVisible(false)}
+      style={{ top: 20 }}
+      footer={null}
+      width="30%"
+    >
+      {members.length === 0 && <Empty style={{marginTop: "50px"}} description={<>Looks like your Hero Council is empty :(</>} />}
+      {members.length > 0 && members.map(member => (<div key={"member-" + member.email}>
+          <Comment
+            author={member.username}
+            datetime={<>{member.email}</>}
+            content={<></>}
+            avatar={<Avatar style={{marginRight: "3px"}} size="large" icon={member.avatarSVG
+              ? <span dangerouslySetInnerHTML={{__html: member.avatarSVG}} />
+              : <UserOutlined />}
+            />}
+          />
+        </div>)
+        )}
+    </Modal>
+
     <h1 style={{textAlign: "center"}}>Hero Council Room</h1>
-    {!(council.announcements) && (<Empty description={<>No activity yet. Professor Ramsey will post an update soon.</>} />)}
-    {council.announcements && council.announcements.length > 0 && [...council.announcements]
-      .sort((a, b) =>(a.num < b.num) ? 1 : -1)
-      .map(announcement => <div key={announcement.num}>
-        <Comment
-          author="Professor Ramsey"
-          content={
-            <>
-              <p>{announcement.text}</p>
-            </>
-          }
-          avatar={<Avatar style={{marginRight: "3px"}} size="large" icon={professorAvatar
-            ? <span dangerouslySetInnerHTML={{__html: professorAvatar}} />
-            : <UserOutlined />}
-          />}
-        />
-      </div>)}
-  </>
+    <div id="announcements-wrapper">
+      <div style={{display: "flex", justifyContent: "center"}}>
+        <div style={{cursor: "pointer"}} onClick={() => setMembersModalVisible(true)}>
+          <Tooltip title={"View Members"}>
+            <Avatar size={75} icon={<TeamOutlined />} />
+          </Tooltip>
+        </div>
+      </div>
+      {!(council.announcements) && (<Empty description={<>No activity yet. Professor Ramsey will post an update soon.</>} />)}
+      {council.announcements && council.announcements.length > 0 &&
+      [...council.announcements]
+        .sort((a, b) =>(a.num < b.num) ? 1 : -1)
+        .map(announcement => (<div key={announcement.num}>
+          <Comment
+            author="Professor Ramsey"
+            content={
+              <>
+                <p>{announcement.text}</p>
+              </>
+            }
+            avatar={<Avatar style={{marginRight: "3px"}} size="large" icon={professorAvatar
+              ? <span dangerouslySetInnerHTML={{__html: professorAvatar}} />
+              : <UserOutlined />}
+            />}
+          />
+        </div>)
+      )}
+    </div>
+  </>)
 }

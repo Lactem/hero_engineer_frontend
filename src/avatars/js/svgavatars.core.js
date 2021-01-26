@@ -7,8 +7,8 @@ export function initAvatars(initialState, initialStateColors, unlockedBodyZoneSh
   var c = svgAvatarsOptions()
 
   // API config. Change when testing locally
-  //var API = "https://heroengineer.com:8082/api"
-  var API = "http://localhost:8081/api"
+  var API = "https://heroengineer.com:8082/api"
+  // var API = "http://localhost:8081/api"
   var colors = {}
 
   // Fetch avatar data
