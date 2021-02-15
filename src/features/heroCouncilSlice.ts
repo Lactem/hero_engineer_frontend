@@ -5,7 +5,7 @@ import {
   AnnouncementModel,
   apiEnterCodeForGrandChallenge, apiGenerateCodeForGrandChallenge, apiGenerateCodeForHeroCouncil,
   apiLoadAllGrandChallenges, apiLoadAllHeroCouncils,
-  apiLoadHeroCouncil, apiRemoveHeroCouncil, apiSaveGrandChallenge, apiSaveHeroCouncil,
+  apiLoadMyHeroCouncils, apiRemoveHeroCouncil, apiSaveGrandChallenge, apiSaveHeroCouncil,
   GrandChallengeModel,
   HeroCouncilModel, QuestInfoModel
 } from "../api/heroCouncilAPI"
@@ -15,16 +15,16 @@ import { loadProfile } from "./userSlice"
 
 
 interface HeroCouncilState {
-  heroCouncilLoading: boolean
-  heroCouncil: HeroCouncilModel | null
+  heroCouncilsLoading: boolean
+  heroCouncils: HeroCouncilModel[] | null
   allHeroCouncils: HeroCouncilModel[] | null
   allGrandChallenges: GrandChallengeModel[] | null
   error: string | null
 }
 
 const initialState: HeroCouncilState = {
-  heroCouncilLoading: false,
-  heroCouncil: null,
+  heroCouncilsLoading: false,
+  heroCouncils: null,
   allHeroCouncils: null,
   allGrandChallenges: null,
   error: null
@@ -34,15 +34,15 @@ const heroCouncil = createSlice({
   name: "heroCouncil",
   initialState,
   reducers: {
-    startLoadingHeroCouncilAction(state) {
-      state.heroCouncilLoading = true
+    startLoadingMyHeroCouncilsAction(state) {
+      state.heroCouncilsLoading = true
     },
-    loadHeroCouncilSuccessAction(state, action: PayloadAction<HeroCouncilModel>) {
-      state.heroCouncil = action.payload
-      state.heroCouncilLoading = false
+    loadMyHeroCouncilsSuccessAction(state, action: PayloadAction<HeroCouncilModel[]>) {
+      state.heroCouncils = action.payload
+      state.heroCouncilsLoading = false
     },
-    loadHeroCouncilFailedAction(state) {
-      state.heroCouncilLoading = false
+    loadMyHeroCouncilsFailedAction(state) {
+      state.heroCouncilsLoading = false
     },
     loadAllHeroCouncilsSuccessAction(state, action: PayloadAction<HeroCouncilModel[]>) {
       state.allHeroCouncils = action.payload
@@ -57,9 +57,9 @@ const heroCouncil = createSlice({
 })
 
 export const {
-  startLoadingHeroCouncilAction,
-  loadHeroCouncilSuccessAction,
-  loadHeroCouncilFailedAction,
+  startLoadingMyHeroCouncilsAction,
+  loadMyHeroCouncilsSuccessAction,
+  loadMyHeroCouncilsFailedAction,
   loadAllHeroCouncilsSuccessAction,
   loadAllGrandChallengesSuccessAction,
   loadFailedAction
@@ -67,14 +67,15 @@ export const {
 
 export default heroCouncil.reducer
 
-export const loadHeroCouncil = (): AppThunk => async dispatch => {
-  dispatch(startLoadingHeroCouncilAction())
-  apiLoadHeroCouncil()
+// Loads hero councils that the user is a part of
+export const loadMyHeroCouncils = (): AppThunk => async dispatch => {
+  dispatch(startLoadingMyHeroCouncilsAction())
+  apiLoadMyHeroCouncils()
     .then(response => {
-      dispatch(loadHeroCouncilSuccessAction(response.data))
+      dispatch(loadMyHeroCouncilsSuccessAction(response.data))
     })
     .catch(error => {
-      dispatch(loadHeroCouncilFailedAction())
+      dispatch(loadMyHeroCouncilsFailedAction())
       console.log(error.toJSON())
       console.log(error.toString())
       if (error.response) {

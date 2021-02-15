@@ -10,6 +10,13 @@
     @include fade-in(1s, 0s);
 }
 
+.councils-nav {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    justify-content: flex-start;
+}
+
 .ant-comment-avatar {
     cursor: default;
 }

@@ -39,14 +39,3 @@
 .log-in-button {
     @include fade-in(0.5s, 0.7s);
 }
-
-.ant-btn-primary {
-    background-color: #FFD700;
-    border-color: #FFD700;
-    color: #bd2031;
-}
-.ant-btn-primary:hover, .ant-btn-primary:focus {
-    background-color: #ffc800 !important;
-    border-color: #ffc800 !important;
-    color: #bd2031 !important;
-}

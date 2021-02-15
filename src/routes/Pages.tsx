@@ -17,14 +17,13 @@ import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "../app/rootReducer"
 
 const Pages = () => {
-  const reload = () => window.location.reload();
   const dispatch = useDispatch()
-  const { userLoading } = useSelector(
+  const { userLoading, isAuthenticated } = useSelector(
     (state: RootState) => state.user
   )
   useEffect(() => {
     const timer = setInterval(() => {
-      if (!userLoading) {
+      if (!userLoading && isAuthenticated) {
         dispatch(loadProfile())
       }
     }, 5000);
@@ -41,7 +40,6 @@ const Pages = () => {
       <LoggedInRoute path="/councils" exact={true} component={Councils} />
       <LoggedInRoute path="/live-classroom" exact={true} component={LiveClassroom} />
       <LoggedInHomeRoute path="/home" exact={true} component={Home} />
-      <Route path="/.well-known/pki-validation/5E5757841245634A66E1A558303AAAEB.txt" exact={true} onEnter={reload} />
       <Route component={NotFound} />
     </Switch>
   )

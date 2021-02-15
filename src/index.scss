@@ -33,3 +33,32 @@ h5,
 h6 {
   font-weight: 400;
 }
+
+/*
+.ant-btn-primary {
+  background-color: #FFD700;
+  border-color: #FFD700;
+}
+.ant-btn-primary:hover, .ant-btn-primary:focus {
+  background-color: #ffc800;
+  border-color: #ffe166;
+}*/
+
+.ant-btn-primary:not([disabled]) {
+  // gold-4 from ant design
+  background-color: #ffd666 !important;
+  border-color: #ffd666 !important;
+  color: #000000 !important;
+}
+
+.ant-btn-primary:hover:not([disabled]) {
+  // gold-3 from ant design
+  background-color: #ffe58f !important;
+  border-color: #ffe58f !important;
+}
+
+.ant-btn-primary:active:not([disabled]) {
+  // gold-5 from ant design
+  background-color: #ffc53d !important;
+  border-color: #ffc53d !important;
+}

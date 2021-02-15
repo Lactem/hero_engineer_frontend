@@ -25,15 +25,16 @@ export interface QuestInfoModel {
 }
 
 export async function apiLoadAllHeroCouncils() {
-  const url = `${apiBase}/herocouncil/herocouncils`
+  const url = `${apiBase}/herocouncil/allHeroCouncils`
 
   return await axios.get<HeroCouncilModel[]>(url)
 }
 
-export async function apiLoadHeroCouncil() {
-  const url = `${apiBase}/herocouncil/herocouncil`
+// Loads hero councils that the user is a part of
+export async function apiLoadMyHeroCouncils() {
+  const url = `${apiBase}/herocouncil/myHeroCouncils`
 
-  return await axios.get<HeroCouncilModel>(url)
+  return await axios.get<HeroCouncilModel[]>(url)
 }
 
 export async function apiSaveHeroCouncil(name: string,

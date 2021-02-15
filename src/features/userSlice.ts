@@ -194,7 +194,6 @@ export const logIn = (
 }
 
 export const loadProfile = (): AppThunk => async dispatch => {
-  console.log("loadProfile() called");
   dispatch(loadProfileStartAction())
   apiLoadProfile()
     .then(response => {
